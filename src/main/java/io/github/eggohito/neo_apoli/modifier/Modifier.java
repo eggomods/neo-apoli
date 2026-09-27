@@ -1,6 +1,7 @@
 package io.github.eggohito.neo_apoli.modifier;
 
 import com.mojang.datafixers.Products;
+import com.mojang.datafixers.util.Function3;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -11,6 +12,7 @@ import io.github.eggohito.neo_apoli.context.ContextValidatable;
 import io.github.eggohito.neo_apoli.modifier.custom.AddModifier;
 import io.github.eggohito.neo_apoli.modifier.custom.MultiplyAdditiveModifier;
 import io.github.eggohito.neo_apoli.modifier.custom.MultiplyMultiplicativeModifier;
+import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.floats.ConstantFloatProvider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliRegistries;
 import io.github.eggohito.neo_apoli.registry.NeoApoliRegistryKeys;
@@ -20,6 +22,9 @@ import io.github.eggohito.neo_apoli.util.MiscUtil;
 import io.github.eggohito.neo_apoli.util.StreamCodecUtil;
 import io.github.eggohito.neo_apoli.util.alias.FixedRegistryAlias;
 import io.netty.buffer.ByteBuf;
+import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
+import it.unimi.dsi.fastutil.doubles.DoubleList;
+import it.unimi.dsi.fastutil.objects.ObjectAVLTreeSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.Util;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -29,8 +34,11 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.function.IntConsumer;
+import java.util.stream.DoubleStream;
 
 public interface Modifier extends ContextUser, Comparable<Modifier> {
 
@@ -59,32 +67,36 @@ public interface Modifier extends ContextUser, Comparable<Modifier> {
 
 	Type<?> getType();
 
-	Phase phase();
-
 	List<Modifier> modifiers();
 
-	default List<Operation> collectNestedOps(Operation parent) {
+	FloatProvider amount();
 
-		List<Operation> nestedOps = new ObjectArrayList<>();
-		MiscUtil.iterateList(
-			this.modifiers(),
-			(index, nestedMod) -> nestedOps.add(nestedMod.asOperation(parent.context().forChild(".modifiers[" + index + "]")))
-		);
+	Phase phase();
 
-		return nestedOps;
-
-	}
-
-	double apply(Context context, double base, double total);
+	double apply(DoubleStream amounts, double base, double total);
 
 	default Operation asOperation(Context context) {
 		return new Operation(this, context);
 	}
 
-	static <M extends Modifier> Products.P2<RecordCodecBuilder.Mu<M>, List<Modifier>, Phase> addFields(RecordCodecBuilder.Instance<M> instance) {
+	static <M extends Modifier> Products.P3<RecordCodecBuilder.Mu<M>, List<Modifier>, FloatProvider, Phase> addFields(RecordCodecBuilder.Instance<M> instance) {
 		return instance.group(
 			MapCodecUtil.lazy(() -> Modifier.CODEC.listOf().optionalFieldOf("modifiers", List.of())).forGetter(Modifier::modifiers),
+			FloatProvider.CODEC.fieldOf("amount").forGetter(Modifier::amount),
 			Phase.CODEC.fieldOf("phase").forGetter(Modifier::phase)
+		);
+	}
+
+	static <M extends Modifier> MapCodec<M> mapCodec(Function3<List<Modifier>, FloatProvider, Phase, M> constructor) {
+		return RecordCodecBuilder.mapCodec(instance -> addFields(instance).apply(instance, constructor));
+	}
+
+	static <M extends Modifier> StreamCodec<RegistryFriendlyByteBuf, M> streamCodec(Function3<List<Modifier>, FloatProvider, Phase, M> constructor) {
+		return StreamCodec.composite(
+			StreamCodecUtil.lazy(() -> Modifier.STREAM_CODEC.apply(ByteBufCodecs.list())), Modifier::modifiers,
+			FloatProvider.STREAM_CODEC, Modifier::amount,
+			Phase.STREAM_CODEC, Modifier::phase,
+			constructor
 		);
 	}
 
@@ -95,11 +107,11 @@ public interface Modifier extends ContextUser, Comparable<Modifier> {
 
 		return switch (operation) {
 			case ADD_VALUE ->
-				new AddModifier(List.of(), Modifier.Phase.BASE, new ConstantFloatProvider(amount));
+				new AddModifier(List.of(), new ConstantFloatProvider(amount), Modifier.Phase.BASE);
 			case ADD_MULTIPLIED_BASE ->
-				new MultiplyAdditiveModifier(List.of(), Modifier.Phase.BASE, new ConstantFloatProvider(amount));
+				new MultiplyAdditiveModifier(List.of(), new ConstantFloatProvider(amount), Modifier.Phase.BASE);
 			case ADD_MULTIPLIED_TOTAL ->
-				new MultiplyMultiplicativeModifier(List.of(), Modifier.Phase.TOTAL, new ConstantFloatProvider(amount));
+				new MultiplyMultiplicativeModifier(List.of(), new ConstantFloatProvider(amount), Modifier.Phase.TOTAL);
 		};
 
 	}
@@ -110,47 +122,55 @@ public interface Modifier extends ContextUser, Comparable<Modifier> {
 			return baseValue;
 		}
 
-		List<Operation> sorted = new ObjectArrayList<>(operations);
-		sorted.sort(Operation::compareTo);
+		Set<Operation> sorted = new ObjectAVLTreeSet<>(Operation::compareTo);
+		DoubleList amounts = new DoubleArrayList();
 
-		double currentBase = baseValue;
-		double currentTotal = baseValue;
+		sorted.addAll(operations);
+		Iterator<Operation> sortedIterator = sorted.iterator();
 
-		Phase previousPhase = null;
-		for (var operation : sorted) {
+		//  Collect all the modifiers' amounts
+		while (sortedIterator.hasNext()) {
 
-			Modifier modifier = operation.modifier();
+			Operation operation = sortedIterator.next();
+
 			Context context = operation.context();
+			Modifier modifier = operation.modifier();
 
-			Phase currentPhase = modifier.phase();
+			List<Operation> nestedOperations = new ObjectArrayList<>();
+			MiscUtil.iterateList(modifier.modifiers(), (index, nested) -> nestedOperations.add(nested.asOperation(context.forChild(".modifiers[" + index + "]"))));
 
-			if (currentPhase != previousPhase) {
-				previousPhase = currentPhase;
-				currentBase = currentTotal;
+			Context amountContext = context.forChild(".amount");
+			double amount = modifier.amount().getFloat(amountContext);
+
+			if (amountContext.hasProblems()) {
+				sortedIterator.remove();
 			}
 
-			try {
-
-				if (context.visitor().push(modifier)) {
-
-					List<Operation> nestedOps = modifier.collectNestedOps(operation);
-					double value = applyAll(nestedOps, modifier.apply(context, currentBase, currentTotal));
-
-					if (!context.hasProblems()) {
-						currentTotal = value;
-					}
-
-				}
-
-			}
-
-			finally {
-				context.visitor().pop(modifier);
+			else {
+				amounts.add(applyAll(nestedOperations, amount));
 			}
 
 		}
 
-		return currentTotal;
+		Phase previousPhase = null;
+		double base = baseValue, total = base;
+
+		//  Apply the modifiers' calculations
+		for (var operation : sorted) {
+
+			Modifier modifier = operation.modifier();
+			Phase currentPhase = modifier.phase();
+
+			if (currentPhase != previousPhase) {
+				previousPhase = currentPhase;
+				base = total;
+			}
+
+			total = modifier.apply(amounts.doubleStream(), base, total);
+
+		}
+
+		return total;
 
 	}
 
