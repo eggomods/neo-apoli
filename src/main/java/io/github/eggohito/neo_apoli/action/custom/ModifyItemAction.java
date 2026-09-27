@@ -56,7 +56,7 @@ public record ModifyItemAction(ResourceKey<LootItemFunction> modifier, SlotProvi
 			return;
 		}
 
-		SlotAccess slotAccess = slot().getSlot(context.forChild(".slot")).orElse(SlotAccess.NULL);
+		SlotAccess slotAccess = slot().getValue(context.forChild(".slot")).orElse(SlotAccess.NULL);
 		ItemStack stack = slotAccess.get();
 
 		if (slotAccess == SlotAccess.NULL || stack.isEmpty()) {
@@ -67,8 +67,8 @@ public record ModifyItemAction(ResourceKey<LootItemFunction> modifier, SlotProvi
 			.map(Holder.Reference::value)
 			.orElse(null);
 		LootParams lootParams = new LootParams.Builder(serverLevel)
-			.withOptionalParameter(LootContextParams.THIS_ENTITY, entity().flatMap(p -> p.getEntity(context.forChild(".entity"))).orElse(null))
-			.withParameter(LootContextParams.ORIGIN, position().flatMap(p -> p.getVec3(context.forChild(".position"))).orElse(Vec3.ZERO))
+			.withOptionalParameter(LootContextParams.THIS_ENTITY, entity().flatMap(p -> p.getValue(context.forChild(".entity"))).orElse(null))
+			.withParameter(LootContextParams.ORIGIN, position().flatMap(p -> p.getValue(context.forChild(".position"))).orElse(Vec3.ZERO))
 			.create(LootContextParamSets.COMMAND);
 
 		if (modifier == null) {

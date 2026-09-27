@@ -19,7 +19,7 @@ import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.IntConsumer;
+import java.util.Optional;
 
 public record AdjacentBlocksIntProvider(Condition condition, Vec3Provider position) implements IntProvider {
 
@@ -43,14 +43,14 @@ public record AdjacentBlocksIntProvider(Condition condition, Vec3Provider positi
 	}
 
 	@Override
-	public void provideInt(Context context, IntConsumer setter) {
+	public Optional<Integer> getValue(Context context) {
 
-		BlockPos position = position().getVec3(context.forChild(".position"))
+		BlockPos position = position().getValue(context.forChild(".position"))
 			.map(BlockPos::containing)
 			.orElse(null);
 
 		if (position == null) {
-			return;
+			return Optional.empty();
 		}
 
 		Level level = context.level();
@@ -76,7 +76,7 @@ public record AdjacentBlocksIntProvider(Condition condition, Vec3Provider positi
 
 		}
 
-		setter.accept(matches);
+		return Optional.of(matches);
 
 	}
 

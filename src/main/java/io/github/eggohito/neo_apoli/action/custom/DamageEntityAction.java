@@ -47,8 +47,8 @@ public record DamageEntityAction(Holder<DamageType> damageType, FloatProvider am
 			return;
 		}
 
-		Entity victim = victim().getEntity(context.forChild(".victim")).orElse(null);
-		Entity attacker = attacker().flatMap(p -> p.getEntity(context.forChild("attacker"))).orElse(null);
+		Entity victim = victim().getValue(context.forChild(".victim")).orElse(null);
+		Entity attacker = attacker().flatMap(p -> p.getValue(context.forChild("attacker"))).orElse(null);
 
 		if (victim == null) {
 			return;

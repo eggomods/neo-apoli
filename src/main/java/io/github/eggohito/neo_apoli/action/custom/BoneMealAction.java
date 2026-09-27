@@ -44,7 +44,7 @@ public record BoneMealAction(Vec3Provider position, BooleanProvider showEffects,
 	public void execute(Context context) {
 
 		if (!context.level().isClientSide()) {
-			position().getVec3(context.forChild(".position"))
+			position().getValue(context.forChild(".position"))
 				.map(BlockPos::containing)
 				.ifPresent(position -> this.apply(context, position));
 		}
@@ -68,7 +68,7 @@ public record BoneMealAction(Vec3Provider position, BooleanProvider showEffects,
 		else {
 
 			Direction offsetDirection = offsetDirection()
-				.flatMap(self -> self.getDirection(context.forChild(".offset_direction")))
+				.flatMap(self -> self.getValue(context.forChild(".offset_direction")))
 				.orElse(null);
 
 			if (offsetDirection != null && context.level().getBlockState(position).isFaceSturdy(context.level(), position, offsetDirection) && BoneMealItem.growWaterPlant(ItemStack.EMPTY, context.level(), position.relative(offsetDirection), offsetDirection)) {

@@ -37,9 +37,9 @@ public record BlockBoundsBoxProvider(ClipContext.Block shapeType, BlockProvider 
 	}
 
 	@Override
-	public Optional<AABB> getBox(Context context) {
+	public Optional<AABB> getValue(Context context) {
 		return block()
-			.getBlock(context.forChild(".block"))
+			.getValue(context.forChild(".block"))
 			.flatMap(block -> this.getBlockBounds(context, block));
 	}
 

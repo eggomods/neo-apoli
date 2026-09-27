@@ -23,8 +23,8 @@ public record OppositeDirectionProvider(DirectionProvider direction) implements 
 	}
 
 	@Override
-	public Optional<Direction> getDirection(Context context) {
-		return direction().getDirection(context.forChild(".direction")).map(Direction::getOpposite);
+	public Optional<Direction> getValue(Context context) {
+		return direction().getValue(context.forChild(".direction")).map(Direction::getOpposite);
 	}
 
 	@Override

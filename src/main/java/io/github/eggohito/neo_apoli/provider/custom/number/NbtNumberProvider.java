@@ -15,11 +15,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.IntConsumer;
+import java.util.function.Function;
+import java.util.function.IntFunction;
 
-public interface NbtNumberProvider extends ValueProvider {
+public interface NbtNumberProvider<N extends Number> extends ValueProvider<N> {
 
 	@Override
 	default void validate(Context.Validator validator) {
@@ -31,14 +32,14 @@ public interface NbtNumberProvider extends ValueProvider {
 
 	NbtPathArgument.NbtPath path();
 
-	default void processTag(Context context, Consumer<NumericTag> numeric, IntConsumer other) {
+	default Optional<N> convertTag(Context context, Function<NumericTag, N> numeric, IntFunction<N> other) {
 
 		Tag source = source()
-			.getTag(context.forChild(".source"))
+			.getValue(context.forChild(".source"))
 			.orElse(null);
 
 		if (source == null) {
-			return;
+			return Optional.empty();
 		}
 
 		try {
@@ -47,22 +48,26 @@ public interface NbtNumberProvider extends ValueProvider {
 			int size = tags.size();
 
 			if (size == 1) {
-				switch (tags.getFirst()) {
+
+				N converted = switch (tags.getFirst()) {
 					case NumericTag numericTag ->
-						numeric.accept(numericTag);
+						numeric.apply(numericTag);
 					case CollectionTag collectionTag ->
-						other.accept(collectionTag.size());
+						other.apply(collectionTag.size());
 					case CompoundTag compoundTag ->
-						other.accept(compoundTag.size());
+						other.apply(compoundTag.size());
 					case StringTag(String value) ->
-						other.accept(value.length());
+						other.apply(value.length());
 					default ->
 						throw MiscUtil.createCommandException(Component.translatableEscape("commands.data.get.unknown", this.path()));
-				}
+				};
+
+				return Optional.of(converted);
+
 			}
 
 			else if (size > 1) {
-				other.accept(path().countMatching(source));
+				return Optional.of(other.apply(path().countMatching(source)));
 			}
 
 		}
@@ -71,16 +76,18 @@ public interface NbtNumberProvider extends ValueProvider {
 			context.reportProblem("Error trying to get a numeric value in NBT path \"" + this.path() + " from NBT \"" + source + "\": " + e.getMessage());
 		}
 
+		return Optional.empty();
+
 	}
 
-	static <M extends NbtNumberProvider> MapCodec<M> mapCodec(BiFunction<NbtProvider, NbtPathArgument.NbtPath, M> constructor) {
+	static <M extends NbtNumberProvider<?>> MapCodec<M> mapCodec(BiFunction<NbtProvider, NbtPathArgument.NbtPath, M> constructor) {
 		return RecordCodecBuilder.mapCodec(instance -> instance.group(
 			NbtProvider.CODEC.fieldOf("source").forGetter(NbtNumberProvider::source),
 			NbtPathArgument.NbtPath.CODEC.fieldOf("path").forGetter(NbtNumberProvider::path)
 		).apply(instance, constructor));
 	}
 
-	static <M extends NbtNumberProvider> StreamCodec<RegistryFriendlyByteBuf, M> streamCodec(BiFunction<NbtProvider, NbtPathArgument.NbtPath, M> constructor) {
+	static <M extends NbtNumberProvider<?>> StreamCodec<RegistryFriendlyByteBuf, M> streamCodec(BiFunction<NbtProvider, NbtPathArgument.NbtPath, M> constructor) {
 		return StreamCodec.composite(
 			NbtProvider.STREAM_CODEC, NbtNumberProvider::source,
 			NeoApoliStreamCodecs.NBT_PATH, NbtNumberProvider::path,

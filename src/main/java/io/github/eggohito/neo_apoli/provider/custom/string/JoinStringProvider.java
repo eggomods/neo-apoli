@@ -37,7 +37,7 @@ public record JoinStringProvider(List<StringProvider> strings, StringProvider se
 	}
 
 	@Override
-	public Optional<String> getString(Context context) {
+	public Optional<String> getValue(Context context) {
 
 		StringBuilder result = new StringBuilder();
 		MutableBoolean init = new MutableBoolean(false);
@@ -47,14 +47,14 @@ public record JoinStringProvider(List<StringProvider> strings, StringProvider se
 			(index, provider) -> {
 
 				String string = provider
-					.getString(context.forChild(".strings[" + index + "]"))
+					.getValue(context.forChild(".strings[" + index + "]"))
 					.orElse(null);
 
 				if (string != null) {
 
 					if (init.isTrue()) {
 						separator()
-							.getString(context.forChild(".separator"))
+							.getValue(context.forChild(".separator"))
 							.ifPresent(separator -> result.append(separator).append(string));
 
 					}

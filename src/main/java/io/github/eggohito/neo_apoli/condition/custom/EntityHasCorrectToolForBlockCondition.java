@@ -34,8 +34,8 @@ public record EntityHasCorrectToolForBlockCondition(EntityProvider entity, Block
 	@Override
 	public boolean test(Context context) {
 
-		Entity entity = entity().getEntity(context.forChild(".entity")).orElse(null);
-		CachedBlock block = block().getBlock(context.forChild(".block")).orElse(null);
+		Entity entity = entity().getValue(context.forChild(".entity")).orElse(null);
+		CachedBlock block = block().getValue(context.forChild(".block")).orElse(null);
 
 		return block != null
 			&& entity instanceof Player player

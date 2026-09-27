@@ -15,13 +15,11 @@ import io.github.eggohito.neo_apoli.util.alias.FixedRegistryAlias;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
-import java.util.function.IntConsumer;
 
-public interface IntProvider extends ValueProvider {
+public interface IntProvider extends ValueProvider<Integer> {
 
 	Codec<IntProvider> CODEC = Codec.lazyInitialized(() -> new MultiAlternativeCodec<>(Type.CODEC.dispatch(IntProvider::getType, Type::mapCodec), ContextIntProvider.INLINE_CODEC, ConstantIntProvider.INLINE_CODEC));
 
@@ -30,19 +28,8 @@ public interface IntProvider extends ValueProvider {
 	@Override
 	IntProvider.@NotNull Type<?> getType();
 
-	void provideInt(Context context, IntConsumer setter);
-
-	default int getIntOr(Context context, int fallback) {
-
-		MutableInt result = new MutableInt(fallback);
-		this.provideInt(context, result::setValue);
-
-		return result.intValue();
-
-	}
-
 	default int getInt(Context context) {
-		return this.getIntOr(context, 0);
+		return this.getValue(context).orElse(0);
 	}
 
 	static Codec<IntProvider> clamped(IntProvider min, IntProvider max) {

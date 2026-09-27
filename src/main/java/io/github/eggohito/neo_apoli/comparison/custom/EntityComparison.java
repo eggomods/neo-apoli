@@ -33,8 +33,8 @@ public record EntityComparison(EntityProvider first, EntityProvider second) impl
 	@Override
 	public boolean compare(Context context) {
 
-		Entity first = first().getEntity(context.forChild(".first")).orElse(null);
-		Entity second = second().getEntity(context.forChild(".second")).orElse(null);
+		Entity first = first().getValue(context.forChild(".first")).orElse(null);
+		Entity second = second().getValue(context.forChild(".second")).orElse(null);
 
 		return first != null
 			&& second != null

@@ -56,7 +56,7 @@ public record PlaceBlockAction(Vec3Provider position, BlockInput block, Mode mod
 			return;
 		}
 
-		BlockPos position = position().getVec3(context.forChild(".position"))
+		BlockPos position = position().getValue(context.forChild(".position"))
 			.map(BlockPos::containing)
 			.orElse(null);
 
@@ -76,7 +76,7 @@ public record PlaceBlockAction(Vec3Provider position, BlockInput block, Mode mod
 				placeBlock = serverLevel.isEmptyBlock(position);
 			case DEFAULT -> {
 
-				Direction offsetDirection = offsetDirection().flatMap(self -> self.getDirection(context.forChild(".offset_direction"))).orElse(null);
+				Direction offsetDirection = offsetDirection().flatMap(self -> self.getValue(context.forChild(".offset_direction"))).orElse(null);
 				placeBlock = serverLevel.isEmptyBlock(position);
 
 				if (!placeBlock && offsetDirection != null) {

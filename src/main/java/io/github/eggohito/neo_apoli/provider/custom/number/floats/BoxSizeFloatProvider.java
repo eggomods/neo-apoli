@@ -6,10 +6,11 @@ import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.provider.custom.box.BoxProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliFloatProviderTypes;
-import io.github.eggohito.neo_apoli.util.FloatConsumer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public record BoxSizeFloatProvider(BoxProvider box) implements FloatProvider {
 
@@ -29,8 +30,8 @@ public record BoxSizeFloatProvider(BoxProvider box) implements FloatProvider {
 	}
 
 	@Override
-	public void provideFloat(Context context, FloatConsumer setter) {
-		box().getBox(context.forChild(".box")).ifPresent(box -> setter.accept((float) box.getSize()));
+	public Optional<Float> getValue(Context context) {
+		return box().getValue(context.forChild(".box")).map(box -> (float) box.getSize());
 	}
 
 	@Override

@@ -11,7 +11,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.IntConsumer;
+import java.util.Optional;
 
 public record ConstantIntProvider(int value) implements IntProvider {
 
@@ -36,8 +36,8 @@ public record ConstantIntProvider(int value) implements IntProvider {
 	}
 
 	@Override
-	public void provideInt(Context context, IntConsumer setter) {
-		setter.accept(this.value());
+	public Optional<Integer> getValue(Context context) {
+		return Optional.of(value());
 	}
 
 }

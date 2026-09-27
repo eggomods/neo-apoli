@@ -4,7 +4,10 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.ContextValidatable;
-import io.github.eggohito.neo_apoli.util.*;
+import io.github.eggohito.neo_apoli.util.FloatBiFunction;
+import io.github.eggohito.neo_apoli.util.MapCodecUtil;
+import io.github.eggohito.neo_apoli.util.MiscUtil;
+import io.github.eggohito.neo_apoli.util.StreamCodecUtil;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -12,6 +15,7 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.mutable.MutableFloat;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 public interface MultiFloatProvider extends FloatProvider {
@@ -24,7 +28,7 @@ public interface MultiFloatProvider extends FloatProvider {
 		ContextValidatable.validate(values(), validator, index -> ".values[" + index + "]");
 	}
 
-	default void iterateAndProcess(Context context, FloatBiFunction processor, FloatConsumer setter) {
+	default Optional<Float> iterateAndProcess(Context context, FloatBiFunction processor) {
 
 		MutableFloat result = new MutableFloat();
 		MutableBoolean init = new MutableBoolean(false);
@@ -71,9 +75,9 @@ public interface MultiFloatProvider extends FloatProvider {
 			}
 		);
 
-		if (init.isTrue()) {
-			setter.accept(result.floatValue());
-		}
+		return init.isTrue()
+			? Optional.of(result.floatValue())
+			: Optional.empty();
 
 	}
 

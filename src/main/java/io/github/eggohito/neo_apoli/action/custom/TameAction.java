@@ -38,8 +38,8 @@ public record TameAction(EntityProvider tameable, EntityProvider owner) implemen
 			return;
 		}
 
-		Entity tameable = tameable().getEntity(context.forChild(".tameable")).orElse(null);
-		Entity owner = owner().getEntity(context.forChild(".owner")).orElse(null);
+		Entity tameable = tameable().getValue(context.forChild(".tameable")).orElse(null);
+		Entity owner = owner().getValue(context.forChild(".owner")).orElse(null);
 
 		if (owner instanceof ServerPlayer serverPlayer) {
 

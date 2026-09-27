@@ -31,7 +31,7 @@ public record RevokeAllPowersAction(ResourceLocation source, EntityProvider enti
 
 	@Override
 	public void execute(Context context) {
-		entity().getEntity(context.forChild(".entity"))
+		entity().getValue(context.forChild(".entity"))
 			.flatMap(MutablePowers::getOptional)
 			.ifPresent(this::revokeAll);
 	}

@@ -39,7 +39,7 @@ public record SelectorEntityProvider(ParsedArgument<EntitySelector> selector) im
 	}
 
 	@Override
-	public Optional<Entity> getEntity(Context context) {
+	public Optional<Entity> getValue(Context context) {
 
 		Level level = context.level();
 		MinecraftServer server = level.getServer();

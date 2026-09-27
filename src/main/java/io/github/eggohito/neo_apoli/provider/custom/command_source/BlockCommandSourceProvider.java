@@ -37,10 +37,10 @@ public record BlockCommandSourceProvider(BlockProvider block) implements Command
 	}
 
 	@Override
-	public Optional<CommandSourceStack> getSource(Context context) {
+	public Optional<CommandSourceStack> getValue(Context context) {
 
 		if (context.level() instanceof ServerLevel serverLevel) {
-			return block().getBlock(context.forChild(".block"))
+			return block().getValue(context.forChild(".block"))
 				.map(block -> this.getCommandSource(serverLevel, block))
 				.map(NeoApoliCommonConfig.INSTANCE.command.get()::sanitizeSource);
 		}

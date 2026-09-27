@@ -31,9 +31,9 @@ public record DynamicBoxProvider(Vec3Provider min, Vec3Provider max) implements 
 	}
 
 	@Override
-	public Optional<AABB> getBox(Context context) {
-		return min().getVec3(context.forChild(".min"))
-			.flatMap(min -> max().getVec3(context.forChild(".max"))
+	public Optional<AABB> getValue(Context context) {
+		return min().getValue(context.forChild(".min"))
+			.flatMap(min -> max().getValue(context.forChild(".max"))
 				.map(max -> new AABB(min, max)));
 	}
 

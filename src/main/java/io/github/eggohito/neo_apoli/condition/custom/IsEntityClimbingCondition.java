@@ -31,7 +31,7 @@ public record IsEntityClimbingCondition(EntityProvider entity) implements Condit
 	public boolean test(Context context) {
 
 		try {
-			return entity().getEntity(context.forChild(".entity"))
+			return entity().getValue(context.forChild(".entity"))
 				.stream()
 				.filter(LivingEntity.class::isInstance)
 				.map(LivingEntity.class::cast)

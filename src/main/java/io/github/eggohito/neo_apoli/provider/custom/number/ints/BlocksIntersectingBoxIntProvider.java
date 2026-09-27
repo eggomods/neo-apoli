@@ -17,7 +17,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.IntConsumer;
+import java.util.Optional;
 
 public record BlocksIntersectingBoxIntProvider(Condition condition, BoxProvider box) implements IntProvider {
 
@@ -41,13 +41,13 @@ public record BlocksIntersectingBoxIntProvider(Condition condition, BoxProvider 
 	}
 
 	@Override
-	public void provideInt(Context context, IntConsumer setter) {
+	public Optional<Integer> getValue(Context context) {
 
 		Context boxContext = context.forChild(".box");
-		AABB box = box().getBox(boxContext).orElse(null);
+		AABB box = box().getValue(boxContext).orElse(null);
 
 		if (box == null) {
-			return;
+			return Optional.empty();
 		}
 
 		Level level = context.level();
@@ -73,7 +73,7 @@ public record BlocksIntersectingBoxIntProvider(Condition condition, BoxProvider 
 
 		}
 
-		setter.accept(matches);
+		return Optional.of(matches);
 
 	}
 

@@ -6,11 +6,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliFloatProviderTypes;
-import io.github.eggohito.neo_apoli.util.FloatConsumer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public record ConstantFloatProvider(float value) implements FloatProvider {
 
@@ -35,8 +36,8 @@ public record ConstantFloatProvider(float value) implements FloatProvider {
 	}
 
 	@Override
-	public void provideFloat(Context context, FloatConsumer setter) {
-		setter.accept(value());
+	public Optional<Float> getValue(Context context) {
+		return Optional.of(value());
 	}
 
 }

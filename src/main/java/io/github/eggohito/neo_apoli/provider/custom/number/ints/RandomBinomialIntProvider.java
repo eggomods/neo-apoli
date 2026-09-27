@@ -13,7 +13,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.IntConsumer;
+import java.util.Optional;
 
 public record RandomBinomialIntProvider(IntProvider attempts, FloatProvider probability) implements IntProvider {
 
@@ -34,20 +34,20 @@ public record RandomBinomialIntProvider(IntProvider attempts, FloatProvider prob
 	}
 
 	@Override
-	public void provideInt(Context context, IntConsumer setter) {
+	public Optional<Integer> getValue(Context context) {
 
 		Context attemptsContext = context.forChild(".attempts");
 		int attempts = attempts().getInt(attemptsContext);
 
 		if (attemptsContext.hasProblems()) {
-			return;
+			return Optional.empty();
 		}
 
 		Context probabilityContext = context.forChild(".probability");
 		float probability = probability().getFloat(probabilityContext);
 
 		if (probabilityContext.hasProblems()) {
-			return;
+			return Optional.empty();
 		}
 
 		RandomSource random = context.level().getRandom();
@@ -61,7 +61,7 @@ public record RandomBinomialIntProvider(IntProvider attempts, FloatProvider prob
 
 		}
 
-		setter.accept(result);
+		return Optional.of(result);
 
 	}
 

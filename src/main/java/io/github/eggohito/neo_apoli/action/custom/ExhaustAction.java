@@ -32,7 +32,7 @@ public record ExhaustAction(FloatProvider amount, EntityProvider entity) impleme
 	@Override
 	public void execute(Context context) {
 
-		if (!(entity().getEntity(context.forChild(".entity")).orElse(null) instanceof ServerPlayer serverPlayer)) {
+		if (!(entity().getValue(context.forChild(".entity")).orElse(null) instanceof ServerPlayer serverPlayer)) {
 			return;
 		}
 

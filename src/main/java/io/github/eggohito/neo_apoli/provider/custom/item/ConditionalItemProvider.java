@@ -2,7 +2,6 @@ package io.github.eggohito.neo_apoli.provider.custom.item;
 
 import com.mojang.serialization.MapCodec;
 import io.github.eggohito.neo_apoli.condition.Condition;
-import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.provider.ConditionalValueProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliItemProviderTypes;
 import io.github.eggohito.neo_apoli.util.MapCodecUtil;
@@ -12,9 +11,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
-
-public record ConditionalItemProvider(Condition condition, ItemProvider onTrue, ItemProvider onFalse) implements ItemProvider, ConditionalValueProvider<ItemProvider> {
+public record ConditionalItemProvider(Condition condition, ItemProvider onTrue, ItemProvider onFalse) implements ItemProvider, ConditionalValueProvider<ItemStack, ItemProvider> {
 
 	public static final MapCodec<ConditionalItemProvider> CODEC = MapCodecUtil.lazy(ConditionalItemProvider.class.getSimpleName(), () -> ConditionalValueProvider.mapCodec(ItemProvider.CODEC, ConditionalItemProvider::new));
 	public static final StreamCodec<RegistryFriendlyByteBuf, ConditionalItemProvider> STREAM_CODEC = StreamCodecUtil.lazy(ConditionalItemProvider.class.getSimpleName(), () -> ConditionalValueProvider.streamCodec(ItemProvider.STREAM_CODEC, ConditionalItemProvider::new));
@@ -22,11 +19,6 @@ public record ConditionalItemProvider(Condition condition, ItemProvider onTrue, 
 	@Override
 	public ItemProvider.@NotNull Type<?> getType() {
 		return NeoApoliItemProviderTypes.CONDITIONAL;
-	}
-
-	@Override
-	public Optional<ItemStack> getItem(Context context) {
-		return this.getValue(context, ItemProvider::getItem, Optional.empty());
 	}
 
 }

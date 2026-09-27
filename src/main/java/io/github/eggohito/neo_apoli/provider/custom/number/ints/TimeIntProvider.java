@@ -13,7 +13,6 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
-import java.util.function.IntConsumer;
 
 public record TimeIntProvider(Optional<IntProvider> period) implements IntProvider {
 
@@ -33,7 +32,7 @@ public record TimeIntProvider(Optional<IntProvider> period) implements IntProvid
 	}
 
 	@Override
-	public void provideInt(Context context, IntConsumer setter) {
+	public Optional<Integer> getValue(Context context) {
 
 		Level level = context.level();
 		int time = Mth.clamp((int) level.getGameTime(), Integer.MIN_VALUE, Integer.MAX_VALUE);
@@ -49,7 +48,7 @@ public record TimeIntProvider(Optional<IntProvider> period) implements IntProvid
 
 		}
 
-		setter.accept(time);
+		return Optional.of(time);
 
 	}
 

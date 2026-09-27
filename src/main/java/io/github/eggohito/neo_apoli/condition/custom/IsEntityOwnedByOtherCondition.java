@@ -35,8 +35,8 @@ public record IsEntityOwnedByOtherCondition(EntityProvider first, EntityProvider
 	@Override
 	public boolean test(Context context) {
 
-		Entity first = first().getEntity(context.forChild(".first")).orElse(null);
-		Entity second = second().getEntity(context.forChild(".second")).orElse(null);
+		Entity first = first().getValue(context.forChild(".first")).orElse(null);
+		Entity second = second().getValue(context.forChild(".second")).orElse(null);
 
 		return second != null
 			&& this.isOwnedBy(first, second);

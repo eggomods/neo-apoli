@@ -31,7 +31,7 @@ public record IsBlockEntityCondition(BlockProvider block) implements Condition {
 
 	@Override
 	public boolean test(Context context) {
-		return block().getBlock(context)
+		return block().getValue(context)
 			.stream()
 			.map(CachedBlock::entity)
 			.anyMatch(Objects::nonNull);

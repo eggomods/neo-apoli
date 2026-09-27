@@ -12,8 +12,8 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.context.ContextKey;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
 import java.util.Set;
-import java.util.function.IntConsumer;
 
 public record ContextIntProvider(Context.Parameter<Integer> parameter) implements IntProvider {
 
@@ -38,8 +38,14 @@ public record ContextIntProvider(Context.Parameter<Integer> parameter) implement
 	}
 
 	@Override
-	public void provideInt(Context context, IntConsumer setter) {
-		context.getOptional(parameter()).ifPresent(setter::accept);
+	public Optional<Integer> getValue(Context context) {
+
+		if (!context.hasParameter(parameter())) {
+			context.reportProblem("Parameter \"" + parameter() + "\" is not provided in the context!");
+		}
+
+		return context.getOptional(parameter());
+
 	}
 
 	@Override

@@ -29,7 +29,7 @@ public record ExtinguishEntityFireAction(EntityProvider entity) implements Actio
 
 	@Override
 	public void execute(Context context) {
-		entity().getEntity(context.forChild(".entity")).ifPresent(Entity::extinguishFire);
+		entity().getValue(context.forChild(".entity")).ifPresent(Entity::extinguishFire);
 	}
 
 	@Override

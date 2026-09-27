@@ -5,10 +5,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliBooleanProviderTypes;
-import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public record ConditionResultBooleanProvider(Condition condition) implements BooleanProvider {
 
@@ -27,14 +28,14 @@ public record ConditionResultBooleanProvider(Condition condition) implements Boo
 	}
 
 	@Override
-	public void provideBoolean(Context context, BooleanConsumer setter) {
+	public Optional<Boolean> getValue(Context context) {
 
 		Context conditionContext = context.forChild(".condition");
 		boolean result = condition().test(conditionContext);
 
-		if (!conditionContext.hasProblems()) {
-			setter.accept(result);
-		}
+		return conditionContext.hasProblems()
+			? Optional.empty()
+			: Optional.of(result);
 
 	}
 

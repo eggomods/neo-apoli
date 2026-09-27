@@ -5,13 +5,14 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliFloatProviderTypes;
-import io.github.eggohito.neo_apoli.util.FloatConsumer;
 import io.github.eggohito.neo_apoli.util.MapCodecUtil;
 import io.github.eggohito.neo_apoli.util.StreamCodecUtil;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public record RandomUniformFloatProvider(FloatProvider min, FloatProvider max) implements FloatProvider {
 
@@ -32,24 +33,24 @@ public record RandomUniformFloatProvider(FloatProvider min, FloatProvider max) i
 	}
 
 	@Override
-	public void provideFloat(Context context, FloatConsumer setter) {
+	public Optional<Float> getValue(Context context) {
 
 		Context minContext = context.forChild(".min");
 		float min = min().getFloat(minContext);
 
 		if (minContext.hasProblems()) {
-			return;
+			return Optional.empty();
 		}
 
 		Context maxContext = context.forChild(".max");
 		float max = max().getFloat(maxContext);
 
 		if (maxContext.hasProblems()) {
-			setter.accept(min);
+			return Optional.of(min);
 		}
 
 		else {
-			setter.accept(Mth.nextFloat(context.level().getRandom(), min, max));
+			return Optional.of(Mth.nextFloat(context.level().getRandom(), min, max));
 		}
 
 	}

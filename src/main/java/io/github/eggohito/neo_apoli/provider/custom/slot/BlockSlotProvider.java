@@ -35,7 +35,7 @@ public record BlockSlotProvider(BlockProvider block, IntProvider slot) implement
 	}
 
 	@Override
-	public Optional<SlotAccess> getSlot(Context context) {
+	public Optional<SlotAccess> getValue(Context context) {
 
 		Context slotContext = context.forChild(".slot");
 		int slot = slot().getInt(slotContext);
@@ -47,7 +47,7 @@ public record BlockSlotProvider(BlockProvider block, IntProvider slot) implement
 		else {
 
 			Context blockContext = context.forChild(".block");
-			Optional<CachedBlock> block = block().getBlock(blockContext);
+			Optional<CachedBlock> block = block().getValue(blockContext);
 
 			Optional<Container> container = block
 				.flatMap(self -> Optional.ofNullable(self.entity()))

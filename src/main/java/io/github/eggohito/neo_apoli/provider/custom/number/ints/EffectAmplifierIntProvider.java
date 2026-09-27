@@ -15,7 +15,7 @@ import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
-import java.util.function.IntConsumer;
+import java.util.Optional;
 
 public record EffectAmplifierIntProvider(Holder<MobEffect> effect, EntityProvider entity) implements IntProvider {
 
@@ -36,14 +36,15 @@ public record EffectAmplifierIntProvider(Holder<MobEffect> effect, EntityProvide
 	}
 
 	@Override
-	public void provideInt(Context context, IntConsumer setter) {
+	public Optional<Integer> getValue(Context context) {
 
 		Context entityContext = context.forChild(".entity");
-		Entity entity = entity().getEntity(entityContext).orElse(null);
+		Entity entity = entity().getValue(entityContext).orElse(null);
 
 		switch (entity) {
-			case LivingEntity livingEntity when livingEntity.hasEffect(effect()) ->
-				setter.accept(Objects.requireNonNull(livingEntity.getEffect(effect())).getAmplifier());
+			case LivingEntity livingEntity when livingEntity.hasEffect(effect()) -> {
+				return Optional.of(Objects.requireNonNull(livingEntity.getEffect(effect())).getAmplifier());
+			}
 			case LivingEntity ignored -> {
 				//  No-op; the entity doesn't have the effect
 			}
@@ -52,6 +53,8 @@ public record EffectAmplifierIntProvider(Holder<MobEffect> effect, EntityProvide
 			default ->
 				entityContext.reportProblem("Entity is not a living entity!");
 		}
+
+		return Optional.empty();
 
 	}
 

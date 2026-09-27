@@ -12,7 +12,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.IntConsumer;
+import java.util.Optional;
 
 public record ClampedIntProvider(IntProvider value, IntProvider min, IntProvider max) implements IntProvider {
 
@@ -35,20 +35,20 @@ public record ClampedIntProvider(IntProvider value, IntProvider min, IntProvider
 	}
 
 	@Override
-	public void provideInt(Context context, IntConsumer setter) {
+	public Optional<Integer> getValue(Context context) {
 
 		Context valueContext = context.forChild(".value");
 		int value = value().getInt(valueContext);
 
 		if (valueContext.hasProblems()) {
-			return;
+			return Optional.empty();
 		}
 
 		Context minContext = context.forChild(".min");
 		int min = min().getInt(minContext);
 
 		if (minContext.hasProblems()) {
-			setter.accept(value);
+			return Optional.of(value);
 		}
 
 		else {
@@ -57,11 +57,11 @@ public record ClampedIntProvider(IntProvider value, IntProvider min, IntProvider
 			int max = max().getInt(maxContext);
 
 			if (maxContext.hasProblems()) {
-				setter.accept(Math.max(value, min));
+				return Optional.of(Math.max(value, min));
 			}
 
 			else {
-				setter.accept(Mth.clamp(value, min, max));
+				return Optional.of(Mth.clamp(value, min, max));
 			}
 
 		}

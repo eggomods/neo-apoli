@@ -33,9 +33,9 @@ public record ItemNbtProvider(ItemProvider item) implements NbtProvider {
 	}
 
 	@Override
-	public Optional<Tag> getTag(Context context) {
+	public Optional<Tag> getValue(Context context) {
 		RegistryOps<Tag> ops = context.level().registryAccess().createSerializationContext(NbtOps.INSTANCE);
-		return item().getItem(context.forChild(".item"))
+		return item().getValue(context.forChild(".item"))
 			.flatMap(item -> ItemStack.OPTIONAL_CODEC.encodeStart(ops, item)
 				.mapError(error -> "Error providing item as NBT: " + error)
 				.resultOrPartial(context::reportProblem));

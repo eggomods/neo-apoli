@@ -11,17 +11,15 @@ import io.github.eggohito.neo_apoli.provider.custom.number.floats.ConstantFloatP
 import io.github.eggohito.neo_apoli.provider.custom.number.floats.ContextFloatProvider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliRegistries;
 import io.github.eggohito.neo_apoli.registry.NeoApoliRegistryKeys;
-import io.github.eggohito.neo_apoli.util.FloatConsumer;
 import io.github.eggohito.neo_apoli.util.alias.FixedRegistryAlias;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
-public interface FloatProvider extends ValueProvider {
+public interface FloatProvider extends ValueProvider<Float> {
 
 	Codec<FloatProvider> CODEC = Codec.lazyInitialized(() -> new MultiAlternativeCodec<>(Type.CODEC.dispatch(FloatProvider::getType, Type::mapCodec), ContextFloatProvider.INLINE_CODEC, ConstantFloatProvider.INLINE_CODEC));
 
@@ -30,19 +28,8 @@ public interface FloatProvider extends ValueProvider {
 	@Override
 	FloatProvider.@NotNull Type<?> getType();
 
-	void provideFloat(Context context, FloatConsumer setter);
-
-	default float getFloatOr(Context context, float fallback) {
-
-		MutableFloat result = new MutableFloat(fallback);
-		this.provideFloat(context, result::setValue);
-
-		return result.floatValue();
-
-	}
-
 	default float getFloat(Context context) {
-		return this.getFloatOr(context, 0.0F);
+		return this.getValue(context).orElse(0.0F);
 	}
 
 	static Codec<FloatProvider> clamped(FloatProvider min, FloatProvider max) {

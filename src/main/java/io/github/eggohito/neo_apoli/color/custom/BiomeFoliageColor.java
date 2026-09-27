@@ -39,7 +39,7 @@ public record BiomeFoliageColor(Vec3Provider position, FloatProvider alpha, Bool
 	@Override
 	public int intValue(Context context) {
 
-		BlockPos position = position().getVec3(context.forChild(".position"))
+		BlockPos position = position().getValue(context.forChild(".position"))
 			.map(BlockPos::containing)
 			.orElse(null);
 

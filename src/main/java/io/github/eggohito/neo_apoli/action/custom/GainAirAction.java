@@ -31,7 +31,7 @@ public record GainAirAction(IntProvider value, EntityProvider entity) implements
 
 	@Override
 	public void execute(Context context) {
-		entity().getEntity(context.forChild(".entity"))
+		entity().getValue(context.forChild(".entity"))
 			.filter(Player.class::isInstance)
 			.map(Player.class::cast)
 			.ifPresent(player -> player.setAirSupply(Math.min(value().getInt(context.forChild(".value")), player.getMaxAirSupply())));

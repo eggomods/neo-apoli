@@ -10,7 +10,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.IntConsumer;
+import java.util.Optional;
 
 public record FromFloatIntProvider(FloatProvider value) implements IntProvider {
 
@@ -30,8 +30,8 @@ public record FromFloatIntProvider(FloatProvider value) implements IntProvider {
 	}
 
 	@Override
-	public void provideInt(Context context, IntConsumer setter) {
-		value().provideFloat(context.forChild(".value"), value -> setter.accept((int) value));
+	public Optional<Integer> getValue(Context context) {
+		return value().getValue(context.forChild(".value")).map(Float::intValue);
 	}
 
 	@Override

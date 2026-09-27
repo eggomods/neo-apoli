@@ -31,9 +31,9 @@ public record DirectionVec3Provider(DirectionProvider direction) implements Vec3
 	}
 
 	@Override
-	public Optional<Vec3> getVec3(Context context) {
+	public Optional<Vec3> getValue(Context context) {
 		return direction()
-			.getDirection(context.forChild(".direction"))
+			.getValue(context.forChild(".direction"))
 			.map(Direction::getUnitVec3);
 	}
 

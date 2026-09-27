@@ -37,7 +37,7 @@ public record RemovePowerAction(ParsedArgument<PowerArgument.Result> power, Enti
 
 	@Override
 	public void execute(Context context) {
-		entity().getEntity(context.forChild(".entity"))
+		entity().getValue(context.forChild(".entity"))
 			.flatMap(MutablePowers::getOptional)
 			.ifPresent(mutable -> this.remove(mutable, context::reportProblem));
 	}

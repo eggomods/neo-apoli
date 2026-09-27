@@ -45,7 +45,7 @@ public record KeyReference(StringProvider id, BooleanProvider continuous) implem
 	public boolean continuouslyPressed(Context context, KeyState previous, KeyState current) {
 
 		String id = id()
-			.getString(context.forChild(".id"))
+			.getValue(context.forChild(".id"))
 			.orElse(null);
 
 		return Objects.equals(id, current.id())

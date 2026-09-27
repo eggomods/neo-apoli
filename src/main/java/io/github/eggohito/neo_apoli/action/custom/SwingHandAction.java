@@ -37,7 +37,7 @@ public record SwingHandAction(Optional<InteractionHand> hand, EntityProvider ent
 
 	@Override
 	public void execute(Context context) {
-		entity().getEntity(context.forChild(".entity"))
+		entity().getValue(context.forChild(".entity"))
 			.filter(LivingEntity.class::isInstance)
 			.map(LivingEntity.class::cast)
 			.ifPresent(this::swingHand);

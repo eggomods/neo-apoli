@@ -6,10 +6,12 @@ import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.provider.custom.vec3.Vec3Provider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliFloatProviderTypes;
-import io.github.eggohito.neo_apoli.util.FloatConsumer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public record DistanceBetweenPositionsFloatProvider(Vec3Provider first, Vec3Provider second) implements FloatProvider {
 
@@ -30,10 +32,12 @@ public record DistanceBetweenPositionsFloatProvider(Vec3Provider first, Vec3Prov
 	}
 
 	@Override
-	public void provideFloat(Context context, FloatConsumer setter) {
-		first().getVec3(context.forChild(".first"))
-			.ifPresent(first -> second().getVec3(context.forChild(".second"))
-				.ifPresent(second -> setter.accept((float) first.distanceTo(second))));
+	public Optional<Float> getValue(Context context) {
+		return first().getValue(context.forChild(".first"))
+			.map(Vec3::toVector3f)
+			.flatMap(first -> second().getValue(context.forChild(".second"))
+				.map(Vec3::toVector3f)
+				.map(first::distance));
 	}
 
 	@Override

@@ -36,7 +36,7 @@ public record ApplyEffectsAction(List<MobEffectInstance> effects, EntityProvider
 	@Override
 	public void execute(Context context) {
 
-		if (!context.level().isClientSide() && entity().getEntity(context.forChild(".entity")).orElse(null) instanceof LivingEntity livingEntity) {
+		if (!context.level().isClientSide() && entity().getValue(context.forChild(".entity")).orElse(null) instanceof LivingEntity livingEntity) {
 			effects().forEach(livingEntity::addEffect);
 		}
 

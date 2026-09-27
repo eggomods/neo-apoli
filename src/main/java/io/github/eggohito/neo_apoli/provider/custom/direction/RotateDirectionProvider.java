@@ -38,9 +38,9 @@ public record RotateDirectionProvider(Orientation orientation, DirectionProvider
 	}
 
 	@Override
-	public Optional<Direction> getDirection(Context context) {
+	public Optional<Direction> getValue(Context context) {
 		return direction()
-			.getDirection(context.forChild(".direction"))
+			.getValue(context.forChild(".direction"))
 			.map(direction -> orientation().rotate(direction, axis()));
 	}
 

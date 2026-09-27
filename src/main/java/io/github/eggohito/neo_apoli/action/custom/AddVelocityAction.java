@@ -43,7 +43,7 @@ public record AddVelocityAction(Method method, Vec3Provider velocity) implements
 
 	@Override
 	public void execute(Context context) {
-		velocity().getVec3(context.forChild(".velocity"))
+		velocity().getValue(context.forChild(".velocity"))
 			.map(Vec3::toVector3f)
 			.ifPresent(velocity -> method().apply(context, velocity));
 	}
@@ -86,7 +86,7 @@ public record AddVelocityAction(Method method, Vec3Provider velocity) implements
 
 			@Override
 			public void apply(Context context, Vector3f velocity) {
-				entity().getEntity(context.forChild(".entity")).ifPresent(entity -> this.onAdd(entity, velocity));
+				entity().getValue(context.forChild(".entity")).ifPresent(entity -> this.onAdd(entity, velocity));
 			}
 
 			@Override
@@ -116,8 +116,8 @@ public record AddVelocityAction(Method method, Vec3Provider velocity) implements
 			@Override
 			public void apply(Context context, Vector3f velocity) {
 
-				Entity first = first().getEntity(context.forChild(".first")).orElse(null);
-				Entity second = second().getEntity(context.forChild(".second")).orElse(null);
+				Entity first = first().getValue(context.forChild(".first")).orElse(null);
+				Entity second = second().getValue(context.forChild(".second")).orElse(null);
 
 				if (first == null || second == null) {
 					return;

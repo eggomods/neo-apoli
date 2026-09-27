@@ -11,7 +11,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.IntConsumer;
+import java.util.Optional;
 
 public record QuotientIntProvider(IntProvider dividend, IntProvider divisor) implements IntProvider {
 
@@ -32,29 +32,31 @@ public record QuotientIntProvider(IntProvider dividend, IntProvider divisor) imp
 	}
 
 	@Override
-	public void provideInt(Context context, IntConsumer setter) {
+	public Optional<Integer> getValue(Context context) {
 
 		Context dividendContext = context.forChild(".dividend");
 		int dividend = dividend().getInt(dividendContext);
 
 		if (dividendContext.hasProblems()) {
-			return;
+			return Optional.empty();
 		}
 
 		Context divisorContext = context.forChild(".divisor");
 		int divisor = divisor().getInt(divisorContext);
 
 		if (divisorContext.hasProblems()) {
-			return;
+			return Optional.empty();
 		}
 
 		try {
-			setter.accept(dividend / divisor);
+			return Optional.of(dividend / divisor);
 		}
 
 		catch (ArithmeticException e) {
 			context.reportProblem(e.getMessage());
 		}
+
+		return Optional.empty();
 
 	}
 

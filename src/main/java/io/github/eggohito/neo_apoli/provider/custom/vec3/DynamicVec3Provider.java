@@ -33,7 +33,7 @@ public record DynamicVec3Provider(FloatProvider x, FloatProvider y, FloatProvide
 	}
 
 	@Override
-	public Optional<Vec3> getVec3(Context context) {
+	public Optional<Vec3> getValue(Context context) {
 		return Optional.of(new Vec3(
 			x().getFloat(context.forChild(".x")),
 			y().getFloat(context.forChild(".y")),

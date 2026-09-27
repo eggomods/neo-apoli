@@ -94,7 +94,7 @@ public record ExplodeAction(Condition damageableCondition, Condition destructibl
 		}
 
 		Vec3 position = position()
-			.getVec3(context.forChild(".position"))
+			.getValue(context.forChild(".position"))
 			.orElse(null);
 
 		if (position == null) {
@@ -116,7 +116,7 @@ public record ExplodeAction(Condition damageableCondition, Condition destructibl
 		}
 
 		Entity emitter = emitter()
-			.flatMap(self -> self.getEntity(context.forChild(".entity")))
+			.flatMap(self -> self.getValue(context.forChild(".entity")))
 			.orElse(null);
 		DamageCalculator calculator = new DamageCalculator(emitter, context);
 

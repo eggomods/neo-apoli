@@ -63,7 +63,7 @@ public record PlaySoundAction(Holder<SoundEvent> sound, SoundSource category, Li
 		}
 
 		Vec3 position = position()
-			.getVec3(context.forChild(".position"))
+			.getValue(context.forChild(".position"))
 			.orElse(null);
 
 		if (position == null) {
@@ -123,7 +123,7 @@ public record PlaySoundAction(Holder<SoundEvent> sound, SoundSource category, Li
 		else {
 
 			List<ServerPlayer> listeners = new ObjectArrayList<>();
-			MiscUtil.iterateList(targets(), (index, provider) -> provider.getEntity(context.forChild(".targets[" + index + "]"))
+			MiscUtil.iterateList(targets(), (index, provider) -> provider.getValue(context.forChild(".targets[" + index + "]"))
 				.filter(ServerPlayer.class::isInstance)
 				.map(ServerPlayer.class::cast)
 				.ifPresent(listeners::add));

@@ -39,7 +39,7 @@ public record BlockStatePropertyCondition(StringProvider property, BlockProvider
 	public boolean test(Context context) {
 
 		String propertyName = property()
-			.getString(context.forChild(".property"))
+			.getValue(context.forChild(".property"))
 			.orElse(null);
 
 		if (propertyName == null) {
@@ -47,7 +47,7 @@ public record BlockStatePropertyCondition(StringProvider property, BlockProvider
 		}
 
 		CachedBlock block = block()
-			.getBlock(context.forChild(".block"))
+			.getValue(context.forChild(".block"))
 			.orElse(null);
 
 		if (block == null) {
@@ -77,7 +77,7 @@ public record BlockStatePropertyCondition(StringProvider property, BlockProvider
 	private <T extends Comparable<T>> boolean testProperty(Context context, BlockState state, Property<T> property) {
 
 		T currentValue = state.getValue(property);
-		T queryValue = value().getString(context.forChild(".value"))
+		T queryValue = value().getValue(context.forChild(".value"))
 			.flatMap(property::getValue)
 			.orElse(null);
 

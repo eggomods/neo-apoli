@@ -51,7 +51,7 @@ public record DamageItemAction(IntProvider amount, SlotProvider slot, BooleanPro
 			return;
 		}
 
-		ItemStack stack = slot().getSlot(context.forChild(".slot"))
+		ItemStack stack = slot().getValue(context.forChild(".slot"))
 			.map(SlotAccess::get)
 			.orElse(ItemStack.EMPTY);
 
@@ -77,7 +77,7 @@ public record DamageItemAction(IntProvider amount, SlotProvider slot, BooleanPro
 		else {
 
 			ServerPlayer itemHolder = itemHolder()
-				.flatMap(self -> self.getEntity(context.forChild(".entity")))
+				.flatMap(self -> self.getValue(context.forChild(".entity")))
 				.filter(ServerPlayer.class::isInstance)
 				.map(ServerPlayer.class::cast)
 				.orElse(null);

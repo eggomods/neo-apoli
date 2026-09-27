@@ -6,11 +6,12 @@ import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.provider.custom.vec3.Vec3Provider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliFloatProviderTypes;
-import io.github.eggohito.neo_apoli.util.FloatConsumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public record BrightnessFloatProvider(Vec3Provider position) implements FloatProvider {
 
@@ -30,11 +31,11 @@ public record BrightnessFloatProvider(Vec3Provider position) implements FloatPro
 	}
 
 	@Override
-	public void provideFloat(Context context, FloatConsumer setter) {
+	public Optional<Float> getValue(Context context) {
 		//noinspection deprecation
-		position().getVec3(context.forChild(".position"))
+		return position().getValue(context.forChild(".position"))
 			.map(BlockPos::containing)
-			.ifPresent(position -> setter.accept(context.level().getLightLevelDependentMagicValue(position)));
+			.map(position -> context.level().getLightLevelDependentMagicValue(position));
 	}
 
 	@Override

@@ -31,7 +31,7 @@ public record StorageNbtProvider(ResourceLocation id) implements NbtProvider {
 	}
 
 	@Override
-	public Optional<Tag> getTag(Context context) {
+	public Optional<Tag> getValue(Context context) {
 		CommandStorageHolder holder = (CommandStorageHolder) context.level();
 		return holder.neo_apoli$contains(this.id())
 			? Optional.of(holder.neo_apoli$getStorage(this.id()))

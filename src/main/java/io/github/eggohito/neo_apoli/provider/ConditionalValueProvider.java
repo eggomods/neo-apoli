@@ -9,18 +9,14 @@ import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.util.conditional.Conditional;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
-import java.util.function.BiFunction;
 
-public interface ConditionalValueProvider<Provider extends ValueProvider> extends ValueProvider, Conditional<Provider> {
+public interface ConditionalValueProvider<Value, Provider extends ValueProvider<Value>> extends ValueProvider<Value>, Conditional<Provider> {
 
-	@NotNull
-	default <Value> Value getValue(Context context, BiFunction<Provider, Context, Value> getter, @NotNull Value fallback) {
-		return this.select(context)
-			.map(selected -> getter.apply(selected.provider(), selected.context()))
-			.orElse(fallback);
+	@Override
+	default Optional<Value> getValue(Context context) {
+		return this.select(context).flatMap(selected -> selected.provider().getValue(selected.context()));
 	}
 
 	default Optional<Selected<Provider>> select(Context context) {
@@ -53,7 +49,7 @@ public interface ConditionalValueProvider<Provider extends ValueProvider> extend
 
 	}
 
-	static <P extends ValueProvider, M extends ConditionalValueProvider<P>> MapCodec<M> mapCodec(Codec<P> providerCodec, Function3<Condition, P, P, M> constructor) {
+	static <P extends ValueProvider<?>, M extends ConditionalValueProvider<?, P>> MapCodec<M> mapCodec(Codec<P> providerCodec, Function3<Condition, P, P, M> constructor) {
 		return RecordCodecBuilder.mapCodec(instance -> instance.group(
 			Condition.CODEC.fieldOf("condition").forGetter(ConditionalValueProvider::condition),
 			providerCodec.fieldOf("on_true").forGetter(ConditionalValueProvider::onTrue),
@@ -61,7 +57,7 @@ public interface ConditionalValueProvider<Provider extends ValueProvider> extend
 		).apply(instance, constructor));
 	}
 
-	static <P extends ValueProvider, M extends ConditionalValueProvider<P>> StreamCodec<RegistryFriendlyByteBuf, M> streamCodec(StreamCodec<RegistryFriendlyByteBuf, P> providerCodec, Function3<Condition, P, P, M> constructor) {
+	static <P extends ValueProvider<?>, M extends ConditionalValueProvider<?, P>> StreamCodec<RegistryFriendlyByteBuf, M> streamCodec(StreamCodec<RegistryFriendlyByteBuf, P> providerCodec, Function3<Condition, P, P, M> constructor) {
 		return StreamCodec.composite(
 			Condition.STREAM_CODEC, ConditionalValueProvider::condition,
 			providerCodec, ConditionalValueProvider::onTrue,
@@ -70,7 +66,7 @@ public interface ConditionalValueProvider<Provider extends ValueProvider> extend
 		);
 	}
 
-	record Selected<P extends ValueProvider>(P provider, Context context) {
+	record Selected<Provider>(Provider provider, Context context) {
 
 	}
 

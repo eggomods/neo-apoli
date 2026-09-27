@@ -38,7 +38,7 @@ public record ContextItemProvider(Context.Parameter<ItemStack> parameter) implem
 	}
 
 	@Override
-	public Optional<ItemStack> getItem(Context context) {
+	public Optional<ItemStack> getValue(Context context) {
 
 		if (!context.hasParameter(parameter())) {
 			context.reportProblem("Parameter \"" + parameter().name() + "\" is not provided in the context!");

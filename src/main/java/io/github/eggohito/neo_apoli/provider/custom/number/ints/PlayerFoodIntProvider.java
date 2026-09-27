@@ -11,7 +11,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.IntConsumer;
+import java.util.Optional;
 
 public record PlayerFoodIntProvider(EntityProvider entity) implements IntProvider {
 
@@ -31,11 +31,11 @@ public record PlayerFoodIntProvider(EntityProvider entity) implements IntProvide
 	}
 
 	@Override
-	public void provideInt(Context context, IntConsumer setter) {
-		entity().getEntity(context.forChild(".entity"))
+	public Optional<Integer> getValue(Context context) {
+		return entity().getValue(context.forChild(".entity"))
 			.filter(Player.class::isInstance)
 			.map(Player.class::cast)
-			.ifPresent(player -> setter.accept(player.getFoodData().getFoodLevel()));
+			.map(player -> player.getFoodData().getFoodLevel());
 	}
 
 	@Override

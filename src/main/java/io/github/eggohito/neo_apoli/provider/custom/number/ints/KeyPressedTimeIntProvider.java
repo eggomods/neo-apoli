@@ -12,7 +12,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.IntConsumer;
+import java.util.Optional;
 
 public record KeyPressedTimeIntProvider(StringProvider id, EntityProvider entity) implements IntProvider {
 
@@ -33,10 +33,11 @@ public record KeyPressedTimeIntProvider(StringProvider id, EntityProvider entity
 	}
 
 	@Override
-	public void provideInt(Context context, IntConsumer setter) {
-		id().getString(context.forChild(".id"))
-			.flatMap(id -> entity().getEntity(context.forChild(".entity"))
-				.flatMap(entity -> KeyStateManager.getInstance().getCurrentState(entity.getUUID(), id))).ifPresent(state -> setter.accept((int) (state.pressedTime())));
+	public Optional<Integer> getValue(Context context) {
+		return id().getValue(context.forChild(".id"))
+			.flatMap(id -> entity().getValue(context.forChild(".entity"))
+				.flatMap(entity -> KeyStateManager.getInstance().getCurrentState(entity.getUUID(), id)
+					.map(state -> (int) state.pressedTime())));
 	}
 
 	@Override

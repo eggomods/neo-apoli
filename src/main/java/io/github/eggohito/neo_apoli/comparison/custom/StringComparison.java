@@ -40,7 +40,7 @@ public record StringComparison(Comparator comparator, StringProvider first, Stri
 	public boolean compare(Context context) {
 
 		String first = first()
-			.getString(context.forChild(".first"))
+			.getValue(context.forChild(".first"))
 			.orElse(null);
 
 		if (first == null) {
@@ -48,7 +48,7 @@ public record StringComparison(Comparator comparator, StringProvider first, Stri
 		}
 
 		String second = second()
-			.getString(context.forChild(".second"))
+			.getValue(context.forChild(".second"))
 			.orElse(null);
 
 		if (second == null) {

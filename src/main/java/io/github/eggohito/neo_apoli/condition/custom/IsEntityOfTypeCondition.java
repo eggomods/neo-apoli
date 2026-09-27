@@ -33,7 +33,7 @@ public record IsEntityOfTypeCondition(EntityType<?> entityType, EntityProvider e
 
 	@Override
 	public boolean test(Context context) {
-		return entity().getEntity(context.forChild(".entity"))
+		return entity().getValue(context.forChild(".entity"))
 			.stream()
 			.map(Entity::getType)
 			.anyMatch(entityType()::equals);

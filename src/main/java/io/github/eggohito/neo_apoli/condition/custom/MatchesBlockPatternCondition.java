@@ -42,7 +42,7 @@ public record MatchesBlockPatternCondition(ContextBlockPattern pattern, Vec3Prov
 	@Override
 	public boolean test(Context context) {
 
-		BlockPos frontTopLeft = frontTopLeft().getVec3(context.forChild(".front_top_left"))
+		BlockPos frontTopLeft = frontTopLeft().getValue(context.forChild(".front_top_left"))
 			.map(BlockPos::containing)
 			.orElse(null);
 
@@ -50,8 +50,8 @@ public record MatchesBlockPatternCondition(ContextBlockPattern pattern, Vec3Prov
 			return false;
 		}
 
-		Direction forwards = forwards().getDirection(context.forChild(".forwards")).orElse(null);
-		Direction up = up().getDirection(context.forChild(".up")).orElse(null);
+		Direction forwards = forwards().getValue(context.forChild(".forwards")).orElse(null);
+		Direction up = up().getValue(context.forChild(".up")).orElse(null);
 
 		if (forwards == null || up == null || forwards == up || forwards == up.getOpposite()) {
 

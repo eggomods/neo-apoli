@@ -11,7 +11,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.IntConsumer;
+import java.util.Optional;
 
 public record NegateIntProvider(IntProvider value) implements IntProvider {
 
@@ -31,25 +31,31 @@ public record NegateIntProvider(IntProvider value) implements IntProvider {
 	}
 
 	@Override
-	public void provideInt(Context context, IntConsumer setter) {
-		var valueContext = context.forChild(".value");
-		value().provideInt(valueContext, value -> {
-
-			try {
-				setter.accept(Math.negateExact(value));
-			}
-
-			catch (ArithmeticException e) {
-				valueContext.reportProblem(e.getMessage());
-			}
-
-		});
+	public Optional<Integer> getValue(Context context) {
+		Context valueContext = context.forChild(".value");
+		return value()
+			.getValue(valueContext)
+			.flatMap(value -> this.negate(context, value));
 	}
 
 	@Override
 	public void validate(Context.Validator validator) {
 		IntProvider.super.validate(validator);
 		value().validate(validator.forChild(".value"));
+	}
+
+	private Optional<Integer> negate(Context context, int value) {
+
+		try {
+			return Optional.of(Math.negateExact(value));
+		}
+
+		catch (ArithmeticException e) {
+			context.reportProblem(e.getMessage());
+		}
+
+		return Optional.empty();
+
 	}
 
 }

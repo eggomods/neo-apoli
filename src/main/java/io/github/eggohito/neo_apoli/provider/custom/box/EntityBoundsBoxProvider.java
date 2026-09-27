@@ -33,9 +33,9 @@ public record EntityBoundsBoxProvider(EntityProvider entity) implements BoxProvi
 	}
 
 	@Override
-	public Optional<AABB> getBox(Context context) {
+	public Optional<AABB> getValue(Context context) {
 		return entity()
-			.getEntity(context.forChild(".entity"))
+			.getValue(context.forChild(".entity"))
 			.map(Entity::getBoundingBox);
 	}
 
@@ -47,7 +47,7 @@ public record EntityBoundsBoxProvider(EntityProvider entity) implements BoxProvi
 
 	@Override
 	public CollisionContext getCollisionContext(Context context) {
-		return entity().getEntity(context.forChild(".entity"))
+		return entity().getValue(context.forChild(".entity"))
 			.map(CollisionContext::of)
 			.orElseGet(CollisionContext::empty);
 	}

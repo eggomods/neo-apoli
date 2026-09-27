@@ -38,7 +38,7 @@ public record ContextSlotProvider(Context.Parameter<SlotAccess> parameter) imple
 	}
 
 	@Override
-	public Optional<SlotAccess> getSlot(Context context) {
+	public Optional<SlotAccess> getValue(Context context) {
 		return context.getOptional(parameter());
 	}
 

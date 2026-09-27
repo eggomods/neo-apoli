@@ -33,7 +33,7 @@ public record IsEffectInTagCondition(TagKey<MobEffect> tag, EffectProvider effec
 
 	@Override
 	public boolean test(Context context) {
-		return effect().getEffect(context.forChild(".effect"))
+		return effect().getValue(context.forChild(".effect"))
 			.stream()
 			.anyMatch(effect -> effect.getEffect().is(this.tag()));
 	}

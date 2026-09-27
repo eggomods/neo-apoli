@@ -36,7 +36,7 @@ public record ConstantDirectionProvider(Direction value) implements DirectionPro
 	}
 
 	@Override
-	public Optional<Direction> getDirection(Context context) {
+	public Optional<Direction> getValue(Context context) {
 		return Optional.of(value());
 	}
 

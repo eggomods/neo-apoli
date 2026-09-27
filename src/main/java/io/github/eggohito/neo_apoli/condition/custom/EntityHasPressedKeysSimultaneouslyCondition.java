@@ -52,7 +52,7 @@ public record EntityHasPressedKeysSimultaneouslyCondition(List<StringProvider> k
 			return false;
 		}
 
-		UUID uuid = entity().getEntity(context.forChild(".entity"))
+		UUID uuid = entity().getValue(context.forChild(".entity"))
 			.map(Entity::getUUID)
 			.orElse(null);
 
@@ -67,7 +67,7 @@ public record EntityHasPressedKeysSimultaneouslyCondition(List<StringProvider> k
 
 			Context keyContext = context.forChild(".keys[" + listIterator.nextIndex() + "]");
 			Optional<KeyState> optState = listIterator.next()
-				.getString(keyContext)
+				.getValue(keyContext)
 				.flatMap(id -> KeyStateManager.getInstance().getCurrentState(uuid, id));
 
 			if (optState.isEmpty()) {

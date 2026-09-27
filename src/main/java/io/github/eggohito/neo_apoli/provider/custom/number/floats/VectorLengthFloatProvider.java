@@ -6,10 +6,11 @@ import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.provider.custom.vec3.Vec3Provider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliFloatProviderTypes;
-import io.github.eggohito.neo_apoli.util.FloatConsumer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public record VectorLengthFloatProvider(Vec3Provider vector) implements FloatProvider {
 
@@ -29,10 +30,10 @@ public record VectorLengthFloatProvider(Vec3Provider vector) implements FloatPro
 	}
 
 	@Override
-	public void provideFloat(Context context, FloatConsumer setter) {
-		vector()
-			.getVec3(context.forChild(".vector"))
-			.ifPresent(vector -> setter.accept((float) vector.length()));
+	public Optional<Float> getValue(Context context) {
+		return vector()
+			.getValue(context.forChild(".vector"))
+			.map(vector -> (float) vector.length());
 	}
 
 	@Override

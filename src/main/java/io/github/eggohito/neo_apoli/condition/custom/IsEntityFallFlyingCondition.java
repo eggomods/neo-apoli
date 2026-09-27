@@ -29,7 +29,7 @@ public record IsEntityFallFlyingCondition(EntityProvider entity) implements Cond
 
 	@Override
 	public boolean test(Context context) {
-		return entity().getEntity(context.forChild(".entity"))
+		return entity().getValue(context.forChild(".entity"))
 			.filter(LivingEntity.class::isInstance)
 			.map(LivingEntity.class::cast)
 			.stream()

@@ -5,12 +5,13 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliFloatProviderTypes;
-import io.github.eggohito.neo_apoli.util.FloatConsumer;
 import io.github.eggohito.neo_apoli.util.MapCodecUtil;
 import io.github.eggohito.neo_apoli.util.StreamCodecUtil;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public record QuotientFloatProvider(FloatProvider dividend, FloatProvider divisor) implements FloatProvider {
 
@@ -31,21 +32,21 @@ public record QuotientFloatProvider(FloatProvider dividend, FloatProvider diviso
 	}
 
 	@Override
-	public void provideFloat(Context context, FloatConsumer setter) {
+	public Optional<Float> getValue(Context context) {
 
 		Context dividendContext = context.forChild(".dividend");
 		float dividend = dividend().getFloat(dividendContext);
 
 		if (dividendContext.hasProblems()) {
-			return;
+			return Optional.empty();
 		}
 
 		Context divisorContext = context.forChild(".divisor");
 		float divisor = divisor().getFloat(divisorContext);
 
-		if (!divisorContext.hasProblems()) {
-			setter.accept(dividend / divisor);
-		}
+		return divisorContext.hasProblems()
+			? Optional.empty()
+			: Optional.of(dividend / divisor);
 
 	}
 

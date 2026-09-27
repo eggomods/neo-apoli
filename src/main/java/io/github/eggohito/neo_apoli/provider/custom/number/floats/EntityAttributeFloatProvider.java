@@ -6,7 +6,6 @@ import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliFloatProviderTypes;
-import io.github.eggohito.neo_apoli.util.FloatConsumer;
 import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -14,6 +13,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public record EntityAttributeFloatProvider(Holder<Attribute> attribute, EntityProvider entity) implements FloatProvider {
 
@@ -34,19 +35,20 @@ public record EntityAttributeFloatProvider(Holder<Attribute> attribute, EntityPr
 	}
 
 	@Override
-	public void provideFloat(Context context, FloatConsumer setter) {
+	public Optional<Float> getValue(Context context) {
 
 		Context entityContext = context.forChild(".entity");
-		Entity entity = entity().getEntity(entityContext).orElse(null);
+		Entity entity = entity().getValue(entityContext).orElse(null);
 
 		switch (entity) {
 			case LivingEntity livingEntity when context.visitor().push(this) -> {
 
 				if (livingEntity.getAttributes().hasAttribute(attribute())) {
-					setter.accept((float) livingEntity.getAttributeValue(attribute()));
+					return Optional.of((float) livingEntity.getAttributeValue(attribute()));
 				}
 
 			}
+
 			case LivingEntity ignored -> {
 				//  No-op because this provider was recursively invoked
 			}
@@ -55,6 +57,8 @@ public record EntityAttributeFloatProvider(Holder<Attribute> attribute, EntityPr
 			default ->
 				entityContext.reportProblem("Entity can't have attributes!");
 		}
+
+		return Optional.empty();
 
 	}
 

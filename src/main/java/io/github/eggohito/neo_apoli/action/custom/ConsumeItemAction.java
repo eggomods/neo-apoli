@@ -38,7 +38,7 @@ public record ConsumeItemAction(IntProvider amount, SlotProvider slot) implement
 		}
 
 		SlotAccess slot = slot()
-			.getSlot(context.forChild(".slot"))
+			.getValue(context.forChild(".slot"))
 			.orElse(null);
 
 		if (slot == null) {

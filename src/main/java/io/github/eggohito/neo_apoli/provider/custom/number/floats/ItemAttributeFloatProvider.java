@@ -7,7 +7,6 @@ import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
 import io.github.eggohito.neo_apoli.provider.custom.item.ItemProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliFloatProviderTypes;
-import io.github.eggohito.neo_apoli.util.FloatConsumer;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
@@ -47,21 +46,21 @@ public record ItemAttributeFloatProvider(Holder<Attribute> attribute, ItemProvid
 	}
 
 	@Override
-	public void provideFloat(Context context, FloatConsumer setter) {
+	public Optional<Float> getValue(Context context) {
 
-		ItemAttributeModifiers attributeModifiers = item().getItem(context.forChild(".item"))
+		ItemAttributeModifiers attributeModifiers = item().getValue(context.forChild(".item"))
 			.flatMap(item -> Optional.ofNullable(item.get(DataComponents.ATTRIBUTE_MODIFIERS)))
 			.orElse(null);
 
 		if (attributeModifiers == null) {
-			return;
+			return Optional.empty();
 		}
 
 		List<ItemAttributeModifiers.Entry> sorted = new ObjectArrayList<>(attributeModifiers.modifiers());
 		sorted.sort(Comparator.comparing(entry -> entry.modifier().operation()));
 
 		Entity entity = entity()
-			.flatMap(self -> self.getEntity(context.forChild(".entity")))
+			.flatMap(self -> self.getValue(context.forChild(".entity")))
 			.orElse(null);
 
 		double baseValue = entity instanceof LivingEntity livingEntity && livingEntity.getAttributes().hasAttribute(attribute())
@@ -89,7 +88,7 @@ public record ItemAttributeFloatProvider(Holder<Attribute> attribute, ItemProvid
 
 		}
 
-		setter.accept((float) attribute().value().sanitizeValue(totalValue));
+		return Optional.of((float) attribute().value().sanitizeValue(totalValue));
 
 	}
 

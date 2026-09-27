@@ -1,7 +1,6 @@
 package io.github.eggohito.neo_apoli.provider.custom.nbt;
 
 import com.mojang.serialization.MapCodec;
-import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.provider.CompositeConditionalValueProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliNbtProviderTypes;
 import io.github.eggohito.neo_apoli.util.MapCodecUtil;
@@ -13,9 +12,8 @@ import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Optional;
 
-public record CompositeConditionalNbtProvider(List<CompositeConditional.Entry<NbtProvider>> entries, NbtProvider defaultValue) implements NbtProvider, CompositeConditionalValueProvider<NbtProvider> {
+public record CompositeConditionalNbtProvider(List<CompositeConditional.Entry<NbtProvider>> entries, NbtProvider defaultValue) implements NbtProvider, CompositeConditionalValueProvider<Tag, NbtProvider> {
 
 	public static final MapCodec<CompositeConditionalNbtProvider> MAP_CODEC = MapCodecUtil.lazy(CompositeConditionalNbtProvider.class.getSimpleName(), () -> CompositeConditionalValueProvider.mapCodec(NbtProvider.CODEC, CompositeConditionalNbtProvider::new));
 	public static final StreamCodec<RegistryFriendlyByteBuf, CompositeConditionalNbtProvider> STREAM_CODEC = StreamCodecUtil.lazy(CompositeConditionalNbtProvider.class.getSimpleName(), () -> CompositeConditionalValueProvider.streamCodec(NbtProvider.STREAM_CODEC, CompositeConditionalNbtProvider::new));
@@ -23,11 +21,6 @@ public record CompositeConditionalNbtProvider(List<CompositeConditional.Entry<Nb
 	@Override
 	public @NotNull NbtProvider.Type<?> getType() {
 		return NeoApoliNbtProviderTypes.COMPOSITE_CONDITIONAL;
-	}
-
-	@Override
-	public Optional<Tag> getTag(Context context) {
-		return getOrDefault(context, NbtProvider::getTag);
 	}
 
 }

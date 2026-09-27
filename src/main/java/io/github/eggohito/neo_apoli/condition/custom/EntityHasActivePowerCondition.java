@@ -36,7 +36,7 @@ public record EntityHasActivePowerCondition(PowerIdentifier power, EntityProvide
 	public boolean test(Context context) {
 
 		Visitor<ContextUser> visitor = context.visitor();
-		Entity entity = entity().getEntity(context.forChild(".entity")).orElse(null);
+		Entity entity = entity().getValue(context.forChild(".entity")).orElse(null);
 
 		try {
 

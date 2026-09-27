@@ -21,7 +21,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
-import java.util.function.IntConsumer;
+import java.util.Optional;
 
 public record EquippedEnchantmentLevelIntProvider(Holder<Enchantment> enchantment, EquipmentSlotGroup slotGroup, Calculation calculation, EntityProvider entity) implements IntProvider {
 
@@ -46,11 +46,11 @@ public record EquippedEnchantmentLevelIntProvider(Holder<Enchantment> enchantmen
 	}
 
 	@Override
-	public void provideInt(Context context, IntConsumer setter) {
-		entity().getEntity(context.forChild(".entity"))
+	public Optional<Integer> getValue(Context context) {
+		return entity().getValue(context.forChild(".entity"))
 			.filter(LivingEntity.class::isInstance)
 			.map(LivingEntity.class::cast)
-			.ifPresent(living -> setter.accept(calculation().getValue(living, enchantment(), slotGroup())));
+			.map(living -> calculation().getValue(living, enchantment(), slotGroup()));
 	}
 
 	@Override

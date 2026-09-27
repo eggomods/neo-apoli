@@ -14,7 +14,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.IntConsumer;
+import java.util.Optional;
 
 public record PowerCooldownRemainingTicksIntProvider(PowerIdentifier power, EntityProvider entity) implements IntProvider {
 
@@ -35,10 +35,10 @@ public record PowerCooldownRemainingTicksIntProvider(PowerIdentifier power, Enti
 	}
 
 	@Override
-	public void provideInt(Context context, IntConsumer setter) {
+	public Optional<Integer> getValue(Context context) {
 
 		Context entityContext = context.forChild(".entity");
-		Entity entity = entity().getEntity(entityContext).orElse(null);
+		Entity entity = entity().getValue(entityContext).orElse(null);
 
 		CooldownPower.Instance<?> cooldownInstance = Powers.getOptional(entity)
 			.flatMap(powers -> powers.getOptionalInstance(power()))
@@ -56,10 +56,12 @@ public record PowerCooldownRemainingTicksIntProvider(PowerIdentifier power, Enti
 				context.reportProblem(power().asDisplayString() + " does not have a cooldown!");
 			}
 
+			return Optional.empty();
+
 		}
 
 		else {
-			setter.accept(cooldownInstance.getRemainingTicks(context.forChild(".power")));
+			return Optional.of(cooldownInstance.getRemainingTicks(context.forChild(".power")));
 		}
 
 	}

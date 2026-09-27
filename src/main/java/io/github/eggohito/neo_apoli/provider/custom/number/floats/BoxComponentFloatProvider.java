@@ -7,12 +7,13 @@ import io.github.eggohito.neo_apoli.provider.custom.box.BoxProvider;
 import io.github.eggohito.neo_apoli.provider.custom.direction.DirectionProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliFloatProviderTypes;
-import io.github.eggohito.neo_apoli.util.FloatConsumer;
 import net.minecraft.core.Direction;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public record BoxComponentFloatProvider(BoxProvider box, DirectionProvider side) implements FloatProvider {
 
@@ -33,22 +34,22 @@ public record BoxComponentFloatProvider(BoxProvider box, DirectionProvider side)
 	}
 
 	@Override
-	public void provideFloat(Context context, FloatConsumer setter) {
+	public Optional<Float> getValue(Context context) {
 
 		AABB box = box()
-			.getBox(context.forChild(".box"))
+			.getValue(context.forChild(".box"))
 			.orElse(null);
 
 		if (box == null) {
-			return;
+			return Optional.empty();
 		}
 
 		Direction side = side()
-			.getDirection(context.forChild(".side"))
+			.getValue(context.forChild(".side"))
 			.orElse(null);
 
 		if (side == null) {
-			return;
+			return Optional.empty();
 		}
 
 		double component = switch (side) {
@@ -66,7 +67,7 @@ public record BoxComponentFloatProvider(BoxProvider box, DirectionProvider side)
 				box.maxX;
 		};
 
-		setter.accept((float) component);
+		return Optional.of((float) component);
 
 	}
 

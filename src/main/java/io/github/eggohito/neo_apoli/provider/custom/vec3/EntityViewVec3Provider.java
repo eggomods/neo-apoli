@@ -33,9 +33,9 @@ public record EntityViewVec3Provider(EntityProvider entity, FloatProvider delta)
 	}
 
 	@Override
-	public Optional<Vec3> getVec3(Context context) {
+	public Optional<Vec3> getValue(Context context) {
 		return entity()
-			.getEntity(context.forChild(".entity"))
+			.getValue(context.forChild(".entity"))
 			.map(entity -> entity.getViewVector(delta().getFloat(context.forChild(".delta"))));
 	}
 

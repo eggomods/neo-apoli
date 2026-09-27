@@ -30,7 +30,7 @@ public record ItemMatchesIngredientCondition(Ingredient ingredient, ItemProvider
 
 	@Override
 	public boolean test(Context context) {
-		return item().getItem(context.forChild(".item"))
+		return item().getValue(context.forChild(".item"))
 			.map(ingredient()::test)
 			.orElse(false);
 	}

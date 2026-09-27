@@ -5,13 +5,14 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliFloatProviderTypes;
-import io.github.eggohito.neo_apoli.util.FloatConsumer;
 import io.github.eggohito.neo_apoli.util.MapCodecUtil;
 import io.github.eggohito.neo_apoli.util.StreamCodecUtil;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public record LinearInterpolatedFloatProvider(FloatProvider delta, FloatProvider start, FloatProvider end) implements FloatProvider {
 
@@ -34,20 +35,20 @@ public record LinearInterpolatedFloatProvider(FloatProvider delta, FloatProvider
 	}
 
 	@Override
-	public void provideFloat(Context context, FloatConsumer setter) {
+	public Optional<Float> getValue(Context context) {
 
 		Context startContext = context.forChild(".start");
 		float start = start().getFloat(startContext);
 
 		if (startContext.hasProblems()) {
-			return;
+			return Optional.empty();
 		}
 
 		Context deltaContext = context.forChild(".delta");
 		float delta = delta().getFloat(deltaContext);
 
 		if (deltaContext.hasProblems()) {
-			setter.accept(start);
+			return Optional.of(start);
 		}
 
 		else {
@@ -56,11 +57,11 @@ public record LinearInterpolatedFloatProvider(FloatProvider delta, FloatProvider
 			float end = end().getFloat(endContext);
 
 			if (endContext.hasProblems()) {
-				setter.accept(start);
+				return Optional.of(start);
 			}
 
 			else {
-				setter.accept(Mth.clampedLerp(start, end, delta));
+				return Optional.of(Mth.clampedLerp(start, end, delta));
 			}
 
 		}

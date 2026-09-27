@@ -7,12 +7,12 @@ import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliFloatProviderTypes;
-import io.github.eggohito.neo_apoli.util.FloatConsumer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.context.ContextKey;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
 import java.util.Set;
 
 public record ContextFloatProvider(Context.Parameter<Float> parameter) implements FloatProvider {
@@ -38,8 +38,14 @@ public record ContextFloatProvider(Context.Parameter<Float> parameter) implement
 	}
 
 	@Override
-	public void provideFloat(Context context, FloatConsumer setter) {
-		context.getOptional(parameter()).ifPresent(setter::accept);
+	public Optional<Float> getValue(Context context) {
+
+		if (!context.hasParameter(parameter())) {
+			context.reportProblem("Parameter \"" + parameter().name() + "\" is not provided in the context!");
+		}
+
+		return context.getOptional(parameter());
+
 	}
 
 	@Override

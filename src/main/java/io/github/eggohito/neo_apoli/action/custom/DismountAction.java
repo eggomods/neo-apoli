@@ -29,7 +29,7 @@ public record DismountAction(EntityProvider entity) implements Action {
 
 	@Override
 	public void execute(Context context) {
-		entity().getEntity(context.forChild(".entity")).ifPresent(Entity::stopRiding);
+		entity().getValue(context.forChild(".entity")).ifPresent(Entity::stopRiding);
 	}
 
 	@Override

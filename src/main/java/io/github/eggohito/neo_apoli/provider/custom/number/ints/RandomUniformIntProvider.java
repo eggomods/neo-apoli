@@ -12,7 +12,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.IntConsumer;
+import java.util.Optional;
 
 public record RandomUniformIntProvider(IntProvider min, IntProvider max) implements IntProvider {
 
@@ -33,24 +33,24 @@ public record RandomUniformIntProvider(IntProvider min, IntProvider max) impleme
 	}
 
 	@Override
-	public void provideInt(Context context, IntConsumer setter) {
+	public Optional<Integer> getValue(Context context) {
 
 		Context minContext = context.forChild(".min");
 		int min = min().getInt(minContext);
 
 		if (minContext.hasProblems()) {
-			return;
+			return Optional.empty();
 		}
 
 		Context maxContext = context.forChild(".max");
 		int max = max().getInt(maxContext);
 
 		if (maxContext.hasProblems()) {
-			setter.accept(min);
+			return Optional.of(Mth.nextInt(context.level().getRandom(), min, Integer.MAX_VALUE));
 		}
 
 		else {
-			setter.accept(Mth.nextInt(context.level().getRandom(), min, max));
+			return Optional.of(Mth.nextInt(context.level().getRandom(), min, max));
 		}
 
 	}

@@ -3,7 +3,6 @@ package io.github.eggohito.neo_apoli.provider.custom.command_source;
 import com.mojang.serialization.Codec;
 import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.codec.MultiAlternativeCodec;
-import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.provider.ValueProvider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliRegistries;
 import io.github.eggohito.neo_apoli.registry.NeoApoliRegistryKeys;
@@ -14,9 +13,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
-
-public interface CommandSourceProvider extends ValueProvider {
+public interface CommandSourceProvider extends ValueProvider<CommandSourceStack> {
 
 	Codec<CommandSourceProvider> CODEC = Codec.lazyInitialized(() -> new MultiAlternativeCodec<>(Type.CODEC.dispatch(CommandSourceProvider::getType, Type::mapCodec), SimpleCommandSourceProvider.CODEC));
 
@@ -24,8 +21,6 @@ public interface CommandSourceProvider extends ValueProvider {
 
 	@Override
 	CommandSourceProvider.@NotNull Type<?> getType();
-
-	Optional<CommandSourceStack> getSource(Context context);
 
 	interface Type<P extends CommandSourceProvider> extends ValueProvider.Type<P> {
 

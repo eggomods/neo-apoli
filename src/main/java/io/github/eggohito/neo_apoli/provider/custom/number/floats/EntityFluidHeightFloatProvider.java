@@ -6,7 +6,6 @@ import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliFloatProviderTypes;
-import io.github.eggohito.neo_apoli.util.FloatConsumer;
 import io.github.eggohito.neo_apoli.util.RegistryUtil;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -14,6 +13,8 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public record EntityFluidHeightFloatProvider(TagKey<Fluid> fluidTag, EntityProvider entity) implements FloatProvider {
 
@@ -34,10 +35,10 @@ public record EntityFluidHeightFloatProvider(TagKey<Fluid> fluidTag, EntityProvi
 	}
 
 	@Override
-	public void provideFloat(Context context, FloatConsumer setter) {
-		entity()
-			.getEntity(context.forChild(".entity"))
-			.ifPresent(entity -> setter.accept((float) entity.getFluidHeight(fluidTag())));
+	public Optional<Float> getValue(Context context) {
+		return entity()
+			.getValue(context.forChild(".entity"))
+			.map(entity -> (float) entity.getFluidHeight(fluidTag()));
 	}
 
 	@Override

@@ -38,7 +38,7 @@ public record ContextEffectProvider(Context.Parameter<MobEffectInstance> paramet
 	}
 
 	@Override
-	public Optional<MobEffectInstance> getEffect(Context context) {
+	public Optional<MobEffectInstance> getValue(Context context) {
 
 		if (!context.hasParameter(parameter())) {
 			context.reportProblem("Parameter \"" + parameter().name() + "\" is not provided in the context!");

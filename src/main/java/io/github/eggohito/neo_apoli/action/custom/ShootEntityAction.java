@@ -75,7 +75,7 @@ public record ShootEntityAction(EntityType<?> entityType, NbtProvider tag, Vec3P
 		for (int i = 0; i < count; i++) {
 
 			Vec3 position = position()
-				.getVec3(context.forChild(".position"))
+				.getValue(context.forChild(".position"))
 				.orElse(null);
 
 			if (position == null) {
@@ -83,14 +83,14 @@ public record ShootEntityAction(EntityType<?> entityType, NbtProvider tag, Vec3P
 			}
 
 			Vec3 direction = direction()
-				.getVec3(context.forChild(".direction"))
+				.getValue(context.forChild(".direction"))
 				.orElse(null);
 
 			if (direction == null) {
 				continue;
 			}
 
-			CompoundTag entityTag = tag().getTag(context.forChild(".tag"))
+			CompoundTag entityTag = tag().getValue(context.forChild(".tag"))
 				.filter(CompoundTag.class::isInstance)
 				.map(CompoundTag.class::cast)
 				.orElse(null);
@@ -109,7 +109,7 @@ public record ShootEntityAction(EntityType<?> entityType, NbtProvider tag, Vec3P
 				case Projectile projectile -> {
 
 					projectile.shoot(direction.x(), direction.y(), direction.z(), inaccuracy, velocity);
-					shooter().flatMap(p -> p.getEntity(context.forChild(".entity"))).ifPresent(projectile::setOwner);
+					shooter().flatMap(p -> p.getValue(context.forChild(".entity"))).ifPresent(projectile::setOwner);
 
 					this.postShoot(serverLevel, projectile, entityTag);
 

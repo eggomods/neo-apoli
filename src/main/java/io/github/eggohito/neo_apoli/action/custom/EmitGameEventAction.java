@@ -47,7 +47,7 @@ public record EmitGameEventAction(Holder<GameEvent> gameEvent, Vec3Provider posi
 	public void execute(Context context) {
 
 		Vec3 position = position()
-			.getVec3(context.forChild(".position"))
+			.getValue(context.forChild(".position"))
 			.orElse(null);
 
 		if (position == null) {
@@ -55,10 +55,10 @@ public record EmitGameEventAction(Holder<GameEvent> gameEvent, Vec3Provider posi
 		}
 
 		Entity entitySource = entitySource()
-			.flatMap(p -> p.getEntity(context.forChild(".entity_source")))
+			.flatMap(p -> p.getValue(context.forChild(".entity_source")))
 			.orElse(null);
 		BlockState blockSource = blockSource()
-			.flatMap(p -> p.getBlock(context.forChild(".block_source")))
+			.flatMap(p -> p.getValue(context.forChild(".block_source")))
 			.map(CachedBlock::state)
 			.orElse(null);
 

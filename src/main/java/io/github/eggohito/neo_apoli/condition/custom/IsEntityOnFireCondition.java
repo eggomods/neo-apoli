@@ -29,7 +29,7 @@ public record IsEntityOnFireCondition(EntityProvider entity) implements Conditio
 
 	@Override
 	public boolean test(Context context) {
-		return entity().getEntity(context.forChild(".entity"))
+		return entity().getValue(context.forChild(".entity"))
 			.stream()
 			.anyMatch(Entity::isOnFire);
 	}

@@ -44,7 +44,7 @@ public record ConstantBoxProvider(Vec3 min, Vec3 max) implements BoxProvider {
 	}
 
 	@Override
-	public Optional<AABB> getBox(Context context) {
+	public Optional<AABB> getValue(Context context) {
 		return Optional.of(new AABB(min(), max()));
 	}
 

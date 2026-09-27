@@ -28,7 +28,7 @@ public record IsEntityHorizontallyCollidingCondition(EntityProvider entity) impl
 
 	@Override
 	public boolean test(Context context) {
-		return entity().getEntity(context.forChild(".entity"))
+		return entity().getValue(context.forChild(".entity"))
 			.stream()
 			.anyMatch(entity -> entity.horizontalCollision);
 	}

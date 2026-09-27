@@ -8,7 +8,6 @@ import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.IntProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliFloatProviderTypes;
-import io.github.eggohito.neo_apoli.util.FloatConsumer;
 import io.github.eggohito.neo_apoli.util.MapCodecUtil;
 import io.github.eggohito.neo_apoli.util.StreamCodecUtil;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -20,6 +19,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.util.Locale;
+import java.util.Optional;
 
 public record RoundFloatProvider(FloatProvider value, IntProvider places, RoundingMode mode) implements FloatProvider {
 
@@ -42,13 +42,13 @@ public record RoundFloatProvider(FloatProvider value, IntProvider places, Roundi
 	}
 
 	@Override
-	public void provideFloat(Context context, FloatConsumer setter) {
+	public Optional<Float> getValue(Context context) {
 
 		Context valueContext = context.forChild(".value");
 		float value = value().getFloat(valueContext);
 
 		if (valueContext.hasProblems()) {
-			return;
+			return Optional.empty();
 		}
 
 		int places = places().getInt(context.forChild(".places"));
@@ -62,12 +62,14 @@ public record RoundFloatProvider(FloatProvider value, IntProvider places, Roundi
 		formatter.setRoundingMode(mode());
 
 		try {
-			setter.accept(formatter.parse(formatter.format(value)).floatValue());
+			return Optional.of(formatter.parse(formatter.format(value)).floatValue());
 		}
 
 		catch (ArithmeticException | ParseException e) {
 			context.reportProblem(e.getMessage());
 		}
+
+		return Optional.empty();
 
 	}
 

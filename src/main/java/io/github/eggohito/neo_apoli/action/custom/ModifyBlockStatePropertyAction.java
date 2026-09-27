@@ -83,7 +83,7 @@ public record ModifyBlockStatePropertyAction(StringProvider property, BlockProvi
 		}
 
 		CachedBlock block = block()
-			.getBlock(context.forChild(".block"))
+			.getValue(context.forChild(".block"))
 			.orElse(null);
 
 		if (block == null) {
@@ -91,7 +91,7 @@ public record ModifyBlockStatePropertyAction(StringProvider property, BlockProvi
 		}
 
 		String propertyName = property()
-			.getString(context.forChild(".property"))
+			.getValue(context.forChild(".property"))
 			.orElse(null);
 
 		if (propertyName == null) {
@@ -122,7 +122,7 @@ public record ModifyBlockStatePropertyAction(StringProvider property, BlockProvi
 
 	private <T extends Comparable<T>> void cycleOrSetValue(Context context, BlockPos pos, BlockState state, Property<T> property) {
 
-		Optional<String> value = value().flatMap(self -> self.getString(context.forChild(".value")));
+		Optional<String> value = value().flatMap(self -> self.getValue(context.forChild(".value")));
 		Optional<Boolean> cycle = cycle().map(self -> self.getBoolean(context.forChild(".cycle")));
 
 		if (cycle.isPresent() != value.isPresent()) {

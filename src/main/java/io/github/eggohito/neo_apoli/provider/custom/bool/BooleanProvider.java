@@ -9,14 +9,12 @@ import io.github.eggohito.neo_apoli.provider.ValueProvider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliRegistries;
 import io.github.eggohito.neo_apoli.registry.NeoApoliRegistryKeys;
 import io.github.eggohito.neo_apoli.util.alias.FixedRegistryAlias;
-import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.NotNull;
 
-public interface BooleanProvider extends ValueProvider {
+public interface BooleanProvider extends ValueProvider<Boolean> {
 
 	Codec<BooleanProvider> CODEC = Codec.lazyInitialized(() -> new MultiAlternativeCodec<>(Type.CODEC.dispatch(BooleanProvider::getType, Type::mapCodec), ConstantBooleanProvider.INLINE_CODEC));
 
@@ -25,19 +23,8 @@ public interface BooleanProvider extends ValueProvider {
 	@NotNull
 	BooleanProvider.Type<?> getType();
 
-	void provideBoolean(Context context, BooleanConsumer setter);
-
-	default boolean getBooleanOr(Context context, boolean fallback) {
-
-		MutableBoolean result = new MutableBoolean(fallback);
-		this.provideBoolean(context, result::setValue);
-
-		return result.booleanValue();
-
-	}
-
 	default boolean getBoolean(Context context) {
-		return this.getBooleanOr(context, false);
+		return this.getValue(context).orElse(false);
 	}
 
 	record Type<P extends BooleanProvider>(MapCodec<P> mapCodec, StreamCodec<RegistryFriendlyByteBuf, P> streamCodec) implements ValueProvider.Type<P> {

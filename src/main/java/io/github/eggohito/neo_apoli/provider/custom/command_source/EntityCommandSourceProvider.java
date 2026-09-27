@@ -35,8 +35,8 @@ public record EntityCommandSourceProvider(EntityProvider entity) implements Comm
 	}
 
 	@Override
-	public Optional<CommandSourceStack> getSource(Context context) {
-		return entity().getEntity(context.forChild(".entity"))
+	public Optional<CommandSourceStack> getValue(Context context) {
+		return entity().getValue(context.forChild(".entity"))
 			.flatMap(this::getCommandSource)
 			.map(NeoApoliCommonConfig.INSTANCE.command.get()::sanitizeSource);
 	}

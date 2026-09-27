@@ -16,9 +16,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
-
-public interface BoxProvider extends ValueProvider {
+public interface BoxProvider extends ValueProvider<AABB> {
 
 	Codec<BoxProvider> CODEC = Codec.lazyInitialized(() -> new MultiAlternativeCodec<>(Type.CODEC.dispatch(BoxProvider::getType, Type::mapCodec), ConstantBoxProvider.INLINE_CODEC));
 
@@ -26,8 +24,6 @@ public interface BoxProvider extends ValueProvider {
 
 	@NotNull
 	BoxProvider.Type<?> getType();
-
-	Optional<AABB> getBox(Context context);
 
 	default CollisionContext getCollisionContext(Context context) {
 		return CollisionContext.empty();

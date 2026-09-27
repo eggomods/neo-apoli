@@ -38,7 +38,7 @@ public record ContextEntityProvider(Context.Parameter<Entity> parameter) impleme
 	}
 
 	@Override
-	public Optional<Entity> getEntity(Context context) {
+	public Optional<Entity> getValue(Context context) {
 
 		if (!context.hasParameter(parameter())) {
 			context.reportProblem("Parameter \"" + parameter().name() + "\" is not provided in the context!");

@@ -40,7 +40,7 @@ public record IsExposedToPrecipitationCondition(Biome.Precipitation precipitatio
 
 		exposureCheck: try {
 
-			BlockPos position = position().getVec3(context.forChild(".position"))
+			BlockPos position = position().getValue(context.forChild(".position"))
 				.map(BlockPos::containing)
 				.orElse(null);
 

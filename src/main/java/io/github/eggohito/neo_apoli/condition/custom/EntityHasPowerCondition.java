@@ -38,7 +38,7 @@ public record EntityHasPowerCondition(PowerIdentifier power, Optional<ResourceLo
 	@Override
 	public boolean test(Context context) {
 
-		Powers powers = entity().getEntity(context.forChild(".entity"))
+		Powers powers = entity().getValue(context.forChild(".entity"))
 			.flatMap(Powers::getOptional)
 			.orElse(null);
 

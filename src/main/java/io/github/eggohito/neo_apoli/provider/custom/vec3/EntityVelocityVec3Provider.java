@@ -30,10 +30,10 @@ public record EntityVelocityVec3Provider(EntityProvider entity) implements Vec3P
     }
 
     @Override
-    public Optional<Vec3> getVec3(Context context) {
+    public Optional<Vec3> getValue(Context context) {
 
         Context entityContext = context.forChild(".entity");
-        Optional<Vec3> velocity = entity().getEntity(entityContext).map(MovingEntity::neo_apoli$getVelocity);
+        Optional<Vec3> velocity = entity().getValue(entityContext).map(MovingEntity::neo_apoli$getVelocity);
 
         if (velocity.isEmpty()) {
             entityContext.reportProblem("Entity doesn't exist!");

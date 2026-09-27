@@ -36,7 +36,7 @@ public record ConstantNbtProvider(Tag value) implements NbtProvider {
 	}
 
 	@Override
-	public Optional<Tag> getTag(Context context) {
+	public Optional<Tag> getValue(Context context) {
 		return Optional.of(this.value());
 	}
 

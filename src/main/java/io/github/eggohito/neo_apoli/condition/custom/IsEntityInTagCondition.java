@@ -36,7 +36,7 @@ public record IsEntityInTagCondition(TagKey<EntityType<?>> tag, EntityProvider e
 	public boolean test(Context context) {
 
 		try {
-			return entity().getEntity(context.forChild(".entity"))
+			return entity().getValue(context.forChild(".entity"))
 				.stream()
 				.filter(entity -> context.visitor().push(this))
 				.map(Entity::getType)

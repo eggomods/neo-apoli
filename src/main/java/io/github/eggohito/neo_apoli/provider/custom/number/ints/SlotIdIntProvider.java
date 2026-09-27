@@ -12,7 +12,7 @@ import net.minecraft.world.inventory.SlotRange;
 import net.minecraft.world.inventory.SlotRanges;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.IntConsumer;
+import java.util.Optional;
 
 public record SlotIdIntProvider(SlotRange slot) implements IntProvider {
 
@@ -32,8 +32,8 @@ public record SlotIdIntProvider(SlotRange slot) implements IntProvider {
 	}
 
 	@Override
-	public void provideInt(Context context, IntConsumer setter) {
-		setter.accept(slot().slots().getFirst());
+	public Optional<Integer> getValue(Context context) {
+		return Optional.of(slot().slots().getFirst());
 	}
 
 	@Override

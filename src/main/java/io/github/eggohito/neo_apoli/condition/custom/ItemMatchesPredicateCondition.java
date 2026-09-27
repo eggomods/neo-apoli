@@ -33,7 +33,7 @@ public record ItemMatchesPredicateCondition(ParsedArgument<ItemPredicateArgument
 
 	@Override
 	public boolean test(Context context) {
-		return item().getItem(context.forChild(".item"))
+		return item().getValue(context.forChild(".item"))
 			.map(predicate().argument()::test)
 			.orElse(false);
 	}

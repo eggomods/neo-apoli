@@ -64,7 +64,7 @@ public record AreaOfEffectAction(AreaTarget areaTarget, Action areaAction, Condi
 	@Override
 	public void execute(Context context) {
 		position()
-			.getVec3(context.forChild(".position"))
+			.getValue(context.forChild(".position"))
 			.ifPresent(position -> areaTarget().run(context, shape(), areaAction(), areaCondition(), position, radius().getFloat(context.forChild(".radius"))));
 	}
 

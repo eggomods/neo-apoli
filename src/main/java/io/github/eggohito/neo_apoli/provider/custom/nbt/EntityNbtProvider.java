@@ -30,9 +30,9 @@ public record EntityNbtProvider(EntityProvider entity) implements NbtProvider {
 	}
 
 	@Override
-	public Optional<Tag> getTag(Context context) {
+	public Optional<Tag> getValue(Context context) {
 		return entity()
-			.getEntity(context.forChild(".entity"))
+			.getValue(context.forChild(".entity"))
 			.map(NbtPredicate::getEntityTagToCompare);
 	}
 

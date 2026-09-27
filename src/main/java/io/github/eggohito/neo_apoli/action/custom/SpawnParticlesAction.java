@@ -66,7 +66,7 @@ public record SpawnParticlesAction(ParticleOptions particle, Condition viewCondi
 		}
 
 		Vec3 position = position()
-			.getVec3(context.forChild(".position"))
+			.getValue(context.forChild(".position"))
 			.orElse(null);
 
 		if (position == null) {
@@ -74,7 +74,7 @@ public record SpawnParticlesAction(ParticleOptions particle, Condition viewCondi
 		}
 
 		Vec3 spread = spread()
-			.getVec3(context.forChild(".spread"))
+			.getValue(context.forChild(".spread"))
 			.orElse(null);
 
 		if (spread == null) {

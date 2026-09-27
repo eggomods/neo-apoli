@@ -9,11 +9,12 @@ import io.github.eggohito.neo_apoli.power.entity.Powers;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliFloatProviderTypes;
-import io.github.eggohito.neo_apoli.util.FloatConsumer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public record PowerCooldownProgressFloatProvider(PowerIdentifier power, EntityProvider entity) implements FloatProvider {
 
@@ -34,10 +35,10 @@ public record PowerCooldownProgressFloatProvider(PowerIdentifier power, EntityPr
 	}
 
 	@Override
-	public void provideFloat(Context context, FloatConsumer setter) {
+	public Optional<Float> getValue(Context context) {
 
 		Context entityContext = context.forChild(".entity");
-		Entity entity = entity().getEntity(entityContext).orElse(null);
+		Entity entity = entity().getValue(entityContext).orElse(null);
 
 		CooldownPower.Instance<?> cooldownInstance = Powers.getOptional(entity)
 			.flatMap(powers -> powers.getOptionalInstance(power()))
@@ -55,10 +56,12 @@ public record PowerCooldownProgressFloatProvider(PowerIdentifier power, EntityPr
 				context.reportProblem(power().asDisplayString() + " does not have a cooldown!");
 			}
 
+			return Optional.empty();
+
 		}
 
 		else {
-			setter.accept((float) cooldownInstance.getProgress(context.forChild(".power")));
+			return Optional.of((float) cooldownInstance.getProgress(context.forChild(".power")));
 		}
 
 	}

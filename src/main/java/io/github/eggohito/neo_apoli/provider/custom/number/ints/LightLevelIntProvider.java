@@ -17,7 +17,6 @@ import net.minecraft.world.level.LightLayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
-import java.util.function.IntConsumer;
 
 public record LightLevelIntProvider(Optional<LightLayer> lightType, Vec3Provider position) implements IntProvider {
 
@@ -38,18 +37,18 @@ public record LightLevelIntProvider(Optional<LightLayer> lightType, Vec3Provider
 	}
 
 	@Override
-	public void provideInt(Context context, IntConsumer setter) {
+	public Optional<Integer> getValue(Context context) {
 
-		BlockPos position = position().getVec3(context.forChild(".position"))
+		BlockPos position = position().getValue(context.forChild(".position"))
 			.map(BlockPos::containing)
 			.orElse(null);
 
 		if (position == null) {
-			return;
+			return Optional.empty();
 		}
 
 		Level level = context.level();
-		setter.accept(lightType()
+		return Optional.of(lightType()
 			.map(lightType -> level.getBrightness(lightType, position))
 			.orElseGet(() -> level.getMaxLocalRawBrightness(position)));
 

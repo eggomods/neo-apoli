@@ -32,8 +32,14 @@ public record ContextDirectionProvider(Context.Parameter<Direction> parameter) i
 	}
 
 	@Override
-	public Optional<Direction> getDirection(Context context) {
+	public Optional<Direction> getValue(Context context) {
+
+		if (!context.hasParameter(parameter())) {
+			context.reportProblem("Parameter \"" + parameter().name() + "\" is not provided in the context!");
+		}
+
 		return context.getOptional(parameter());
+
 	}
 
 	@Override

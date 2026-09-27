@@ -32,9 +32,9 @@ public record OffsetVec3Provider(Vec3Provider vector, Vec3Provider offset) imple
 	}
 
 	@Override
-	public Optional<Vec3> getVec3(Context context) {
-		return vector().getVec3(context.forChild(".vector"))
-			.flatMap(vector -> offset().getVec3(context.forChild(".offset"))
+	public Optional<Vec3> getValue(Context context) {
+		return vector().getValue(context.forChild(".vector"))
+			.flatMap(vector -> offset().getValue(context.forChild(".offset"))
 				.map(vector::add));
 	}
 

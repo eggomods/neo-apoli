@@ -34,7 +34,7 @@ public record ConstantStringProvider(String value) implements StringProvider {
 	}
 
 	@Override
-	public Optional<String> getString(Context context) {
+	public Optional<String> getValue(Context context) {
 		return Optional.of(value());
 	}
 

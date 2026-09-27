@@ -30,7 +30,7 @@ public record IsBlockReplaceableCondition(BlockProvider block) implements Condit
 
 	@Override
 	public boolean test(Context context) {
-		return block().getBlock(context.forChild(".block"))
+		return block().getValue(context.forChild(".block"))
 			.map(CachedBlock::state)
 			.map(BlockBehaviour.BlockStateBase::canBeReplaced)
 			.orElse(false);

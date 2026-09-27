@@ -60,7 +60,7 @@ public record GiveItemsAction(Action giveAction, List<IndexedStack> stacks, Enti
 		}
 
 		Entity entity = entity()
-			.getEntity(context.forChild(".entity"))
+			.getValue(context.forChild(".entity"))
 			.orElse(null);
 
 		if (entity == null) {

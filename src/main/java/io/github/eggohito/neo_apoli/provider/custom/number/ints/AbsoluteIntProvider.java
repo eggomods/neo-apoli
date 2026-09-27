@@ -11,7 +11,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.IntConsumer;
+import java.util.Optional;
 
 public record AbsoluteIntProvider(IntProvider value) implements IntProvider {
 
@@ -31,8 +31,8 @@ public record AbsoluteIntProvider(IntProvider value) implements IntProvider {
 	}
 
 	@Override
-	public void provideInt(Context context, IntConsumer setter) {
-		value().provideInt(context.forChild(".value"), value -> setter.accept(Math.abs(value)));
+	public Optional<Integer> getValue(Context context) {
+		return value().getValue(context.forChild(".value")).map(Math::abs);
 	}
 
 	@Override

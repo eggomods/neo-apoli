@@ -31,7 +31,7 @@ public record IsEntitySprintingCondition(EntityProvider entity) implements Condi
 	public boolean test(Context context) {
 
 		try {
-			return entity().getEntity(context.forChild(".entity"))
+			return entity().getValue(context.forChild(".entity"))
 				.stream()
 				.filter(entity -> context.visitor().push(this))
 				.anyMatch(Entity::isSprinting);

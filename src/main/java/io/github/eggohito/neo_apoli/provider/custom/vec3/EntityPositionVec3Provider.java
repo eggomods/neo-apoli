@@ -34,9 +34,9 @@ public record EntityPositionVec3Provider(EntityProvider entity, EntityAnchorArgu
 	}
 
 	@Override
-	public Optional<Vec3> getVec3(Context context) {
+	public Optional<Vec3> getValue(Context context) {
 		return entity()
-			.getEntity(context.forChild(".entity"))
+			.getValue(context.forChild(".entity"))
 			.map(anchor()::apply);
 	}
 

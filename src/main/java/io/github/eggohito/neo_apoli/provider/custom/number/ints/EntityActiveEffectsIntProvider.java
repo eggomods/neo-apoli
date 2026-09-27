@@ -16,7 +16,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.IntConsumer;
+import java.util.Optional;
 
 public record EntityActiveEffectsIntProvider(Condition condition, EntityProvider entity) implements IntProvider {
 
@@ -40,10 +40,10 @@ public record EntityActiveEffectsIntProvider(Condition condition, EntityProvider
 	}
 
 	@Override
-	public void provideInt(Context context, IntConsumer setter) {
+	public Optional<Integer> getValue(Context context) {
 
-		if (!(entity().getEntity(context.forChild(".entity")).orElse(null) instanceof LivingEntity livingEntity)) {
-			return;
+		if (!(entity().getValue(context.forChild(".entity")).orElse(null) instanceof LivingEntity livingEntity)) {
+			return Optional.empty();
 		}
 
 		var activeEffects = livingEntity.getActiveEffects();
@@ -61,7 +61,7 @@ public record EntityActiveEffectsIntProvider(Condition condition, EntityProvider
 
 		}
 
-		setter.accept(matches);
+		return Optional.of(matches);
 
 	}
 

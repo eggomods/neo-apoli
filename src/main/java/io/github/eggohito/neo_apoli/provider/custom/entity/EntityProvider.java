@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.codec.MultiAlternativeCodec;
-import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.provider.ValueProvider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliRegistries;
 import io.github.eggohito.neo_apoli.registry.NeoApoliRegistryKeys;
@@ -15,9 +14,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
-
-public interface EntityProvider extends ValueProvider {
+public interface EntityProvider extends ValueProvider<Entity> {
 
 	Codec<EntityProvider> CODEC = Codec.lazyInitialized(() -> new MultiAlternativeCodec<>(Type.CODEC.dispatch(EntityProvider::getType, Type::mapCodec), ContextEntityProvider.INLINE_CODEC));
 
@@ -25,8 +22,6 @@ public interface EntityProvider extends ValueProvider {
 
 	@Override
 	EntityProvider.@NotNull Type<?> getType();
-
-	Optional<Entity> getEntity(Context context);
 
 	record Type<P extends EntityProvider>(MapCodec<P> mapCodec, StreamCodec<RegistryFriendlyByteBuf, P> streamCodec) implements ValueProvider.Type<P> {
 

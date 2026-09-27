@@ -48,7 +48,7 @@ public record EntityHasItemEquippedCondition(Condition equippedCondition, Equipm
 	public boolean test(Context context) {
 
 		Context entityContext = context.forChild(".entity");
-		Entity entity = entity().getEntity(entityContext).orElse(null);
+		Entity entity = entity().getValue(entityContext).orElse(null);
 
 		if (entityContext.hasProblems() || !(entity instanceof LivingEntity livingEntity)) {
 			return false;

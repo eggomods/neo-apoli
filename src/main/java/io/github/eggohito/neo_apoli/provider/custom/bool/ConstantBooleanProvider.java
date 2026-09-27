@@ -5,11 +5,12 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliBooleanProviderTypes;
-import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public record ConstantBooleanProvider(boolean value) implements BooleanProvider {
 
@@ -34,8 +35,8 @@ public record ConstantBooleanProvider(boolean value) implements BooleanProvider 
 	}
 
 	@Override
-	public void provideBoolean(Context context, BooleanConsumer setter) {
-		setter.accept(value());
+	public Optional<Boolean> getValue(Context context) {
+		return Optional.of(value());
 	}
 
 }

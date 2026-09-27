@@ -1,7 +1,6 @@
 package io.github.eggohito.neo_apoli.provider.custom.box;
 
 import com.mojang.serialization.MapCodec;
-import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.provider.CompositeConditionalValueProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliBoxProviderTypes;
 import io.github.eggohito.neo_apoli.util.MapCodecUtil;
@@ -13,9 +12,8 @@ import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Optional;
 
-public record CompositeConditionalBoxProvider(List<CompositeConditional.Entry<BoxProvider>> entries, BoxProvider defaultValue) implements BoxProvider, CompositeConditionalValueProvider<BoxProvider> {
+public record CompositeConditionalBoxProvider(List<CompositeConditional.Entry<BoxProvider>> entries, BoxProvider defaultValue) implements BoxProvider, CompositeConditionalValueProvider<AABB, BoxProvider> {
 
 	public static final MapCodec<CompositeConditionalBoxProvider> MAP_CODEC = MapCodecUtil.lazy(CompositeConditionalBoxProvider.class.getSimpleName(), () -> CompositeConditionalValueProvider.mapCodec(BoxProvider.CODEC, CompositeConditionalBoxProvider::new));
 	public static final StreamCodec<RegistryFriendlyByteBuf, CompositeConditionalBoxProvider> STREAM_CODEC = StreamCodecUtil.lazy(CompositeConditionalBoxProvider.class.getSimpleName(), () -> CompositeConditionalValueProvider.streamCodec(BoxProvider.STREAM_CODEC, CompositeConditionalBoxProvider::new));
@@ -23,11 +21,6 @@ public record CompositeConditionalBoxProvider(List<CompositeConditional.Entry<Bo
 	@Override
 	public @NotNull BoxProvider.Type<?> getType() {
 		return NeoApoliBoxProviderTypes.COMPOSITE_CONDITIONAL;
-	}
-
-	@Override
-	public Optional<AABB> getBox(Context context) {
-		return getOrDefault(context, BoxProvider::getBox);
 	}
 
 }

@@ -8,9 +8,10 @@ import io.github.eggohito.neo_apoli.provider.custom.number.IntProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliIntProviderTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.IntConsumer;
+import java.util.Optional;
 
 public record ItemCountIntProvider(ItemProvider item) implements IntProvider {
 
@@ -30,8 +31,10 @@ public record ItemCountIntProvider(ItemProvider item) implements IntProvider {
 	}
 
 	@Override
-	public void provideInt(Context context, IntConsumer setter) {
-		item().getItem(context.forChild(".item")).ifPresent(item -> setter.accept(item.getCount()));
+	public Optional<Integer> getValue(Context context) {
+		return item()
+			.getValue(context.forChild(".item"))
+			.map(ItemStack::getCount);
 	}
 
 	@Override

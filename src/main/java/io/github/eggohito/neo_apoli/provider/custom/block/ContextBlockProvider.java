@@ -38,7 +38,7 @@ public record ContextBlockProvider(Context.Parameter<CachedBlock> parameter) imp
 	}
 
 	@Override
-	public Optional<CachedBlock> getBlock(Context context) {
+	public Optional<CachedBlock> getValue(Context context) {
 
 		if (!context.hasParameter(parameter())) {
 			context.reportProblem("Parameter \"" + parameter().name() + "\" is not provided in the context!");

@@ -32,8 +32,8 @@ public record BlockPositionVec3Provider(BlockProvider block) implements Vec3Prov
 	}
 
 	@Override
-	public Optional<Vec3> getVec3(Context context) {
-		return block().getBlock(context.forChild(".block"))
+	public Optional<Vec3> getValue(Context context) {
+		return block().getValue(context.forChild(".block"))
 			.map(CachedBlock::pos)
 			.map(BlockPos::getCenter);
 	}

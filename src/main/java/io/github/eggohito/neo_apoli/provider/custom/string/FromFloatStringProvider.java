@@ -29,7 +29,7 @@ public record FromFloatStringProvider(FloatProvider value) implements StringProv
 	}
 
 	@Override
-	public Optional<String> getString(Context context) {
+	public Optional<String> getValue(Context context) {
 
 		Context valueContext = context.forChild(".value");
 		float value = value().getFloat(valueContext);

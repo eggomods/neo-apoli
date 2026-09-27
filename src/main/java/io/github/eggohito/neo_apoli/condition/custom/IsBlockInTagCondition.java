@@ -34,7 +34,7 @@ public record IsBlockInTagCondition(TagKey<Block> tag, BlockProvider block) impl
 
 	@Override
 	public boolean test(Context context) {
-		return block().getBlock(context.forChild(".block"))
+		return block().getValue(context.forChild(".block"))
 			.stream()
 			.map(CachedBlock::state)
 			.anyMatch(state -> state.is(this.tag()));

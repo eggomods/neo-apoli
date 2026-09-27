@@ -11,18 +11,17 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
-public interface CompositeConditionalValueProvider<Provider extends ValueProvider> extends ValueProvider, CompositeConditional<Provider> {
+public interface CompositeConditionalValueProvider<Value, Provider extends ValueProvider<Value>> extends ValueProvider<Value>, CompositeConditional<Provider> {
 
-	@NotNull
-	default <Value> Value getOrDefault(Context context, BiFunction<Provider, Context, Value> getter) {
+	@Override
+	default Optional<Value> getValue(Context context) {
 		var selected = this.select(context);
-		return getter.apply(selected.value(), selected.context());
+		return selected.provider().getValue(selected.context());
 	}
 
 	default Selected<Provider> select(Context context) {
@@ -47,10 +46,6 @@ public interface CompositeConditionalValueProvider<Provider extends ValueProvide
 
 	}
 
-	default void onSelect(Context context, Consumer<Selected<Provider>> consumer) {
-		consumer.accept(this.select(context));
-	}
-
 	@Override
 	default void validate(Context.Validator validator) {
 
@@ -72,14 +67,14 @@ public interface CompositeConditionalValueProvider<Provider extends ValueProvide
 
 	}
 
-	static <P extends ValueProvider, M extends CompositeConditionalValueProvider<P>> MapCodec<M> mapCodec(Codec<P> providerCodec, BiFunction<List<CompositeConditional.Entry<P>>, P, M> constructor) {
+	static <P extends ValueProvider<?>, M extends CompositeConditionalValueProvider<?, P>> MapCodec<M> mapCodec(Codec<P> providerCodec, BiFunction<List<CompositeConditional.Entry<P>>, P, M> constructor) {
 		return RecordCodecBuilder.mapCodec(instance -> instance.group(
 			ExtraCodecs.nonEmptyList(CompositeConditional.Entry.codec(Condition.CODEC, providerCodec).listOf()).fieldOf("entries").forGetter(CompositeConditionalValueProvider::entries),
 			providerCodec.fieldOf("default").forGetter(CompositeConditionalValueProvider::defaultValue)
 		).apply(instance, constructor));
 	}
 
-	static <P extends ValueProvider, M extends CompositeConditionalValueProvider<P>> StreamCodec<RegistryFriendlyByteBuf, M> streamCodec(StreamCodec<RegistryFriendlyByteBuf, P> providerCodec, BiFunction<List<CompositeConditional.Entry<P>>, P, M> constructor) {
+	static <P extends ValueProvider<?>, M extends CompositeConditionalValueProvider<?, P>> StreamCodec<RegistryFriendlyByteBuf, M> streamCodec(StreamCodec<RegistryFriendlyByteBuf, P> providerCodec, BiFunction<List<CompositeConditional.Entry<P>>, P, M> constructor) {
 		return StreamCodec.composite(
 			CompositeConditional.Entry.streamCodec(Condition.STREAM_CODEC, providerCodec).apply(ByteBufCodecs.list()), CompositeConditionalValueProvider::entries,
 			providerCodec, CompositeConditionalValueProvider::defaultValue,
@@ -87,7 +82,7 @@ public interface CompositeConditionalValueProvider<Provider extends ValueProvide
 		);
 	}
 
-	record Selected<V>(V value, Context context) {
+	record Selected<Provider>(Provider provider, Context context) {
 
 	}
 

@@ -31,7 +31,7 @@ public record SetEntityOnFireAction(IntProvider ticks, EntityProvider entity) im
 	@Override
 	public void execute(Context context) {
 		entity()
-			.getEntity(context.forChild(".entity"))
+			.getValue(context.forChild(".entity"))
 			.ifPresent(entity -> entity.igniteForTicks(ticks().getInt(context.forChild(".ticks"))));
 	}
 

@@ -32,9 +32,9 @@ public record OffsetBoxProvider(BoxProvider box, BoxProvider offset) implements 
 	}
 
 	@Override
-	public Optional<AABB> getBox(Context context) {
-		return box().getBox(context.forChild(".box"))
-			.flatMap(box -> offset().getBox(context.forChild(".offset"))
+	public Optional<AABB> getValue(Context context) {
+		return box().getValue(context.forChild(".box"))
+			.flatMap(box -> offset().getValue(context.forChild(".offset"))
 				.map(offset -> this.offset(box, offset)));
 	}
 

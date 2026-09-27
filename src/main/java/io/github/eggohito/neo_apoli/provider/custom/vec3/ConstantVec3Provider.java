@@ -40,7 +40,7 @@ public record ConstantVec3Provider(Vec3 value) implements Vec3Provider {
 	}
 
 	@Override
-	public Optional<Vec3> getVec3(Context context) {
+	public Optional<Vec3> getValue(Context context) {
 		return Optional.of(value());
 	}
 

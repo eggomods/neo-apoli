@@ -42,8 +42,8 @@ public record MountAction(EntityProvider vehicle, EntityProvider passenger, Bool
 			return;
 		}
 
-		Entity vehicle = vehicle().getEntity(context.forChild(".vehicle")).orElse(null);
-		Entity passenger = passenger().getEntity(context.forChild(".passenger")).orElse(null);
+		Entity vehicle = vehicle().getValue(context.forChild(".vehicle")).orElse(null);
+		Entity passenger = passenger().getValue(context.forChild(".passenger")).orElse(null);
 
 		if (vehicle != null && passenger != null && passenger.getSelfAndPassengers().noneMatch(entity -> entity == vehicle)) {
 

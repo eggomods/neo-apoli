@@ -1,7 +1,6 @@
 package io.github.eggohito.neo_apoli.provider.custom.effect;
 
 import com.mojang.serialization.MapCodec;
-import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.provider.CompositeConditionalValueProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliEffectProviderTypes;
 import io.github.eggohito.neo_apoli.util.MapCodecUtil;
@@ -13,9 +12,8 @@ import net.minecraft.world.effect.MobEffectInstance;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Optional;
 
-public record CompositeConditionalEffectProvider(List<CompositeConditional.Entry<EffectProvider>> entries, EffectProvider defaultValue) implements EffectProvider, CompositeConditionalValueProvider<EffectProvider> {
+public record CompositeConditionalEffectProvider(List<CompositeConditional.Entry<EffectProvider>> entries, EffectProvider defaultValue) implements EffectProvider, CompositeConditionalValueProvider<MobEffectInstance, EffectProvider> {
 
 	public static final MapCodec<CompositeConditionalEffectProvider> CODEC = MapCodecUtil.lazy(CompositeConditionalEffectProvider.class.getSimpleName(), () -> CompositeConditionalValueProvider.mapCodec(EffectProvider.CODEC, CompositeConditionalEffectProvider::new));
 	public static final StreamCodec<RegistryFriendlyByteBuf, CompositeConditionalEffectProvider> STREAM_CODEC = StreamCodecUtil.lazy(CompositeConditionalEffectProvider.class.getSimpleName(), () -> CompositeConditionalValueProvider.streamCodec(EffectProvider.STREAM_CODEC, CompositeConditionalEffectProvider::new));
@@ -23,11 +21,6 @@ public record CompositeConditionalEffectProvider(List<CompositeConditional.Entry
 	@Override
 	public EffectProvider.@NotNull Type<?> getType() {
 		return NeoApoliEffectProviderTypes.COMPOSITE_CONDITIONAL;
-	}
-
-	@Override
-	public Optional<MobEffectInstance> getEffect(Context context) {
-		return this.getOrDefault(context, EffectProvider::getEffect);
 	}
 
 }

@@ -6,11 +6,12 @@ import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliFloatProviderTypes;
-import io.github.eggohito.neo_apoli.util.FloatConsumer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public record PlayerSaturationFloatProvider(EntityProvider entity) implements FloatProvider {
 
@@ -30,11 +31,11 @@ public record PlayerSaturationFloatProvider(EntityProvider entity) implements Fl
 	}
 
 	@Override
-	public void provideFloat(Context context, FloatConsumer setter) {
-		entity().getEntity(context.forChild(".entity"))
+	public Optional<Float> getValue(Context context) {
+		return entity().getValue(context.forChild(".entity"))
 			.filter(Player.class::isInstance)
 			.map(Player.class::cast)
-			.ifPresent(player -> setter.accept(player.getFoodData().getSaturationLevel()));
+			.map(player -> player.getFoodData().getSaturationLevel());
 	}
 
 	@Override

@@ -30,8 +30,8 @@ public record ExecuteCommandAction(CommandSourceProvider source, StringProvider 
 
 	@Override
 	public void execute(Context context) {
-		source().getSource(context.forChild(".source"))
-			.ifPresent(source -> command().getString(context.forChild(".command"))
+		source().getValue(context.forChild(".source"))
+			.ifPresent(source -> command().getValue(context.forChild(".command"))
 				.ifPresent(command -> source.getServer().getCommands().performPrefixedCommand(source, command)));
 	}
 

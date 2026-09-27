@@ -29,7 +29,7 @@ public record FromIntStringProvider(IntProvider value) implements StringProvider
 	}
 
 	@Override
-	public Optional<String> getString(Context context) {
+	public Optional<String> getValue(Context context) {
 
 		Context valueContext = context.forChild(".value");
 		int value = value().getInt(valueContext);

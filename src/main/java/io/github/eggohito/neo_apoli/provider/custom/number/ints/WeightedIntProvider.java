@@ -13,7 +13,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.random.WeightedList;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.IntConsumer;
+import java.util.Optional;
 
 public record WeightedIntProvider(WeightedList<IntProvider> entries) implements IntProvider {
 
@@ -33,10 +33,10 @@ public record WeightedIntProvider(WeightedList<IntProvider> entries) implements 
 	}
 
 	@Override
-	public void provideInt(Context context, IntConsumer setter) {
-		entries()
+	public Optional<Integer> getValue(Context context) {
+		return entries()
 			.neo_apoli$getRandomAndIndex(context.level().getRandom())
-			.ifPresent(pair -> pair.first().provideInt(context.forChild(".entries[" + pair.secondInt() + "]"), setter));
+			.flatMap(pair -> pair.first().getValue(context.forChild(".entries[" + pair.secondInt() + "]")));
 	}
 
 	@Override

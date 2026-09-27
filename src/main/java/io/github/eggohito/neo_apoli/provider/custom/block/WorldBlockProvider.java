@@ -31,8 +31,8 @@ public record WorldBlockProvider(Vec3Provider position) implements BlockProvider
 	}
 
 	@Override
-	public Optional<CachedBlock> getBlock(Context context) {
-		return position().getVec3(context.forChild(".position"))
+	public Optional<CachedBlock> getValue(Context context) {
+		return position().getValue(context.forChild(".position"))
 			.map(BlockPos::containing)
 			.flatMap(position -> CachedBlock.optionallyFromLoadedPos(context.level(), position));
 	}

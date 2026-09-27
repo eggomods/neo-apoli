@@ -32,7 +32,7 @@ public record EntitySlotProvider(EntityProvider entity, IntProvider slot) implem
 	}
 
 	@Override
-	public Optional<SlotAccess> getSlot(Context context) {
+	public Optional<SlotAccess> getValue(Context context) {
 
 		Context slotContext = context.forChild(".slot");
 		int slot = slot().getInt(slotContext);
@@ -43,7 +43,7 @@ public record EntitySlotProvider(EntityProvider entity, IntProvider slot) implem
 
 		else {
 			return entity()
-				.getEntity(context.forChild(".entity"))
+				.getValue(context.forChild(".entity"))
 				.map(entity -> entity.getSlot(slot));
 		}
 

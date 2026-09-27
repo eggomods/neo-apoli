@@ -28,7 +28,7 @@ public record ClearPowersAction(EntityProvider entity) implements Action {
 
 	@Override
 	public void execute(Context context) {
-		entity().getEntity(context.forChild(".entity"))
+		entity().getValue(context.forChild(".entity"))
 			.flatMap(MutablePowers::getOptional)
 			.ifPresent(this::clear);
 	}

@@ -1,7 +1,6 @@
 package io.github.eggohito.neo_apoli.provider.custom.vec3;
 
 import com.mojang.serialization.MapCodec;
-import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.provider.CompositeConditionalValueProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliVec3ProviderTypes;
 import io.github.eggohito.neo_apoli.util.MapCodecUtil;
@@ -13,9 +12,8 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Optional;
 
-public record CompositeConditionalVec3Provider(List<CompositeConditional.Entry<Vec3Provider>> entries, Vec3Provider defaultValue) implements Vec3Provider, CompositeConditionalValueProvider<Vec3Provider> {
+public record CompositeConditionalVec3Provider(List<CompositeConditional.Entry<Vec3Provider>> entries, Vec3Provider defaultValue) implements Vec3Provider, CompositeConditionalValueProvider<Vec3, Vec3Provider> {
 
 	public static final MapCodec<CompositeConditionalVec3Provider> CODEC = MapCodecUtil.lazy(CompositeConditionalVec3Provider.class.getSimpleName(), () -> CompositeConditionalValueProvider.mapCodec(Vec3Provider.CODEC, CompositeConditionalVec3Provider::new));
 	public static final StreamCodec<RegistryFriendlyByteBuf, CompositeConditionalVec3Provider> STREAM_CODEC = StreamCodecUtil.lazy(CompositeConditionalVec3Provider.class.getSimpleName(), () -> CompositeConditionalValueProvider.streamCodec(Vec3Provider.STREAM_CODEC, CompositeConditionalVec3Provider::new));
@@ -23,11 +21,6 @@ public record CompositeConditionalVec3Provider(List<CompositeConditional.Entry<V
 	@Override
 	public @NotNull Vec3Provider.Type<?> getType() {
 		return NeoApoliVec3ProviderTypes.COMPOSITE_CONDITIONAL;
-	}
-
-	@Override
-	public Optional<Vec3> getVec3(Context context) {
-		return this.getOrDefault(context, Vec3Provider::getVec3);
 	}
 
 }

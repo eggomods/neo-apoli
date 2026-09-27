@@ -30,9 +30,9 @@ public record EntityUuidStringProvider(EntityProvider entity) implements StringP
 	}
 
 	@Override
-	public Optional<String> getString(Context context) {
+	public Optional<String> getValue(Context context) {
 		return entity()
-			.getEntity(context.forChild(".entity"))
+			.getValue(context.forChild(".entity"))
 			.map(Entity::getStringUUID);
 	}
 

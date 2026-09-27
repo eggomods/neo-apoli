@@ -5,7 +5,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliFloatProviderTypes;
-import io.github.eggohito.neo_apoli.util.FloatConsumer;
 import io.github.eggohito.neo_apoli.util.MapCodecUtil;
 import io.github.eggohito.neo_apoli.util.MiscUtil;
 import io.github.eggohito.neo_apoli.util.StreamCodecUtil;
@@ -13,6 +12,8 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.random.WeightedList;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public record WeightedFloatProvider(WeightedList<FloatProvider> entries) implements FloatProvider {
 
@@ -32,10 +33,10 @@ public record WeightedFloatProvider(WeightedList<FloatProvider> entries) impleme
 	}
 
 	@Override
-	public void provideFloat(Context context, FloatConsumer setter) {
-		entries()
+	public Optional<Float> getValue(Context context) {
+		return entries()
 			.neo_apoli$getRandomAndIndex(context.level().getRandom())
-			.ifPresent(pair -> pair.first().provideFloat(context.forChild(".entries[" + pair.secondInt() + "]"), setter));
+			.flatMap(pair -> pair.first().getValue(context.forChild(".entries[" + pair.secondInt() + "]")));
 	}
 
 	@Override

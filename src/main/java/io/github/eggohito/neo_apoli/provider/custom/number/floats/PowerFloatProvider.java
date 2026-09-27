@@ -5,12 +5,13 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliFloatProviderTypes;
-import io.github.eggohito.neo_apoli.util.FloatConsumer;
 import io.github.eggohito.neo_apoli.util.MapCodecUtil;
 import io.github.eggohito.neo_apoli.util.StreamCodecUtil;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public record PowerFloatProvider(FloatProvider base, FloatProvider exponent) implements FloatProvider {
 
@@ -31,10 +32,10 @@ public record PowerFloatProvider(FloatProvider base, FloatProvider exponent) imp
 	}
 
 	@Override
-	public void provideFloat(Context context, FloatConsumer setter) {
-		base().provideFloat(context.forChild(".base"), base ->
-			exponent().provideFloat(context.forChild(".exponent"), exponent ->
-				setter.accept((float) Math.pow(base, exponent))));
+	public Optional<Float> getValue(Context context) {
+		return base().getValue(context.forChild(".base"))
+			.flatMap(base -> exponent().getValue(context.forChild(".exponent"))
+				.map(exponent -> (float) Math.pow(base, exponent)));
 	}
 
 	@Override

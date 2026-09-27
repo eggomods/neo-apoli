@@ -15,8 +15,8 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.IntConsumer;
 
 public interface MultiIntProvider extends IntProvider {
 
@@ -28,7 +28,7 @@ public interface MultiIntProvider extends IntProvider {
 		ContextValidatable.validate(values(), validator, index -> ".values[" + index + "]");
 	}
 
-	default void iterateAndProcess(Context context, IntBiFunction processor, IntConsumer setter) {
+	default Optional<Integer> iterateAndProcess(Context context, IntBiFunction processor) {
 
 		MutableInt result = new MutableInt();
 		MutableBoolean init = new MutableBoolean(false);
@@ -75,9 +75,9 @@ public interface MultiIntProvider extends IntProvider {
 			}
 		);
 
-		if (init.isTrue()) {
-			setter.accept(result.intValue());
-		}
+		return init.isTrue()
+			? Optional.of(result.intValue())
+			: Optional.empty();
 
 	}
 

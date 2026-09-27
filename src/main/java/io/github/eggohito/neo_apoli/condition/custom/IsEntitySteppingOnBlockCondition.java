@@ -42,7 +42,7 @@ public record IsEntitySteppingOnBlockCondition(Condition steppedOnCondition, Ent
 	public boolean test(Context context) {
 
 		Level level = context.level();
-		Entity entity = entity().getEntity(context.forChild(".entity")).orElse(null);
+		Entity entity = entity().getValue(context.forChild(".entity")).orElse(null);
 
 		try {
 

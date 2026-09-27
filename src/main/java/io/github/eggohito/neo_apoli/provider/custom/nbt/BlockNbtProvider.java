@@ -35,9 +35,9 @@ public record BlockNbtProvider(BlockProvider block) implements NbtProvider {
 	}
 
 	@Override
-	public Optional<Tag> getTag(Context context) {
+	public Optional<Tag> getValue(Context context) {
 		return block()
-			.getBlock(context.forChild(".block"))
+			.getValue(context.forChild(".block"))
 			.map(block -> this.serialize(context, block));
 	}
 

@@ -10,7 +10,7 @@ import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.function.IntConsumer;
+import java.util.Optional;
 
 public record DifferenceIntProvider(List<IntProvider> values) implements MultiIntProvider {
 
@@ -23,8 +23,8 @@ public record DifferenceIntProvider(List<IntProvider> values) implements MultiIn
 	}
 
 	@Override
-	public void provideInt(Context context, IntConsumer setter) {
-		this.iterateAndProcess(context, (first, second) -> first - second, setter);
+	public Optional<Integer> getValue(Context context) {
+		return this.iterateAndProcess(context, (first, second) -> first - second);
 	}
 
 }

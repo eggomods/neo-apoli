@@ -20,7 +20,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.function.IntConsumer;
+import java.util.Optional;
 
 public record EntitiesInRadiusIntProvider(Condition condition, Vec3Provider position, Shape shape, FloatProvider radius) implements IntProvider {
 
@@ -49,14 +49,14 @@ public record EntitiesInRadiusIntProvider(Condition condition, Vec3Provider posi
 	}
 
 	@Override
-	public void provideInt(Context context, IntConsumer setter) {
+	public Optional<Integer> getValue(Context context) {
 
 		Vec3 position = position()
-			.getVec3(context.forChild(".position"))
+			.getValue(context.forChild(".position"))
 			.orElse(null);
 
 		if (position == null) {
-			return;
+			return Optional.empty();
 		}
 
 		Level level = context.level();
@@ -77,7 +77,7 @@ public record EntitiesInRadiusIntProvider(Condition condition, Vec3Provider posi
 
 		}
 
-		setter.accept(matches);
+		return Optional.of(matches);
 
 	}
 

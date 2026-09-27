@@ -2,7 +2,6 @@ package io.github.eggohito.neo_apoli.provider.custom.command_source;
 
 import com.mojang.serialization.MapCodec;
 import io.github.eggohito.neo_apoli.condition.Condition;
-import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.provider.ConditionalValueProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliCommandSourceProviderTypes;
 import io.github.eggohito.neo_apoli.util.MapCodecUtil;
@@ -12,9 +11,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
-
-public record ConditionalCommandSourceProvider(Condition condition, CommandSourceProvider onTrue, CommandSourceProvider onFalse) implements CommandSourceProvider, ConditionalValueProvider<CommandSourceProvider> {
+public record ConditionalCommandSourceProvider(Condition condition, CommandSourceProvider onTrue, CommandSourceProvider onFalse) implements CommandSourceProvider, ConditionalValueProvider<CommandSourceStack, CommandSourceProvider> {
 
 	public static final MapCodec<ConditionalCommandSourceProvider> CODEC = MapCodecUtil.lazy(ConditionalCommandSourceProvider.class.getSimpleName(), () -> ConditionalValueProvider.mapCodec(CommandSourceProvider.CODEC, ConditionalCommandSourceProvider::new));
 	public static final StreamCodec<RegistryFriendlyByteBuf, ConditionalCommandSourceProvider> STREAM_CODEC = StreamCodecUtil.lazy(ConditionalCommandSourceProvider.class.getSimpleName(), () -> ConditionalValueProvider.streamCodec(CommandSourceProvider.STREAM_CODEC, ConditionalCommandSourceProvider::new));
@@ -22,11 +19,6 @@ public record ConditionalCommandSourceProvider(Condition condition, CommandSourc
 	@Override
 	public CommandSourceProvider.@NotNull Type<?> getType() {
 		return NeoApoliCommandSourceProviderTypes.CONDITIONAL;
-	}
-
-	@Override
-	public Optional<CommandSourceStack> getSource(Context context) {
-		return this.getValue(context, CommandSourceProvider::getSource, Optional.empty());
 	}
 
 }

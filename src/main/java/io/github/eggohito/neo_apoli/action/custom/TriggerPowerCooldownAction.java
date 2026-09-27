@@ -36,7 +36,7 @@ public record TriggerPowerCooldownAction(PowerIdentifier power, EntityProvider e
 	@Override
 	public void execute(Context context) {
 
-		Entity entity = entity().getEntity(context.forChild(".entity")).orElse(null);
+		Entity entity = entity().getValue(context.forChild(".entity")).orElse(null);
 		Power.Instance<?> instance = Powers.getOptional(entity)
 			.map(powers -> powers.getInstance(this.power()))
 			.orElse(null);

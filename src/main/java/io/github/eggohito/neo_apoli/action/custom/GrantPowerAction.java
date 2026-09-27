@@ -40,7 +40,7 @@ public record GrantPowerAction(ParsedArgument<PowerArgument.Result> power, Resou
 
 	@Override
 	public void execute(Context context) {
-		entity().getEntity(context.forChild(".entity"))
+		entity().getValue(context.forChild(".entity"))
 			.map(MutablePowers::create)
 			.ifPresent(mutable -> this.grant(mutable, context::reportProblem));
 	}

@@ -35,10 +35,10 @@ public record NbtStringProvider(NbtProvider source, NbtPathArgument.NbtPath path
 	}
 
 	@Override
-	public Optional<String> getString(Context context) {
+	public Optional<String> getValue(Context context) {
 
 		Tag source = source()
-			.getTag(context.forChild(".source"))
+			.getValue(context.forChild(".source"))
 			.orElse(null);
 
 		if (source == null) {
