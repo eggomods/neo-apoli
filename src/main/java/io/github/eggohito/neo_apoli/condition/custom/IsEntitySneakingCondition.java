@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.parameter.EntityContextParameter;
 import io.github.eggohito.neo_apoli.provider.custom.entity.ContextEntityProvider;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliConditionTypes;
@@ -23,7 +24,7 @@ public record IsEntitySneakingCondition(EntityProvider entity) implements Condit
 		IsEntitySneakingCondition::new
 	);
 
-	public IsEntitySneakingCondition(Context.Parameter<Entity> entity) {
+	public IsEntitySneakingCondition(EntityContextParameter entity) {
 		this(new ContextEntityProvider(entity));
 	}
 

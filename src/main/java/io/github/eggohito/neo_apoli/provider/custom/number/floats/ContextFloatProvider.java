@@ -4,31 +4,30 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.parameter.FloatContextParameter;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliFloatProviderTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.context.ContextKey;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.Set;
 
-public record ContextFloatProvider(Context.Parameter<Float> parameter) implements FloatProvider {
+public record ContextFloatProvider(FloatContextParameter parameter) implements FloatProvider {
 
 	public static final MapCodec<ContextFloatProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
-		.group(NeoApoliContextParams.Codecs.FLOAT.fieldOf("parameter").forGetter(ContextFloatProvider::parameter))
+		.group(FloatContextParameter.CODEC.fieldOf("parameter").forGetter(ContextFloatProvider::parameter))
 		.apply(instance, ContextFloatProvider::new)
 	);
 
-	public static final Codec<ContextFloatProvider> INLINE_CODEC = NeoApoliContextParams.Codecs.FLOAT.xmap(
+	public static final Codec<ContextFloatProvider> INLINE_CODEC = FloatContextParameter.CODEC.xmap(
 		ContextFloatProvider::new,
 		ContextFloatProvider::parameter
 	);
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ContextFloatProvider> STREAM_CODEC = StreamCodec.composite(
-		NeoApoliContextParams.StreamCodecs.FLOAT, ContextFloatProvider::parameter,
+		FloatContextParameter.STREAM_CODEC, ContextFloatProvider::parameter,
 		ContextFloatProvider::new
 	);
 
@@ -49,7 +48,7 @@ public record ContextFloatProvider(Context.Parameter<Float> parameter) implement
 	}
 
 	@Override
-	public Set<ContextKey<?>> getRequiredParameters() {
+	public Set<Context.Parameter<?>> getRequiredParameters() {
 		return Set.of(parameter());
 	}
 

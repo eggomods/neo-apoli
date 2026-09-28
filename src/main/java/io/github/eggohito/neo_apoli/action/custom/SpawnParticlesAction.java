@@ -2,11 +2,13 @@ package io.github.eggohito.neo_apoli.action.custom;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.action.Action;
 import io.github.eggohito.neo_apoli.codec.NeoApoliCodecs;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.condition.custom.ConstantCondition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextParams;
 import io.github.eggohito.neo_apoli.context.parameter.EntityContextParameter;
 import io.github.eggohito.neo_apoli.provider.custom.bool.BooleanProvider;
 import io.github.eggohito.neo_apoli.provider.custom.bool.ConstantBooleanProvider;
@@ -18,19 +20,16 @@ import io.github.eggohito.neo_apoli.provider.custom.vec3.ConstantVec3Provider;
 import io.github.eggohito.neo_apoli.provider.custom.vec3.Vec3Provider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliActionTypes;
 import io.github.eggohito.neo_apoli.registry.NeoApoliParticleTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.context.ContextKeySet;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
 public record SpawnParticlesAction(ParticleOptions particle, Condition viewCondition, Vec3Provider position, Vec3Provider spread, FloatProvider speed, IntProvider count, BooleanProvider force) implements Action {
 
-	public static final Context.Parameter<Entity> VIEWER_ENTITY = NeoApoliContextParams.registerInternal("viewer_entity", EntityContextParameter::new);
-	public static final ContextKeySet CONDITION_PARAMETER_SET = new ContextKeySet.Builder().required(VIEWER_ENTITY).build();
+	public static final EntityContextParameter VIEWER_ENTITY = new EntityContextParameter(NeoApoli.id("viewer_entity"));
+	public static final ContextParams CONDITION_PARAMETER_SET = new ContextParams.Builder().required(VIEWER_ENTITY).build();
 
 	public static final MapCodec<SpawnParticlesAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		NeoApoliCodecs.PARTICLE_OPTIONS.fieldOf("particle").forGetter(SpawnParticlesAction::particle),
@@ -102,7 +101,7 @@ public record SpawnParticlesAction(ParticleOptions particle, Condition viewCondi
 	@Override
 	public void validate(Context.Validator validator) {
 		Action.super.validate(validator);
-		viewCondition().validate(validator.withAdditionalKeysFromSets(CONDITION_PARAMETER_SET).forChild(".view_condition"));
+		viewCondition().validate(validator.withParams(CONDITION_PARAMETER_SET).forChild(".view_condition"));
 		position().validate(validator.forChild(".position"));
 		spread().validate(validator.forChild(".spread"));
 		speed().validate(validator.forChild(".speed"));

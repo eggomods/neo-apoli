@@ -4,31 +4,30 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.context.parameter.EntityContextParameter;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliEntityProviderTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.Set;
 
-public record ContextEntityProvider(Context.Parameter<Entity> parameter) implements EntityProvider {
+public record ContextEntityProvider(EntityContextParameter parameter) implements EntityProvider {
 
 	public static final MapCodec<ContextEntityProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
-		.group(NeoApoliContextParams.Codecs.ENTITY.fieldOf("parameter").forGetter(ContextEntityProvider::parameter))
+		.group(EntityContextParameter.CODEC.fieldOf("parameter").forGetter(ContextEntityProvider::parameter))
 		.apply(instance, ContextEntityProvider::new)
 	);
 
-	public static final Codec<ContextEntityProvider> INLINE_CODEC = NeoApoliContextParams.Codecs.ENTITY.xmap(
+	public static final Codec<ContextEntityProvider> INLINE_CODEC = EntityContextParameter.CODEC.xmap(
 		ContextEntityProvider::new,
 		ContextEntityProvider::parameter
 	);
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ContextEntityProvider> STREAM_CODEC = StreamCodec.composite(
-		NeoApoliContextParams.StreamCodecs.ENTITY, ContextEntityProvider::parameter,
+		EntityContextParameter.STREAM_CODEC, ContextEntityProvider::parameter,
 		ContextEntityProvider::new
 	);
 
@@ -49,7 +48,7 @@ public record ContextEntityProvider(Context.Parameter<Entity> parameter) impleme
 	}
 
 	@Override
-	public Set<ContextKey<?>> getRequiredParameters() {
+	public Set<Context.Parameter<?>> getRequiredParameters() {
 		return Set.of(parameter());
 	}
 

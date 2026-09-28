@@ -12,7 +12,7 @@ import io.github.eggohito.neo_apoli.context.parameter.ItemContextParameter;
 import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.custom.misc.PrioritizedPower;
 import io.github.eggohito.neo_apoli.registry.NeoApoliPowerTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameters;
 import io.github.eggohito.neo_apoli.util.CachedBlock;
 import io.github.eggohito.neo_apoli.util.ResourceLocationUtil;
 import net.minecraft.ResourceLocationException;
@@ -25,7 +25,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -42,7 +41,7 @@ import java.util.regex.Pattern;
 public record ReplaceLootTablePower(Optional<Condition> activeCondition, Map<Pattern, String> replacements, int priority) implements PrioritizedPower<ReplaceLootTablePower> {
 
 	public static final ResourceKey<LootTable> REPLACED_TABLE_KEY = ResourceKey.create(Registries.LOOT_TABLE, NeoApoli.id("replaced_loot_table"));
-	public static final Context.Parameter<ItemStack> TOOL_ITEM = NeoApoliContextParams.registerInternal("tool_item", ItemContextParameter::new);
+	public static final ItemContextParameter TOOL_ITEM = new ItemContextParameter(NeoApoli.id("tool_item"));
 
 	public static final MapCodec<ReplaceLootTablePower> CODEC = RecordCodecBuilder.mapCodec(instance -> Power
 		.addActiveConditionField(instance)
@@ -88,9 +87,9 @@ public record ReplaceLootTablePower(Optional<Condition> activeCondition, Map<Pat
 				.or(() -> blockPos.flatMap(pos -> Optional.ofNullable(serverLevel.getBlockEntity(pos))));
 
 			return this.createHolderContextBuilder(holder)
-				.withRequired(NeoApoliContextParams.ACTOR_ENTITY, holder)
-				.withNullable(NeoApoliContextParams.TARGET_ENTITY, lootContext.getOptionalParameter(LootContextParams.THIS_ENTITY))
-				.withOptional(NeoApoliContextParams.BROKEN_BLOCK, blockPos.flatMap(pos -> blockState.map(state -> new CachedBlock(pos, state, blockEntity.orElse(null)))))
+				.withRequired(NeoApoliContextParameters.ACTOR_ENTITY, holder)
+				.withNullable(NeoApoliContextParameters.TARGET_ENTITY, lootContext.getOptionalParameter(LootContextParams.THIS_ENTITY))
+				.withOptional(NeoApoliContextParameters.BROKEN_BLOCK, blockPos.flatMap(pos -> blockState.map(state -> new CachedBlock(pos, state, blockEntity.orElse(null)))))
 				.withNullable(TOOL_ITEM, lootContext.getOptionalParameter(LootContextParams.TOOL))
 				.build(lootContext.getLevel());
 

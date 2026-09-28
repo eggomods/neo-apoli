@@ -8,7 +8,7 @@ import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.entity.Powers;
 import io.github.eggohito.neo_apoli.registry.NeoApoliPowerTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameters;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -57,9 +57,9 @@ public record ModifyModelColorSelfPower(Optional<Condition> activeCondition, Col
 
 		public Context createContext(@NotNull Entity holder, @Nullable Entity viewer) {
 			return this.createHolderContextBuilder(holder)
-				.withNullable(NeoApoliContextParams.ACTOR_ENTITY, viewer)
-				.withRequired(NeoApoliContextParams.TARGET_ENTITY, holder)
-				.buildWithRequirements(holder.level(), NeoApoliPowerTypes.MODIFY_MODEL_COLOR_OTHER.requirements());
+				.withNullable(NeoApoliContextParameters.ACTOR_ENTITY, viewer)
+				.withRequired(NeoApoliContextParameters.TARGET_ENTITY, holder)
+				.build(holder.level());
 		}
 
 		public int getColor(Context context) {

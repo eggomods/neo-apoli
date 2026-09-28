@@ -1,46 +1,55 @@
 package io.github.eggohito.neo_apoli.context;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import com.mojang.brigadier.tree.CommandNode;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.datafixers.util.Unit;
+import com.mojang.serialization.*;
+import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.context.visitor.Visitor;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
-import io.github.eggohito.neo_apoli.util.CommandParameter;
+import io.github.eggohito.neo_apoli.provider.ValueProvider;
+import io.github.eggohito.neo_apoli.registry.NeoApoliRegistries;
+import io.github.eggohito.neo_apoli.registry.NeoApoliRegistryKeys;
 import io.github.eggohito.neo_apoli.util.Reporter;
+import io.github.eggohito.neo_apoli.util.ResourceLocationUtil;
+import io.github.eggohito.neo_apoli.util.alias.FixedRegistryAlias;
+import io.github.eggohito.neo_apoli.util.alias.ResourceLocationAlias;
+import io.netty.buffer.ByteBuf;
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.Getter;
-import net.minecraft.commands.CommandBuildContext;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.context.ContextKey;
-import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.world.level.Level;
-import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-public final class Context implements ContextParamsHolder {
+@SuppressWarnings("unchecked")
+public final class Context implements ContextHolder {
+
+	public static final ResourceLocationAlias ALIASES = new ResourceLocationAlias();
 
 	@Getter
 	private final Level level;
 	@Getter
 	private final Reporter reporter;
 
-	private final ContextParams params;
+	private final ImmutableMap<Parameter<?>, Object> params;
 	private final Set<ContextUser> visited;
 
-	private Context(Level level, Reporter reporter, ContextParams params, Set<ContextUser> visited) {
+	private Context(Level level, Reporter reporter, ImmutableMap<Parameter<?>, Object> params, Set<ContextUser> visited) {
 		this.level = level;
 		this.reporter = reporter;
 		this.params = params;
@@ -48,13 +57,13 @@ public final class Context implements ContextParamsHolder {
 	}
 
 	@Override
-	public ContextKeySet toKeySet() {
-		return params.toKeySet();
+	public ImmutableSet<Parameter<?>> parameters() {
+		return params.keySet();
 	}
 
 	@Override
-	public @Nullable <T> T getNullable(ContextKey<T> parameter) {
-		return params.getNullable(parameter);
+	public @Nullable <T> T getNullable(Parameter<T> parameter) {
+		return (T) this.params.get(parameter);
 	}
 
 	public Visitor<ContextUser> visitor() {
@@ -90,53 +99,49 @@ public final class Context implements ContextParamsHolder {
 		return reporter().hasProblems();
 	}
 
-	public static final class Builder implements ContextParamsHolder {
+	public static final class Builder implements ContextHolder {
 
-		private final ContextParams.Builder params;
+		private final Map<Parameter<?>, Object> params;
 		private final Set<ContextUser> visited;
+
 		private Reporter reporter;
 
-		Builder(ContextParams.Builder params, Reporter reporter, Set<ContextUser> visited) {
+		Builder(Map<Parameter<?>, Object> params, Reporter reporter, Set<ContextUser> visited) {
 			this.params = params;
 			this.reporter = reporter;
 			this.visited = visited;
 		}
 
 		public Builder(Context context) {
-			this(context.params.toBuilder(), context.reporter, context.visited);
+			this(new Object2ObjectLinkedOpenHashMap<>(context.params), context.reporter, context.visited);
 		}
 
 		public Builder() {
-			this(new ContextParams.Builder(), new Reporter(), new ObjectOpenHashSet<>());
+			this(new Object2ObjectLinkedOpenHashMap<>(), new Reporter(), new ObjectOpenHashSet<>());
 		}
 
 		@Override
-		public ContextKeySet toKeySet() {
-			return params.toKeySet();
+		public Set<Parameter<?>> parameters() {
+			return Set.copyOf(params.keySet());
 		}
 
 		@Override
-		public @Nullable <T> T getNullable(ContextKey<T> parameter) {
-			return params.getNullable(parameter);
+		public @Nullable <T> T getNullable(Parameter<T> parameter) {
+			return (T) this.params.get(parameter);
 		}
 
-		public <T> Builder withNullable(Parameter<T> key, @Nullable T value) {
-			this.params.withNullable(key,value);
-			return this;
-		}
+		public <T> Builder withNullable(Parameter<T> parameter, @Nullable T value) {
 
-		public <T> Builder withNullableIfAbsent(Parameter<T> key, Supplier<@Nullable T> value) {
-			this.params.withNullableIfAbsent(key, value);
+			if (value != null) {
+				this.params.put(parameter, value);
+			}
+
 			return this;
+
 		}
 
 		public <T> Builder withRequired(Parameter<T> key, @NotNull T value) {
-			this.params.withRequired(key, value);
-			return this;
-		}
-
-		public <T> Builder withRequiredIfAbsent(Parameter<T> key, Supplier<@NotNull T> value) {
-			this.params.withRequiredIfAbsent(key, value);
+			this.params.put(key, value);
 			return this;
 		}
 
@@ -144,26 +149,13 @@ public final class Context implements ContextParamsHolder {
 			return this.withNullable(key, value.orElse(null));
 		}
 
-		public <T> Builder withOptionalIfAbsent(Parameter<T> key, Supplier<Optional<T>> value) {
-			this.params.withOptionalIfAbsent(key, value);
-			return this;
-		}
-
 		public Builder withReporter(Reporter reporter) {
 			this.reporter = reporter;
 			return this;
 		}
 
-		public Context buildWithRequirements(Level level, ContextKeySet keySet) {
-			return build(level, params.buildWithRequirements(keySet));
-		}
-
 		public Context build(Level level) {
-			return build(level, params.build());
-		}
-
-		private Context build(Level level, ContextParams params) {
-			return new Context(level, reporter, params, visited);
+			return new Context(level, this.reporter, ImmutableMap.copyOf(this.params), this.visited);
 		}
 
 	}
@@ -171,48 +163,43 @@ public final class Context implements ContextParamsHolder {
 	public static class Validator {
 
 		@Getter
-		private final ContextKeySet keySet;
+		private final ContextParams params;
 		@Getter
 		private final Reporter reporter;
 
 		private final Optional<HolderLookup.Provider> resolver;
 		private final Set<ResourceKey<?>> visited;
 
-		Validator(ContextKeySet keySet, Reporter reporter, Optional<HolderLookup.Provider> resolver, Set<ResourceKey<?>> visited) {
-			this.keySet = keySet;
+		Validator(ContextParams params, Reporter reporter, Optional<HolderLookup.Provider> resolver, Set<ResourceKey<?>> visited) {
+			this.params = params;
 			this.reporter = reporter;
 			this.resolver = resolver;
 			this.visited = visited;
 		}
 
-		public Validator(ContextKeySet keySet, Reporter reporter, @NotNull HolderLookup.Provider resolver) {
-			this(keySet, reporter, Optional.of(resolver), new ObjectOpenHashSet<>());
+		public Validator(ContextParams params, Reporter reporter, @NotNull HolderLookup.Provider resolver) {
+			this(params, reporter, Optional.of(resolver), new ObjectOpenHashSet<>());
 		}
 
-		public Validator(ContextKeySet keySet, Reporter reporter) {
-			this(keySet, reporter, Optional.empty(), new ObjectOpenHashSet<>());
+		public Validator(ContextParams params, Reporter reporter) {
+			this(params, reporter, Optional.empty(), new ObjectOpenHashSet<>());
 		}
 
-		public Validator withKeySet(ContextKeySet keySet) {
-			return new Validator(keySet, reporter(), this.resolver, this.visited);
-		}
-
-		public Validator withAdditionalKeysFromSets(ContextKeySet... keySets) {
-			ContextKeySet[] merged = ArrayUtils.add(keySets, this.keySet());
-			return new Validator(ContextHelper.mergeKeySets(merged), reporter(), this.resolver, this.visited);
+		public Validator withParams(ContextParams... params) {
+			return new Validator(this.params().mergeAll(params), this.reporter(), this.resolver, this.visited);
 		}
 
 		public Validator withResolver(@NotNull HolderLookup.Provider resolver) {
-			return new Validator(this.keySet, reporter, Optional.of(resolver), this.visited);
+			return new Validator(this.params(), this.reporter(), Optional.of(resolver), this.visited);
 		}
 
 		public Validator forChild(String path) {
-			return new Validator(keySet(), reporter().forChild(path), this.resolver, this.visited);
+			return new Validator(this.params(), this.reporter().forChild(path), this.resolver, this.visited);
 		}
 
 		public Validator visitChild(String path, ResourceKey<?> key) {
 			this.visited.add(key);
-			return new Validator(keySet(), reporter().forChild(path), this.resolver, this.visited);
+			return new Validator(this.params(), this.reporter().forChild(path), this.resolver, this.visited);
 		}
 
 		public HolderLookup.Provider resolver() {
@@ -254,63 +241,151 @@ public final class Context implements ContextParamsHolder {
 
 		public void validate(ContextUser user) {
 
-			Set<ContextKey<?>> missing = Sets.difference(user.getRequiredParameters(), keySet().allowed());
+			if (params() == ContextParams.INTENTIONALLY_EMPTY) {
+				return;
+			}
+
+			Set<Context.Parameter<?>> missing = Sets.difference(user.getRequiredParameters(), params().allowed());
 
 			if (!missing.isEmpty()) {
-				this.reportProblem("The following parameters are not provided: " + missing);
+				this.reportProblem("The following parameters are not provided: [" + missing.stream().map(Parameter::name).map(ResourceLocation::toString).collect(Collectors.joining(", ")) + "]");
 			}
 
 		}
 
 	}
 
-	public static <T> Parameter<T> simpleParameter(ResourceLocation name, Class<T> typeClass) {
-		return new Parameter<>(name) {
+	public interface Parameter<T> {
+
+		Codec<Map<Parameter<?>, ValueProvider<?>>> VALUE_MAP_CODEC = new Codec<>() {
+
+			private final static Codec<ResourceLocation> ID_CODEC = ResourceLocationUtil.codecWithDefaultNamespace(NeoApoli.MOD_NAMESPACE);
+			private final static MapCodec<Type<?, ?>> TYPE_CODEC = Type.CODEC.fieldOf("type");
 
 			@Override
-			public @NotNull Class<T> getTypeClass() {
-				return typeClass;
+			public <I> DataResult<Pair<Map<Parameter<?>, ValueProvider<?>>, I>> decode(DynamicOps<I> ops, I input) {
+				return ops.getMap(input).flatMap(map -> this.decodeMap(ops, map)).map(r -> Pair.of(r, input));
 			}
 
 			@Override
-			public void addAsArgument(CommandBuildContext buildContext, CommandNode<CommandSourceStack> baseNode, CommandNode<CommandSourceStack> parameterNode) {
+			public <O> DataResult<O> encode(Map<Parameter<?>, ValueProvider<?>> input, DynamicOps<O> ops, O prefix) {
+				return this.encodeMap(input, ops, ops.mapBuilder()).build(prefix);
+			}
+
+			private <I> DataResult<Map<Parameter<?>, ValueProvider<?>>> decodeMap(DynamicOps<I> ops, MapLike<I> input) {
+
+				Map<Parameter<?>, ValueProvider<?>> succeeded = new Object2ObjectLinkedOpenHashMap<>();
+				DataResult<Unit> result = input.entries().reduce(
+					DataResult.success(Unit.INSTANCE, Lifecycle.stable()),
+					(identity, keyAndValue) -> {
+
+						DataResult<String> keyResult = Codec.STRING.parse(ops, keyAndValue.getFirst());
+						DataResult<MapLike<I>> valueResult = ops.getMap(keyAndValue.getSecond());
+
+						if (keyResult.isError()) {
+							return identity.apply2stable((unit, o) -> unit, keyResult);
+						}
+
+						if (valueResult.isError()) {
+							return identity.apply2stable((unit, o) -> unit, valueResult);
+						}
+
+						String key = keyResult.getOrThrow();
+						MapLike<I> valueMap = valueResult.getOrThrow();
+
+						DataResult<ResourceLocation> idResult = ID_CODEC
+							.parse(ops, keyAndValue.getFirst())
+							.map(id -> ALIASES.resolve(id, Predicate.not(id::equals)));
+
+						if (idResult.isError()) {
+							return identity.apply2stable((unit, ignored) -> unit, idResult);
+						}
+
+						ResourceLocation id = idResult.getOrThrow();
+						DataResult<Type<?, ?>> typeResult = TYPE_CODEC.decode(ops, valueMap);
+
+						if (typeResult.isError()) {
+							return identity.apply2stable((unit, ignored) -> unit, typeResult);
+						}
+
+						Type<?, ValueProvider<?>> type = (Type<?, ValueProvider<?>>) typeResult.getOrThrow();
+						DataResult<ValueProvider<?>> providerResult = type.providerCodec().parse(ops, valueMap.get("value"));
+
+						if (providerResult.isSuccess() && succeeded.putIfAbsent(type.create(id), providerResult.getOrThrow()) != null) {
+							return identity.apply2stable((unit, o) -> unit, DataResult.error(() -> "Duplicate key: \"" + key + "\""));
+						}
+
+						return identity.apply2stable((unit, ignored) -> unit, providerResult);
+
+					},
+					(first, second) ->
+						first.apply2stable((a, b) -> a, second)
+				);
+
+				Map<Parameter<?>, ValueProvider<?>> elements = ImmutableMap.copyOf(succeeded);
+				return result.map(unit -> elements).setPartial(elements);
+
+			}
+
+			private <O> RecordBuilder<O> encodeMap(Map<Parameter<?>, ValueProvider<?>> input, DynamicOps<O> ops, RecordBuilder<O> prefix) {
+
+				for (var entry : input.entrySet()) {
+
+					Parameter<?> parameter = entry.getKey();
+					ValueProvider<?> provider = entry.getValue();
+
+					Parameter.Type<?, ValueProvider<?>> parameterType = (Type<?, ValueProvider<?>>) parameter.getType();
+
+					if (parameterType != null) {
+
+						RecordBuilder<O> mapBuilder = TYPE_CODEC
+							.encode(parameterType, ops, ops.mapBuilder()
+							.add("value", parameterType.providerCodec().encodeStart(ops, provider)));
+
+						prefix.add(entry.getKey().name().toString(), mapBuilder.build(ops.empty()));
+
+					}
+
+				}
+
+				return prefix;
 
 			}
 
 		};
-	}
 
-	public static <T> Codec<Parameter<T>> parameterCodec(String name, Class<T> typeClass) {
-		return NeoApoliContextParams.CODEC.comapFlatMap(parameterValidator(name, typeClass), Function.identity());
-	}
+		ResourceLocation name();
 
-	public static <T> StreamCodec<RegistryFriendlyByteBuf, Parameter<T>> parameterStreamCodec(String name, Class<T> typeClass) {
-		return NeoApoliContextParams.STREAM_CODEC.map(parameterValidator(name, typeClass).andThen(DataResult::getOrThrow), Function.identity());
-	}
+		@Nullable
+		Type<?, ?> getType();
 
-	@SuppressWarnings("unchecked")
-	public static <T> Function<Parameter<?>, DataResult<Parameter<T>>> parameterValidator(String name, Class<T> typeClass) {
-		return key -> {
-
-			if (typeClass.isAssignableFrom(key.getTypeClass())) {
-				return DataResult.success((Parameter<T>) key);
-			}
-
-			else {
-				return DataResult.error(() -> "Unknown " + name.toLowerCase(Locale.ROOT) + " parameter: \"" + key.name() + "\"");
-			}
-
-		};
-	}
-
-	public abstract static class Parameter<T> extends ContextKey<T> implements CommandParameter {
-
-		protected Parameter(ResourceLocation name) {
-			super(name);
+		static <T, P extends Parameter<T>> Codec<P> codec(Function<ResourceLocation, P> constructor) {
+			return ResourceLocation.CODEC.xmap(constructor, Parameter::name);
 		}
 
-		@NotNull
-		public abstract Class<T> getTypeClass();
+		static <T, P extends Parameter<T>> Codec<P> codec(String defaultNamespace, Function<ResourceLocation, P> constructor) {
+			return ResourceLocationUtil.codecWithDefaultNamespace(defaultNamespace)
+				.xmap(id -> ALIASES.resolve(id, Predicate.not(id::equals)), Function.identity())
+				.xmap(constructor, Parameter::name);
+		}
+
+		static <T, P extends Parameter<T>> StreamCodec<ByteBuf, P> streamCodec(Function<ResourceLocation, P> constructor) {
+			return ResourceLocation.STREAM_CODEC.map(constructor, Parameter::name);
+		}
+
+		record Type<Parameter extends Context.Parameter<?>, Provider extends ValueProvider<?>>(Codec<Provider> providerCodec, Function<ResourceLocation, Parameter> factory) {
+
+			public static final FixedRegistryAlias<Type<?, ?>> ALIASES = FixedRegistryAlias.of(NeoApoliRegistries.CONTEXT_PARAMETER_TYPE);
+
+			public static final Codec<Type<?, ?>> CODEC = ALIASES.createCodec(NeoApoli.MOD_NAMESPACE);
+
+			public static final StreamCodec<RegistryFriendlyByteBuf, Type<?, ?>> STREAM_CODEC = ByteBufCodecs.registry(NeoApoliRegistryKeys.CONTEXT_PARAMETER_TYPE);
+
+			public Parameter create(ResourceLocation name) {
+				return factory().apply(name);
+			}
+
+		}
 
 	}
 

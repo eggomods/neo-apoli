@@ -7,16 +7,15 @@ import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameterTyp
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 
-public record ItemContextParameter(ResourceLocation name) implements Context.Parameter<ItemStack> {
+public record FloatContextParameter(ResourceLocation name) implements Context.Parameter<Float> {
 
-	public static final Codec<ItemContextParameter> CODEC = Context.Parameter.codec(NeoApoli.MOD_NAMESPACE, ItemContextParameter::new);
-	public static final StreamCodec<ByteBuf, ItemContextParameter> STREAM_CODEC = Context.Parameter.streamCodec(ItemContextParameter::new);
+	public static final Codec<FloatContextParameter> CODEC = Context.Parameter.codec(NeoApoli.MOD_NAMESPACE, FloatContextParameter::new);
+	public static final StreamCodec<ByteBuf, FloatContextParameter> STREAM_CODEC = Context.Parameter.streamCodec(FloatContextParameter::new);
 
 	@Override
 	public Type<?, ?> getType() {
-		return NeoApoliContextParameterTypes.ITEM;
+		return NeoApoliContextParameterTypes.FLOAT;
 	}
 
 }

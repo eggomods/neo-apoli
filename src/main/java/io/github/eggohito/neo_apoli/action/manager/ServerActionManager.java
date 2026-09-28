@@ -11,16 +11,13 @@ import com.mojang.serialization.JsonOps;
 import io.github.eggohito.neo_apoli.action.Action;
 import io.github.eggohito.neo_apoli.action.ActionHolder;
 import io.github.eggohito.neo_apoli.condition.manager.ConditionManager;
-import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.event.DependencyManager;
 import io.github.eggohito.neo_apoli.event.ReloadableServerResourcesEvents;
 import io.github.eggohito.neo_apoli.network.packet.clientbound.ClientboundUpdateActionsPacket;
 import io.github.eggohito.neo_apoli.registry.NeoApoliRegistryKeys;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParamSets;
 import io.github.eggohito.neo_apoli.resource.json.JsonFileToIdConverter;
 import io.github.eggohito.neo_apoli.resource.json.JsonWithSource;
 import io.github.eggohito.neo_apoli.util.MiscUtil;
-import io.github.eggohito.neo_apoli.util.Reporter;
 import io.github.eggohito.neo_apoli.util.ResourceLocationUtil;
 import io.github.eggohito.neo_apoli.util.manager.AbstractContentAndTagManager;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -148,32 +145,6 @@ public class ServerActionManager extends AbstractContentAndTagManager<ResourceLo
 	}
 
 	private void finalize(ReloadableServerResources resources) {
-
-		ImmutableMap.Builder<ResourceLocation, ActionHolder<?>> validatedContents = ImmutableMap.builder();
-		int prevSize = contents.size();
-
-		LOGGER.info("Validating {} action(s)...", prevSize);
-
-		try (Reporter.Scoped reporter = new Reporter.Scoped(errors -> LOGGER.error("Found errors while validating the following actions:\n{}", errors))) {
-
-			for (var holder : contents.values()) {
-
-				Action action = holder.value();
-				Reporter actionReporter = reporter.forChild("{\"" + holder.id() + "\"}");
-
-				Context.Validator validator = new Context.Validator(NeoApoliContextParamSets.all(), actionReporter).withResolver(MiscUtil.getLookupProvider(resources));
-				action.validate(validator);
-
-				if (!actionReporter.hasProblems()) {
-					validatedContents.put(holder.id(), holder);
-				}
-
-			}
-
-		}
-
-		this.contents = validatedContents.build();
-		LOGGER.info("Finished validating {} action(s). Action manager contains {} action(s)", prevSize, contents.size());
 
 		LOGGER.info("Parsing action tags from data packs...");
 		this.tags = ImmutableMap.copyOf(tagLoader.build(pendingTags));

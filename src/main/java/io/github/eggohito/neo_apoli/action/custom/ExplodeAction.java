@@ -2,13 +2,17 @@ package io.github.eggohito.neo_apoli.action.custom;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.action.Action;
 import io.github.eggohito.neo_apoli.codec.NeoApoliCodecs;
 import io.github.eggohito.neo_apoli.codec.NeoApoliStreamCodecs;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.condition.custom.ConstantCondition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextParams;
 import io.github.eggohito.neo_apoli.context.ContextUser;
+import io.github.eggohito.neo_apoli.context.parameter.BlockContextParameter;
+import io.github.eggohito.neo_apoli.context.parameter.EntityContextParameter;
 import io.github.eggohito.neo_apoli.provider.custom.bool.BooleanProvider;
 import io.github.eggohito.neo_apoli.provider.custom.bool.ConstantBooleanProvider;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
@@ -17,7 +21,6 @@ import io.github.eggohito.neo_apoli.provider.custom.number.floats.ConstantFloatP
 import io.github.eggohito.neo_apoli.provider.custom.vec3.Vec3Provider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliActionTypes;
 import io.github.eggohito.neo_apoli.registry.NeoApoliParticleTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
 import io.github.eggohito.neo_apoli.util.CachedBlock;
 import lombok.AllArgsConstructor;
 import net.minecraft.core.BlockPos;
@@ -31,7 +34,6 @@ import net.minecraft.network.protocol.game.ClientboundExplodePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
@@ -46,18 +48,18 @@ import java.util.Optional;
 
 public record ExplodeAction(Condition damageableCondition, Condition destructibleCondition, Display display, Property property, Vec3Provider position, Optional<EntityProvider> emitter) implements Action {
 
-	public static final Context.Parameter<CachedBlock> EXPLODED_BLOCK = NeoApoliContextParams.registerSimpleInternal("exploded_block", CachedBlock.class);
-	public static final Context.Parameter<Entity> EMITTER_ENTITY = NeoApoliContextParams.registerSimpleInternal("emitter_entity", Entity.class);
-	public static final Context.Parameter<Entity> EXPLODED_ENTITY = NeoApoliContextParams.registerSimpleInternal("exploded_entity", Entity.class);
+	public static final BlockContextParameter EXPLODED_BLOCK = new BlockContextParameter(NeoApoli.id("exploded_block"));
+	public static final EntityContextParameter EMITTER_ENTITY = new EntityContextParameter(NeoApoli.id("emitter_entity"));
+	public static final EntityContextParameter EXPLODED_ENTITY = new EntityContextParameter(NeoApoli.id("exploded_entity"));
 
-	public static final ContextKeySet DAMAGEABLE_PARAMETER_SET = new ContextKeySet.Builder()
+	public static final ContextParams DAMAGEABLE_PARAMETER_SET = new ContextParams.Builder()
 		.required(EXPLODED_ENTITY)
 		.optional(EMITTER_ENTITY)
 		.build();
-	public static final ContextKeySet DESTRUCTIBLE_PARAMETER_SET = new ContextKeySet.Builder()
+	public static final ContextParams DESTRUCTIBLE_PARAMETER_SET = new ContextParams.Builder()
 		.required(EXPLODED_BLOCK)
 		.build();
-	public static final ContextKeySet KNOCKBACK_MULTIPLIER_PARAMETER_SET = new ContextKeySet.Builder()
+	public static final ContextParams KNOCKBACK_MULTIPLIER_PARAMETER_SET = new ContextParams.Builder()
 		.required(EXPLODED_ENTITY)
 		.optional(EMITTER_ENTITY)
 		.build();
@@ -143,8 +145,8 @@ public record ExplodeAction(Condition damageableCondition, Condition destructibl
 	@Override
 	public void validate(Context.Validator validator) {
 		Action.super.validate(validator);
-		damageableCondition().validate(validator.withAdditionalKeysFromSets(DAMAGEABLE_PARAMETER_SET).forChild(".damageable_condition"));
-		destructibleCondition().validate(validator.withAdditionalKeysFromSets(DESTRUCTIBLE_PARAMETER_SET).forChild(".destructible_condition"));
+		damageableCondition().validate(validator.withParams(DAMAGEABLE_PARAMETER_SET).forChild(".damageable_condition"));
+		destructibleCondition().validate(validator.withParams(DESTRUCTIBLE_PARAMETER_SET).forChild(".destructible_condition"));
 		property().validate(validator.forChild(".property"));
 		position().validate(validator.forChild(".position"));
 		emitter().ifPresent(emitter -> emitter.validate(validator.forChild(".emitter")));
@@ -171,7 +173,7 @@ public record ExplodeAction(Condition damageableCondition, Condition destructibl
 		public void validate(Context.Validator validator) {
 			ContextUser.super.validate(validator);
 			power().validate(validator.forChild(".power"));
-			knockbackMultiplier().validate(validator.withAdditionalKeysFromSets(KNOCKBACK_MULTIPLIER_PARAMETER_SET).forChild(".knockback_multiplier"));
+			knockbackMultiplier().validate(validator.withParams(KNOCKBACK_MULTIPLIER_PARAMETER_SET).forChild(".knockback_multiplier"));
 			createFire().validate(validator.forChild(".create_fire"));
 		}
 

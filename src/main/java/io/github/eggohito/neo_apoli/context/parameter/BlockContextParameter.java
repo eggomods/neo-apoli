@@ -1,49 +1,22 @@
 package io.github.eggohito.neo_apoli.context.parameter;
 
-
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.serialization.Codec;
+import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameterTypes;
 import io.github.eggohito.neo_apoli.util.CachedBlock;
-import net.minecraft.commands.CommandBuildContext;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
-import net.minecraft.core.BlockPos;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
 
-public final class BlockContextParameter extends Context.Parameter<CachedBlock> {
+public record BlockContextParameter(ResourceLocation name) implements Context.Parameter<CachedBlock> {
 
-	public BlockContextParameter(ResourceLocation name) {
-		super(name);
-	}
+	public static final Codec<BlockContextParameter> CODEC = Context.Parameter.codec(NeoApoli.MOD_NAMESPACE, BlockContextParameter::new);
+	public static final StreamCodec<ByteBuf, BlockContextParameter> STREAM_CODEC = Context.Parameter.streamCodec(BlockContextParameter::new);
 
 	@Override
-	public @NotNull Class<CachedBlock> getTypeClass() {
-		return CachedBlock.class;
-	}
-
-	@Override
-	public void addAsArgument(CommandBuildContext buildContext, CommandNode<CommandSourceStack> baseNode, CommandNode<CommandSourceStack> parameterNode) {
-
-		var posNode = Commands.argument("pos", BlockPosArgument.blockPos())
-			.redirect(baseNode, this::addToSource)
-			.build();
-
-		parameterNode.addChild(posNode);
-
-	}
-
-	CommandSourceStack addToSource(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-
-		CommandSourceStack source = context.getSource();
-		BlockPos pos = BlockPosArgument.getLoadedBlockPos(context, "pos");
-
-		source.neo_apoli$getContextBuilder().withRequired(this, CachedBlock.fromLoadedPos(source.getLevel(), pos));
-		return source;
-
+	public Type<?, ?> getType() {
+		return NeoApoliContextParameterTypes.BLOCK;
 	}
 
 }

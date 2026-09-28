@@ -4,31 +4,30 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.context.parameter.SlotContextParameter;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliSlotProviderTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.entity.SlotAccess;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.Set;
 
-public record ContextSlotProvider(Context.Parameter<SlotAccess> parameter) implements SlotProvider {
+public record ContextSlotProvider(SlotContextParameter parameter) implements SlotProvider {
 
 	public static final MapCodec<ContextSlotProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
-		.group(NeoApoliContextParams.Codecs.SLOT.fieldOf("parameter").forGetter(ContextSlotProvider::parameter))
+		.group(SlotContextParameter.CODEC.fieldOf("parameter").forGetter(ContextSlotProvider::parameter))
 		.apply(instance, ContextSlotProvider::new)
 	);
 
-	public static final Codec<ContextSlotProvider> INLINE_CODEC = NeoApoliContextParams.Codecs.SLOT.xmap(
+	public static final Codec<ContextSlotProvider> INLINE_CODEC = SlotContextParameter.CODEC.xmap(
 		ContextSlotProvider::new,
 		ContextSlotProvider::parameter
 	);
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ContextSlotProvider> STREAM_CODEC = StreamCodec.composite(
-		NeoApoliContextParams.StreamCodecs.SLOT, ContextSlotProvider::parameter,
+		SlotContextParameter.STREAM_CODEC, ContextSlotProvider::parameter,
 		ContextSlotProvider::new
 	);
 
@@ -43,7 +42,7 @@ public record ContextSlotProvider(Context.Parameter<SlotAccess> parameter) imple
 	}
 
 	@Override
-	public Set<ContextKey<?>> getRequiredParameters() {
+	public Set<Context.Parameter<?>> getRequiredParameters() {
 		return Set.of(parameter());
 	}
 

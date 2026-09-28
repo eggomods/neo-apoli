@@ -3,10 +3,12 @@ package io.github.eggohito.neo_apoli.action.custom;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.action.Action;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.condition.custom.ConstantCondition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextParams;
 import io.github.eggohito.neo_apoli.context.parameter.BlockContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.EntityContextParameter;
 import io.github.eggohito.neo_apoli.exception.PosOutOfBoundsException;
@@ -14,7 +16,6 @@ import io.github.eggohito.neo_apoli.exception.PosUnloadedException;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.provider.custom.vec3.Vec3Provider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliActionTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
 import io.github.eggohito.neo_apoli.util.CachedBlock;
 import io.github.eggohito.neo_apoli.util.CodecUtil;
 import io.github.eggohito.neo_apoli.util.Shape;
@@ -23,16 +24,14 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.context.ContextKeySet;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
 public record AreaOfEffectAction(AreaTarget areaTarget, Action areaAction, Condition areaCondition, Vec3Provider position, Shape shape, FloatProvider radius) implements Action {
 
-	public static final Context.Parameter<Entity> ENTITY_IN_AREA = NeoApoliContextParams.registerInternal("entity_in_area", EntityContextParameter::new);
-	public static final Context.Parameter<CachedBlock> BLOCK_IN_AREA = NeoApoliContextParams.registerInternal("block_in_area", BlockContextParameter::new);
+	public static final EntityContextParameter ENTITY_IN_AREA = new EntityContextParameter(NeoApoli.id("entity_in_area"));
+	public static final BlockContextParameter BLOCK_IN_AREA = new BlockContextParameter(NeoApoli.id("block_in_area"));
 
-	public static final ContextKeySet AREA_PARAMETER_SET = new ContextKeySet.Builder()
+	public static final ContextParams AREA_PARAMETER_SET = new ContextParams.Builder()
 		.optional(ENTITY_IN_AREA)
 		.optional(BLOCK_IN_AREA)
 		.build();
@@ -72,7 +71,7 @@ public record AreaOfEffectAction(AreaTarget areaTarget, Action areaAction, Condi
 	public void validate(Context.Validator validator) {
 
 		Action.super.validate(validator);
-		var areaValidator = validator.withAdditionalKeysFromSets(AREA_PARAMETER_SET);
+		var areaValidator = validator.withParams(AREA_PARAMETER_SET);
 
 		areaAction().validate(areaValidator.forChild(".area_action"));
 		areaCondition().validate(areaValidator.forChild(".area_condition"));

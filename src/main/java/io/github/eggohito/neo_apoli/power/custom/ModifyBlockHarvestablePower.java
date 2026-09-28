@@ -10,7 +10,7 @@ import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.custom.misc.PrioritizedPower;
 import io.github.eggohito.neo_apoli.provider.custom.bool.BooleanProvider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliPowerTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameters;
 import io.github.eggohito.neo_apoli.util.CachedBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -68,7 +68,7 @@ public record ModifyBlockHarvestablePower(Optional<Condition> activeCondition, B
 
 		public Context createContext(Entity holder, BlockPos blockPos, BlockState blockState, @Nullable BlockEntity blockEntity) {
 			return this.createHolderContextBuilder(holder)
-				.withRequired(NeoApoliContextParams.MINING_BLOCK, new CachedBlock(blockPos, blockState, blockEntity))
+				.withRequired(NeoApoliContextParameters.MINING_BLOCK, new CachedBlock(blockPos, blockState, blockEntity))
 				.build(holder.level());
 		}
 

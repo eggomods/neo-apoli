@@ -11,7 +11,7 @@ import io.github.eggohito.neo_apoli.power.custom.misc.PrioritizedPower;
 import io.github.eggohito.neo_apoli.provider.custom.bool.BooleanProvider;
 import io.github.eggohito.neo_apoli.provider.custom.bool.ConstantBooleanProvider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliPowerTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameters;
 import io.github.eggohito.neo_apoli.util.CachedBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -73,8 +73,8 @@ public record CallbackBlockBreakPower(Optional<Condition> activeCondition, Actio
 
 		public Context createContext(Entity holder, BlockPos blockPos, BlockState blockState, @Nullable BlockEntity blockEntity, @Nullable Direction side) {
 			return this.createHolderContextBuilder(holder)
-				.withRequired(NeoApoliContextParams.BROKEN_BLOCK, new CachedBlock(blockPos, blockState, blockEntity))
-				.withNullable(NeoApoliContextParams.BROKEN_SIDE, side)
+				.withRequired(NeoApoliContextParameters.BROKEN_BLOCK, new CachedBlock(blockPos, blockState, blockEntity))
+				.withNullable(NeoApoliContextParameters.BROKEN_SIDE, side)
 				.build(holder.level());
 		}
 

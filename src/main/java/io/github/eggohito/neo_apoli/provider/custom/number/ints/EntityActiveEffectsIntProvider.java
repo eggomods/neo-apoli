@@ -2,17 +2,17 @@ package io.github.eggohito.neo_apoli.provider.custom.number.ints;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.condition.custom.ConstantCondition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextParams;
+import io.github.eggohito.neo_apoli.context.parameter.EffectContextParameter;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.IntProvider;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliIntProviderTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.context.ContextKeySet;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,8 +20,8 @@ import java.util.Optional;
 
 public record EntityActiveEffectsIntProvider(Condition condition, EntityProvider entity) implements IntProvider {
 
-	public static final Context.Parameter<MobEffectInstance> ACTIVE_EFFECT = NeoApoliContextParams.registerSimpleInternal("active_effect", MobEffectInstance.class);
-	public static final ContextKeySet CONDITION_PARAMETER_SET = new ContextKeySet.Builder().required(ACTIVE_EFFECT).build();
+	public static final EffectContextParameter ACTIVE_EFFECT = new EffectContextParameter(NeoApoli.id("active_effect"));
+	public static final ContextParams CONDITION_PARAMETER_SET = new ContextParams.Builder().required(ACTIVE_EFFECT).build();
 
 	public static final MapCodec<EntityActiveEffectsIntProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Condition.CODEC.optionalFieldOf("condition", new ConstantCondition(true)).forGetter(EntityActiveEffectsIntProvider::condition),
@@ -68,7 +68,7 @@ public record EntityActiveEffectsIntProvider(Condition condition, EntityProvider
 	@Override
 	public void validate(Context.Validator validator) {
 		IntProvider.super.validate(validator);
-		condition().validate(validator.withAdditionalKeysFromSets(CONDITION_PARAMETER_SET).forChild(".condition"));
+		condition().validate(validator.withParams(CONDITION_PARAMETER_SET).forChild(".condition"));
 		entity().validate(validator.forChild(".entity"));
 	}
 

@@ -55,7 +55,7 @@ public final class NeoApoliRegistries {
 	public static final Registry<Color.Type<?>> COLOR_TYPE = create(NeoApoliRegistryKeys.COLOR_TYPE);
 	public static final Registry<HudElement.Type<?>> HUD_ELEMENT_TYPE = create(NeoApoliRegistryKeys.HUD_ELEMENT_TYPE);
 
-	public static final Registry<Context.Parameter<?>> CONTEXT_PARAMETER = create(NeoApoliRegistryKeys.CONTEXT_PARAMETER);
+	public static final Registry<Context.Parameter.Type<?, ?>> CONTEXT_PARAMETER_TYPE = create(NeoApoliRegistryKeys.CONTEXT_PARAMETER_TYPE);
 
 	private static <T> Registry<T> create(ResourceKey<Registry<T>> key) {
 		return FabricRegistryBuilder.createSimple(key)

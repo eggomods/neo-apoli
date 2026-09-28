@@ -7,7 +7,7 @@ import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.entity.Powers;
 import io.github.eggohito.neo_apoli.registry.NeoApoliPowerTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameters;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -48,10 +48,10 @@ public record ModifyEffectImmunityPower(Optional<Condition> activeCondition) imp
 
 		public Context createContext(Entity holder, MobEffectInstance effectInstance, @Nullable Entity source) {
 			return this.createHolderContextBuilder(holder)
-				.withNullable(NeoApoliContextParams.ACTOR_ENTITY, source)
-				.withRequired(NeoApoliContextParams.TARGET_ENTITY, holder)
-				.withRequired(NeoApoliContextParams.APPLIED_EFFECT, effectInstance)
-				.buildWithRequirements(holder.level(), NeoApoliPowerTypes.MODIFY_EFFECT_DURATION.requirements());
+				.withNullable(NeoApoliContextParameters.ACTOR_ENTITY, source)
+				.withRequired(NeoApoliContextParameters.TARGET_ENTITY, holder)
+				.withRequired(NeoApoliContextParameters.APPLIED_EFFECT, effectInstance)
+				.build(holder.level());
 		}
 
 	}

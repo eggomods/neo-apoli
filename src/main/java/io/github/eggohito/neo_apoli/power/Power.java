@@ -7,13 +7,14 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextParams;
 import io.github.eggohito.neo_apoli.context.ContextUser;
 import io.github.eggohito.neo_apoli.network.packet.clientbound.ClientboundUpdatePowerDataPacket;
 import io.github.eggohito.neo_apoli.power.entity.Powers;
 import io.github.eggohito.neo_apoli.power.manager.PowerManager;
 import io.github.eggohito.neo_apoli.registry.NeoApoliRegistries;
 import io.github.eggohito.neo_apoli.registry.NeoApoliRegistryKeys;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameters;
 import io.github.eggohito.neo_apoli.util.MiscUtil;
 import io.github.eggohito.neo_apoli.util.Reporter;
 import io.github.eggohito.neo_apoli.util.alias.FixedRegistryAlias;
@@ -25,8 +26,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.RegistryOps;
-import net.minecraft.util.context.ContextKey;
-import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -89,7 +88,7 @@ public interface Power extends ContextUser {
 		}
 
 		@Override
-		public Set<ContextKey<?>> getRequiredParameters() {
+		public Set<Context.Parameter<?>> getRequiredParameters() {
 			return power.getRequiredParameters();
 		}
 
@@ -101,7 +100,7 @@ public interface Power extends ContextUser {
 		public Context.Builder createHolderContextBuilder(Entity holder) {
 			return new Context.Builder()
 				.withReporter(new Reporter("{\"" + this.id() + "\"}"))
-				.withRequired(NeoApoliContextParams.THIS_ENTITY, holder);
+				.withRequired(NeoApoliContextParameters.THIS_ENTITY, holder);
 		}
 
 		public Context createHolderContext(Entity holder) {
@@ -192,7 +191,7 @@ public interface Power extends ContextUser {
 
 	}
 
-	record Type<P extends Power>(ContextKeySet requirements, MapCodec<P> mapCodec, StreamCodec<RegistryFriendlyByteBuf, P> streamCodec) {
+	record Type<P extends Power>(ContextParams parameters, MapCodec<P> mapCodec, StreamCodec<RegistryFriendlyByteBuf, P> streamCodec) {
 
 		public static final FixedRegistryAlias<Type<?>> ALIASES = FixedRegistryAlias.of(NeoApoliRegistries.POWER_TYPE);
 

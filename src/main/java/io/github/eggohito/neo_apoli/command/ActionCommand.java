@@ -8,24 +8,16 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import io.github.eggohito.neo_apoli.action.Action;
-import io.github.eggohito.neo_apoli.action.manager.ActionManager;
 import io.github.eggohito.neo_apoli.command.argument.ActionArgument;
-import io.github.eggohito.neo_apoli.context.Context;
-import io.github.eggohito.neo_apoli.registry.NeoApoliRegistries;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
 import io.github.eggohito.neo_apoli.util.JsonTextFormatter;
 import io.github.eggohito.neo_apoli.util.MiscUtil;
-import io.github.eggohito.neo_apoli.util.Reporter;
-import net.minecraft.Util;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.network.chat.Component;
-
-import java.util.List;
 
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 
+//  FIXME: Bring me back!!
 public class ActionCommand {
 
 	public static void register(CommandBuildContext buildContext, CommandNode<CommandSourceStack> rootNode) {
@@ -94,7 +86,7 @@ public class ActionCommand {
 			var forNode = literal("for").build();
 			var actionNode = argument("action", ActionArgument.idOrTagOrInline(buildContext)).executes(Execute::execute).build();
 
-			NeoApoliContextParams.addAsArguments(buildContext, executeNode, withNode);
+//			NeoApoliContextParameters.addAsArguments(buildContext, executeNode, withNode);
 
 			forNode.addChild(actionNode);
 			executeNode.addChild(withNode);
@@ -106,37 +98,39 @@ public class ActionCommand {
 
 		public static int execute(CommandContext<CommandSourceStack> commandContext) throws CommandSyntaxException {
 
-			CommandSourceStack source = commandContext.getSource();
-			Context.Builder contextBuilder = source.neo_apoli$getContextBuilder();
+//			CommandSourceStack source = commandContext.getSource();
+//			Context.Builder contextBuilder = source.neo_apoli$getContextBuilder();
+//
+//			List<Action> actions = ActionArgument.getActions(commandContext, "action");
+//			int executed = 0;
+//
+//			for (var action : actions) {
+//
+//				String path = ActionManager.getInstance().getKeyAsResult(action).mapOrElse(id -> "{\"" + id + "\"}", ignored -> "{type: \"" + Util.getRegisteredName(NeoApoliRegistries.ACTION_TYPE, action.getType()) + "\"}");
+//				Reporter reporter = new Reporter(path);
+//
+//				Context.Validator validator = new Context.Validator(contextBuilder.toKeySet(), reporter).withResolver(source.registryAccess());
+//				action.validate(validator);
+//
+//				if (reporter.hasProblems()) {
+//					throw MiscUtil.createCommandException(Component.literal("Found errors while validating the action\n" + reporter.getReport()));
+//				}
+//
+//				Context context = contextBuilder.withReporter(reporter).build(source.getLevel());
+//				action.execute(context);
+//
+//				if (reporter.hasProblems()) {
+//					throw MiscUtil.createCommandException(Component.literal("Found errors while executing the action\n" + reporter.getReport()));
+//				}
+//
+//				executed++;
+//
+//			}
+//
+//			commandContext.getSource().sendSuccess(() -> Component.literal("Successfully executed action!"), false);
+//			return executed;
 
-			List<Action> actions = ActionArgument.getActions(commandContext, "action");
-			int executed = 0;
-
-			for (var action : actions) {
-
-				String path = ActionManager.getInstance().getKeyAsResult(action).mapOrElse(id -> "{\"" + id + "\"}", ignored -> "{type: \"" + Util.getRegisteredName(NeoApoliRegistries.ACTION_TYPE, action.getType()) + "\"}");
-				Reporter reporter = new Reporter(path);
-
-				Context.Validator validator = new Context.Validator(contextBuilder.toKeySet(), reporter).withResolver(source.registryAccess());
-				action.validate(validator);
-
-				if (reporter.hasProblems()) {
-					throw MiscUtil.createCommandException(Component.literal("Found errors while validating the action\n" + reporter.getReport()));
-				}
-
-				Context context = contextBuilder.withReporter(reporter).build(source.getLevel());
-				action.execute(context);
-
-				if (reporter.hasProblems()) {
-					throw MiscUtil.createCommandException(Component.literal("Found errors while executing the action\n" + reporter.getReport()));
-				}
-
-				executed++;
-
-			}
-
-			commandContext.getSource().sendSuccess(() -> Component.literal("Successfully executed action!"), false);
-			return executed;
+			return 0;
 
 		}
 

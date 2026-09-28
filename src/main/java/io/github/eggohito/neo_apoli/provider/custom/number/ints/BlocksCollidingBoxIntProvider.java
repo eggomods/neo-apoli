@@ -2,17 +2,18 @@ package io.github.eggohito.neo_apoli.provider.custom.number.ints;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextParams;
+import io.github.eggohito.neo_apoli.context.parameter.BlockContextParameter;
 import io.github.eggohito.neo_apoli.provider.custom.box.BoxProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.IntProvider;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliIntProviderTypes;
 import io.github.eggohito.neo_apoli.util.CachedBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.world.level.BlockCollisions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -23,8 +24,8 @@ import java.util.Optional;
 
 public record BlocksCollidingBoxIntProvider(Condition condition, BoxProvider box) implements IntProvider {
 
-	public static final Context.Parameter<CachedBlock> BLOCK_COLLIDING_BOX = NeoApoliContextParams.registerSimpleInternal("block_colliding_box", CachedBlock.class);
-	public static final ContextKeySet CONDITION_PARAMETER_SET = new ContextKeySet.Builder().required(BLOCK_COLLIDING_BOX).build();
+	public static final BlockContextParameter BLOCK_COLLIDING_BOX = new BlockContextParameter(NeoApoli.id("block_colliding_box"));
+	public static final ContextParams CONDITION_PARAMETER_SET = new ContextParams.Builder().required(BLOCK_COLLIDING_BOX).build();
 
 	public static final MapCodec<BlocksCollidingBoxIntProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Condition.CODEC.fieldOf("condition").forGetter(BlocksCollidingBoxIntProvider::condition),
@@ -85,7 +86,7 @@ public record BlocksCollidingBoxIntProvider(Condition condition, BoxProvider box
 	@Override
 	public void validate(Context.Validator validator) {
 		IntProvider.super.validate(validator);
-		condition().validate(validator.withAdditionalKeysFromSets(CONDITION_PARAMETER_SET).forChild(".condition"));
+		condition().validate(validator.withParams(CONDITION_PARAMETER_SET).forChild(".condition"));
 		box().validate(validator.forChild(".box"));
 	}
 

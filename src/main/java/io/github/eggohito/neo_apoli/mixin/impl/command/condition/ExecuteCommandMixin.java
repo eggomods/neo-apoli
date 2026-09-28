@@ -7,7 +7,6 @@ import com.mojang.brigadier.tree.CommandNode;
 import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.command.ConditionCommand;
 import io.github.eggohito.neo_apoli.command.argument.ConditionArgument;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.commands.ExecuteCommand;
@@ -34,7 +33,7 @@ public abstract class ExecuteCommandMixin {
 		var forNode = literal("for").build();
 		var conditionNode = addConditional(rootNode, argument("condition", ConditionArgument.inlineCondition(buildContext)), positive, ConditionCommand.Test::test).build();
 
-		NeoApoliContextParams.addAsArguments(buildContext, baseNode, withNode);
+//		NeoApoliContextParameters.addAsArguments(buildContext, baseNode, withNode);
 
 		forNode.addChild(conditionNode);
 		baseNode.addChild(withNode);

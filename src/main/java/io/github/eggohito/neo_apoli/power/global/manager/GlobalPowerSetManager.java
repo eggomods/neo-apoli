@@ -8,6 +8,7 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextParams;
 import io.github.eggohito.neo_apoli.event.DependencyManager;
 import io.github.eggohito.neo_apoli.event.ReloadableServerResourcesEvents;
 import io.github.eggohito.neo_apoli.power.PowerHolder;
@@ -15,7 +16,6 @@ import io.github.eggohito.neo_apoli.power.entity.MutablePowers;
 import io.github.eggohito.neo_apoli.power.global.GlobalPowerSet;
 import io.github.eggohito.neo_apoli.power.manager.PowerManager;
 import io.github.eggohito.neo_apoli.registry.NeoApoliRegistryKeys;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParamSets;
 import io.github.eggohito.neo_apoli.resource.json.JsonFileToIdConverter;
 import io.github.eggohito.neo_apoli.resource.json.JsonWithSource;
 import io.github.eggohito.neo_apoli.util.MiscUtil;
@@ -212,7 +212,7 @@ public final class GlobalPowerSetManager extends AbstractContentManager<Resource
 				GlobalPowerSet set = entry.getValue();
 
 				Reporter setReporter = reporter.forChild("{\"" + id + "\"}");
-				Context.Validator validator = new Context.Validator(NeoApoliContextParamSets.all(), setReporter).withResolver(MiscUtil.getLookupProvider(resources));
+				Context.Validator validator = new Context.Validator(ContextParams.INTENTIONALLY_EMPTY, setReporter).withResolver(MiscUtil.getLookupProvider(resources));
 
 				set.validate(validator);
 

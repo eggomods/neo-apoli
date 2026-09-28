@@ -1,12 +1,10 @@
 package io.github.eggohito.neo_apoli.context;
 
-import net.minecraft.util.context.ContextKey;
-
 import java.util.Set;
 
 public interface ContextUser extends ContextValidatable {
 
-	default Set<ContextKey<?>> getRequiredParameters() {
+	default Set<Context.Parameter<?>> getRequiredParameters() {
 		return Set.of();
 	}
 

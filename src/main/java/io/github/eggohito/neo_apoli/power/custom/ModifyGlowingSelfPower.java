@@ -12,7 +12,7 @@ import io.github.eggohito.neo_apoli.power.entity.Powers;
 import io.github.eggohito.neo_apoli.provider.custom.bool.BooleanProvider;
 import io.github.eggohito.neo_apoli.provider.custom.bool.ConstantBooleanProvider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliPowerTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameters;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -68,9 +68,9 @@ public record ModifyGlowingSelfPower(Optional<Condition> activeCondition, Boolea
 
 		public Context createContext(@NotNull Entity holder, @Nullable Entity viewer) {
 			return this.createHolderContextBuilder(holder)
-				.withNullable(NeoApoliContextParams.ACTOR_ENTITY, viewer)
-				.withRequired(NeoApoliContextParams.TARGET_ENTITY, holder)
-				.buildWithRequirements(holder.level(), NeoApoliPowerTypes.MODIFY_GLOWING_SELF.requirements());
+				.withNullable(NeoApoliContextParameters.ACTOR_ENTITY, viewer)
+				.withRequired(NeoApoliContextParameters.TARGET_ENTITY, holder)
+				.build(holder.level());
 		}
 
 		public boolean doesApply(Context context, boolean hasTeamColor) {

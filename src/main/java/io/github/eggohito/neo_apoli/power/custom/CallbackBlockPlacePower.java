@@ -3,18 +3,19 @@ package io.github.eggohito.neo_apoli.power.custom;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.action.Action;
 import io.github.eggohito.neo_apoli.codec.NeoApoliCodecs;
 import io.github.eggohito.neo_apoli.codec.NeoApoliStreamCodecs;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.parameter.BlockContextParameter;
-import io.github.eggohito.neo_apoli.context.parameter.EnumContextParameter;
+import io.github.eggohito.neo_apoli.context.parameter.DirectionContextParameter;
 import io.github.eggohito.neo_apoli.mixin.access.UseOnContextAccessor;
 import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.custom.misc.PrioritizedPower;
 import io.github.eggohito.neo_apoli.registry.NeoApoliPowerTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameters;
 import io.github.eggohito.neo_apoli.util.CachedBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -33,9 +34,9 @@ import java.util.Optional;
 
 public record CallbackBlockPlacePower(Optional<Condition> activeCondition, Action onPlaceAction, EnumSet<Direction> directions, EnumSet<InteractionHand> hands, int priority) implements PrioritizedPower<CallbackBlockBreakPower> {
 	
-	public static final Context.Parameter<CachedBlock> PLACED_ON_BLOCK = NeoApoliContextParams.registerInternal("placed_on_block", BlockContextParameter::new);
-	public static final Context.Parameter<CachedBlock> PLACED_TO_BLOCK = NeoApoliContextParams.registerInternal("placed_to_block", BlockContextParameter::new);
-	public static final Context.Parameter<Direction> PLACED_SIDE = NeoApoliContextParams.registerInternal("placed_side", id -> new EnumContextParameter<>(id, Direction.class));
+	public static final BlockContextParameter PLACED_ON_BLOCK = new BlockContextParameter(NeoApoli.id("placed_on_block"));
+	public static final BlockContextParameter PLACED_TO_BLOCK = new BlockContextParameter(NeoApoli.id("placed_to_block"));
+	public static final DirectionContextParameter PLACED_SIDE = new DirectionContextParameter(NeoApoli.id("placed_side"));
 	
 	public static final MapCodec<CallbackBlockPlacePower> CODEC = RecordCodecBuilder.mapCodec(instance -> Power.addActiveConditionField(instance)
 		.and(Action.CODEC.fieldOf("on_place_action").forGetter(CallbackBlockPlacePower::onPlaceAction))
@@ -81,8 +82,8 @@ public record CallbackBlockPlacePower(Optional<Condition> activeCondition, Actio
 				.withOptional(PLACED_ON_BLOCK, CachedBlock.optionallyFromLoadedPos(level, onPos))
 				.withOptional(PLACED_TO_BLOCK, CachedBlock.optionallyFromLoadedPos(level, toPos))
 				.withRequired(PLACED_SIDE, onSide)
-				.withRequired(NeoApoliContextParams.USED_ITEM, holder.getItemInHand(hand))
-				.withRequired(NeoApoliContextParams.USED_ITEM_SLOT, SlotAccess.of(() -> holder.getItemInHand(hand), stack -> holder.setItemInHand(hand, stack)))
+				.withRequired(NeoApoliContextParameters.USED_ITEM, holder.getItemInHand(hand))
+				.withRequired(NeoApoliContextParameters.USED_ITEM_SLOT, SlotAccess.of(() -> holder.getItemInHand(hand), stack -> holder.setItemInHand(hand, stack)))
 				.build(level);
 		}
 		

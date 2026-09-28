@@ -2,124 +2,69 @@ package io.github.eggohito.neo_apoli.context;
 
 import com.google.common.collect.Sets;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import net.minecraft.util.context.ContextKey;
-import net.minecraft.util.context.ContextKeySet;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 
-import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.Arrays;
 import java.util.Set;
-import java.util.function.Supplier;
 
-@SuppressWarnings("unchecked")
-public class ContextParams implements ContextParamsHolder {
+@Accessors(fluent = true)
+@Getter
+public final class ContextParams {
 
-	private final Map<ContextKey<?>, Object> params;
-	private final Set<ContextKey<?>> optional;
+	public static final ContextParams INTENTIONALLY_EMPTY = new ContextParams.Builder().build();
 
-	ContextParams(Map<ContextKey<?>, Object> params, Set<ContextKey<?>> optional) {
-		this.params = params;
-		this.optional = optional;
+	private final Set<Context.Parameter<?>> required;
+	private final Set<Context.Parameter<?>> allowed;
+
+	private ContextParams(Set<Context.Parameter<?>> required, Set<Context.Parameter<?>> optional) {
+		this.required = Set.copyOf(required);
+		this.allowed = Sets.union(required, optional);
 	}
 
-	@Override
-	public ContextKeySet toKeySet() {
-		return ContextHelper.toKeySet(params.keySet(), optional);
+	public ContextParams merge(ContextParams that) {
+
+		Set<Context.Parameter<?>> required = Sets.union(this.required(), that.required());
+		Set<Context.Parameter<?>> optional = Sets.difference(Sets.union(this.allowed(), that.allowed()), required);
+
+		Builder builder = new Builder();
+
+		required.forEach(builder::required);
+		optional.forEach(builder::optional);
+
+		return builder.build();
+
 	}
 
-	@Override
-	public @Nullable <T> T getNullable(ContextKey<T> parameter) {
-		return (T) params.get(parameter);
+	public ContextParams mergeAll(ContextParams... others) {
+		return Arrays.stream(others).reduce(this, ContextParams::merge);
 	}
 
-	public Builder toBuilder() {
-		return new Builder(this.params, this.optional);
-	}
+	public static final class Builder {
 
-	public static class Builder implements ContextParamsHolder {
+		private final Set<Context.Parameter<?>> required = new ObjectOpenHashSet<>();
+		private final Set<Context.Parameter<?>> optional = new ObjectOpenHashSet<>();
 
-		private final Map<ContextKey<?>, Object> params;
-		private final Set<ContextKey<?>> optional;
+		public Builder required(Context.Parameter<?> parameter) {
 
-		Builder(Map<ContextKey<?>, Object> params, Set<ContextKey<?>> optional) {
-			this.params = params;
-			this.optional = optional;
-		}
-
-		public Builder() {
-			this(new IdentityHashMap<>(), new ObjectOpenHashSet<>());
-		}
-
-		@Override
-		public ContextKeySet toKeySet() {
-			return ContextHelper.toKeySet(params.keySet(), optional);
-		}
-
-		@Override
-		public @Nullable <T> T getNullable(ContextKey<T> parameter) {
-			return (T) params.get(parameter);
-		}
-
-		public <T> Builder withNullable(Context.Parameter<T> key, @Nullable T value) {
-
-			this.params.put(key,value);
-
-			if (value == null) {
-				optional.add(key);
-			}
+			this.optional.remove(parameter);
+			this.required.add(parameter);
 
 			return this;
 
 		}
 
-		public <T> Builder withNullableIfAbsent(Context.Parameter<T> key, Supplier<@Nullable T> value) {
-			return hasParameter(key) ? this : withNullable(key, value.get());
-		}
+		public Builder optional(Context.Parameter<?> parameter) {
 
-		public <T> Builder withRequired(Context.Parameter<T> key, @NotNull T value) {
-			return this.withNullable(key, value);
-		}
+			this.required.remove(parameter);
+			this.optional.add(parameter);
 
-		public <T> Builder withRequiredIfAbsent(Context.Parameter<T> key, Supplier<@NotNull T> value) {
-			return hasParameter(key) ? this : withRequired(key, value.get());
-		}
-
-		public <T> Builder withOptional(Context.Parameter<T> key, Optional<T> value) {
-			return this.withNullable(key, value.orElse(null));
-		}
-
-		public <T> Builder withOptionalIfAbsent(Context.Parameter<T> key, Supplier<Optional<T>> value) {
-			return  hasParameter(key) ? this : withOptional(key, value.get());
-		}
-
-		public ContextParams buildWithRequirements(ContextKeySet keySet) {
-
-			Set<ContextKey<?>> disallowed = Sets.difference(this.params.keySet(), keySet.allowed());
-
-			if (!disallowed.isEmpty()) {
-				throw new IllegalArgumentException("Disallowed parameters in parameter set: " + disallowed);
-			}
-
-			else {
-
-				Set<ContextKey<?>> required = Sets.difference(keySet.required(), this.params.keySet());
-
-				if (!required.isEmpty()) {
-					throw new IllegalArgumentException("Missing required parameters: " + required);
-				}
-
-				else {
-					return build();
-				}
-
-			}
+			return this;
 
 		}
 
 		public ContextParams build() {
-			return new ContextParams(params, optional);
+			return new ContextParams(this.required, this.optional);
 		}
 
 	}

@@ -4,31 +4,30 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.context.parameter.EffectContextParameter;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliEffectProviderTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.effect.MobEffectInstance;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.Set;
 
-public record ContextEffectProvider(Context.Parameter<MobEffectInstance> parameter) implements EffectProvider {
+public record ContextEffectProvider(EffectContextParameter parameter) implements EffectProvider {
 
 	public static final MapCodec<ContextEffectProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
-		.group(NeoApoliContextParams.Codecs.EFFECT.fieldOf("parameter").forGetter(ContextEffectProvider::parameter))
+		.group(EffectContextParameter.CODEC.fieldOf("parameter").forGetter(ContextEffectProvider::parameter))
 		.apply(instance, ContextEffectProvider::new)
 	);
 
-	public static final Codec<ContextEffectProvider> INLINE_CODEC = NeoApoliContextParams.Codecs.EFFECT.xmap(
+	public static final Codec<ContextEffectProvider> INLINE_CODEC = EffectContextParameter.CODEC.xmap(
 		ContextEffectProvider::new,
 		ContextEffectProvider::parameter
 	);
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ContextEffectProvider> STREAM_CODEC = StreamCodec.composite(
-		NeoApoliContextParams.StreamCodecs.EFFECT, ContextEffectProvider::parameter,
+		EffectContextParameter.STREAM_CODEC, ContextEffectProvider::parameter,
 		ContextEffectProvider::new
 	);
 
@@ -49,7 +48,7 @@ public record ContextEffectProvider(Context.Parameter<MobEffectInstance> paramet
 	}
 
 	@Override
-	public Set<ContextKey<?>> getRequiredParameters() {
+	public Set<Context.Parameter<?>> getRequiredParameters() {
 		return Set.of(parameter());
 	}
 

@@ -2,13 +2,14 @@ package io.github.eggohito.neo_apoli.action.custom;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.action.Action;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextParams;
 import io.github.eggohito.neo_apoli.context.parameter.ItemContextParameter;
-import io.github.eggohito.neo_apoli.context.parameter.SlotAccessContextParameter;
+import io.github.eggohito.neo_apoli.context.parameter.SlotContextParameter;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliActionTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
 import io.github.eggohito.neo_apoli.util.IndexedStack;
 import io.github.eggohito.neo_apoli.util.InventoryUtil;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -16,7 +17,6 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
@@ -26,10 +26,10 @@ import java.util.List;
 
 public record GiveItemsAction(Action giveAction, List<IndexedStack> stacks, EntityProvider entity) implements Action {
 
-	public static final Context.Parameter<SlotAccess> GIVEN_SLOT = NeoApoliContextParams.registerInternal("given_slot", SlotAccessContextParameter::new);
-	public static final Context.Parameter<ItemStack> GIVEN_ITEM = NeoApoliContextParams.registerInternal("given_item", ItemContextParameter::new);
+	public static final SlotContextParameter GIVEN_SLOT = new SlotContextParameter(NeoApoli.id("given_slot"));
+	public static final ItemContextParameter GIVEN_ITEM = new ItemContextParameter(NeoApoli.id("given_item"));
 
-	public static final ContextKeySet ACTION_PARAMETER_SET = new ContextKeySet.Builder()
+	public static final ContextParams ACTION_PARAMETER_SET = new ContextParams.Builder()
 		.required(GIVEN_SLOT)
 		.required(GIVEN_ITEM)
 		.build();
@@ -120,7 +120,7 @@ public record GiveItemsAction(Action giveAction, List<IndexedStack> stacks, Enti
 	@Override
 	public void validate(Context.Validator validator) {
 		Action.super.validate(validator);
-		giveAction().validate(validator.withAdditionalKeysFromSets(ACTION_PARAMETER_SET).forChild(".give_action"));
+		giveAction().validate(validator.withParams(ACTION_PARAMETER_SET).forChild(".give_action"));
 		entity().validate(validator.forChild(".entity"));
 	}
 

@@ -183,7 +183,7 @@ public class ServerPowerManager extends AbstractContentAndTagManager<PowerIdenti
 				Power power = holder.value();
 				Reporter powerReporter = reporter.forChild("{\"" + holder.id() + "\"}");
 
-				Context.Validator validator = new Context.Validator(power.getType().requirements(), powerReporter).withResolver(MiscUtil.getLookupProvider(resources));
+				Context.Validator validator = new Context.Validator(power.getType().parameters(), powerReporter).withResolver(MiscUtil.getLookupProvider(resources));
 				power.validate(validator);
 
 				if (!powerReporter.hasProblems()) {

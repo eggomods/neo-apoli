@@ -1,46 +1,22 @@
 package io.github.eggohito.neo_apoli.context.parameter;
 
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.serialization.Codec;
+import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.context.Context;
-import net.minecraft.commands.CommandBuildContext;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameterTypes;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import org.jetbrains.annotations.NotNull;
 
-public final class EntityContextParameter extends Context.Parameter<Entity> {
+public record EntityContextParameter(ResourceLocation name) implements Context.Parameter<Entity> {
 
-	public EntityContextParameter(ResourceLocation name) {
-		super(name);
-	}
+	public static final Codec<EntityContextParameter> CODEC = Context.Parameter.codec(NeoApoli.MOD_NAMESPACE, EntityContextParameter::new);
+	public static final StreamCodec<ByteBuf, EntityContextParameter> STREAM_CODEC = Context.Parameter.streamCodec(EntityContextParameter::new);
 
 	@Override
-	public @NotNull Class<Entity> getTypeClass() {
-		return Entity.class;
-	}
-
-	@Override
-	public void addAsArgument(CommandBuildContext buildContext, CommandNode<CommandSourceStack> baseNode, CommandNode<CommandSourceStack> parameterNode) {
-
-		var entityNode = Commands.argument("entity", EntityArgument.entity())
-			.redirect(baseNode, this::addToSource)
-			.build();
-
-		parameterNode.addChild(entityNode);
-
-	}
-
-	CommandSourceStack addToSource(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-
-		CommandSourceStack source = context.getSource();
-		source.neo_apoli$getContextBuilder().withRequired(this, EntityArgument.getEntity(context, "entity"));
-
-		return source;
-
+	public Type<?, ?> getType() {
+		return NeoApoliContextParameterTypes.ENTITY;
 	}
 
 }

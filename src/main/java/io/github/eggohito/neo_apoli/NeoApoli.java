@@ -18,8 +18,8 @@ import io.github.eggohito.neo_apoli.power.global.manager.GlobalPowerSetManager;
 import io.github.eggohito.neo_apoli.power.manager.PowerManager;
 import io.github.eggohito.neo_apoli.registry.*;
 import io.github.eggohito.neo_apoli.registry.attachment.NeoApoliEntityAttachments;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParamSets;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameterTypes;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameters;
 import io.github.eggohito.neo_apoli.registry.provider.*;
 import io.github.eggohito.neo_apoli.registry.recipe.NeoApoliRecipeBookCategories;
 import io.github.eggohito.neo_apoli.registry.recipe.NeoApoliRecipeSerializers;
@@ -134,8 +134,8 @@ public class NeoApoli implements ModInitializer {
 
 		PowerIntegrations.init();
 
-		NeoApoliContextParams.registerAll();
-		NeoApoliContextParamSets.registerAll();
+		NeoApoliContextParameterTypes.registerAll();
+		NeoApoliContextParameters.registerAll();
 
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> NeoApoli.server = server);
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> NeoApoli.server = null);

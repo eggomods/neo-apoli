@@ -2,15 +2,15 @@ package io.github.eggohito.neo_apoli.registry;
 
 import com.mojang.serialization.MapCodec;
 import io.github.eggohito.neo_apoli.NeoApoli;
+import io.github.eggohito.neo_apoli.context.ContextParams;
 import io.github.eggohito.neo_apoli.hud.element.NumberBoundHudElement;
 import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.custom.*;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameters;
 import net.minecraft.core.Registry;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.context.ContextKeySet;
 
 import java.util.function.UnaryOperator;
 
@@ -21,8 +21,8 @@ public final class NeoApoliPowerTypes {
 		CallbackBlockBreakPower.CODEC,
 		CallbackBlockBreakPower.STREAM_CODEC,
 		params -> params
-			.required(NeoApoliContextParams.BROKEN_BLOCK)
-			.optional(NeoApoliContextParams.BROKEN_SIDE)
+			.required(NeoApoliContextParameters.BROKEN_BLOCK)
+			.optional(NeoApoliContextParameters.BROKEN_SIDE)
 	);
 
 	public static final Power.Type<CallbackBlockPlacePower> CALLBACK_BLOCK_PLACE = registerInternal(
@@ -32,8 +32,8 @@ public final class NeoApoliPowerTypes {
 		builder -> builder
 			.required(CallbackBlockPlacePower.PLACED_ON_BLOCK)
 			.required(CallbackBlockPlacePower.PLACED_SIDE)
-			.required(NeoApoliContextParams.USED_ITEM)
-			.required(NeoApoliContextParams.USED_ITEM_SLOT)
+			.required(NeoApoliContextParameters.USED_ITEM)
+			.required(NeoApoliContextParameters.USED_ITEM_SLOT)
 	);
 
 	public static final Power.Type<CallbackDamageDealtPower> CALLBACK_DAMAGE_DEALT = registerInternal(
@@ -41,12 +41,12 @@ public final class NeoApoliPowerTypes {
 		CallbackDamageDealtPower.CODEC,
 		CallbackDamageDealtPower.STREAM_CODEC,
 		params -> params
-			.required(NeoApoliContextParams.DEALT_DAMAGE_SOURCE)
-			.required(NeoApoliContextParams.DEALT_DAMAGE_AMOUNT)
-			.required(NeoApoliContextParams.ACTOR_ENTITY)
-			.required(NeoApoliContextParams.TARGET_ENTITY)
-			.optional(NeoApoliContextParams.DAMAGING_ENTITY)
-			.optional(NeoApoliContextParams.DIRECT_DAMAGING_ENTITY)
+			.required(NeoApoliContextParameters.DEALT_DAMAGE_SOURCE)
+			.required(NeoApoliContextParameters.DEALT_DAMAGE_AMOUNT)
+			.required(NeoApoliContextParameters.ACTOR_ENTITY)
+			.required(NeoApoliContextParameters.TARGET_ENTITY)
+			.optional(NeoApoliContextParameters.DAMAGING_ENTITY)
+			.optional(NeoApoliContextParameters.DIRECT_DAMAGING_ENTITY)
 	);
 
 	public static final Power.Type<CallbackPlayerRespawnedPower> CALLBACK_PLAYER_RESPAWNED = registerInternal(
@@ -104,11 +104,11 @@ public final class NeoApoliPowerTypes {
 		CallbackProjectileLandPower.STREAM_CODEC,
 		params -> params
 			.required(CallbackProjectileLandPower.LANDED_ON_BLOCK)
-			.required(NeoApoliContextParams.THIS_ENTITY)
-			.required(NeoApoliContextParams.PROJECTILE_ENTITY)
+			.required(NeoApoliContextParameters.THIS_ENTITY)
+			.required(NeoApoliContextParameters.PROJECTILE_ENTITY)
 			.optional(CallbackProjectileLandPower.LANDED_ON_SIDE)
-			.optional(NeoApoliContextParams.ACTOR_ENTITY)
-			.optional(NeoApoliContextParams.TARGET_ENTITY)
+			.optional(NeoApoliContextParameters.ACTOR_ENTITY)
+			.optional(NeoApoliContextParameters.TARGET_ENTITY)
 	);
 
 	public static final Power.Type<CooldownStandalonePower> COOLDOWN = registerInternal(
@@ -174,21 +174,21 @@ public final class NeoApoliPowerTypes {
 		"modify/block/break_speed",
 		ModifyBlockBreakSpeedPower.CODEC,
 		ModifyBlockBreakSpeedPower.STREAM_CODEC,
-		params -> params.required(NeoApoliContextParams.MINING_BLOCK)
+		params -> params.required(NeoApoliContextParameters.MINING_BLOCK)
 	);
 
 	public static final Power.Type<ModifyBlockHarvestablePower> MODIFY_BLOCK_HARVESTABLE = registerInternal(
 		"modify/block/harvestable",
 		ModifyBlockHarvestablePower.CODEC,
 		ModifyBlockHarvestablePower.STREAM_CODEC,
-		params -> params.required(NeoApoliContextParams.MINING_BLOCK)
+		params -> params.required(NeoApoliContextParameters.MINING_BLOCK)
 	);
 
 	public static final Power.Type<ModifyBlockSelectablePower> MODIFY_BLOCK_SELECTABLE = registerInternal(
 		"modify/block/selectable",
 		ModifyBlockSelectablePower.CODEC,
 		ModifyBlockSelectablePower.STREAM_CODEC,
-		params -> params.required(NeoApoliContextParams.SELECTED_BLOCK)
+		params -> params.required(NeoApoliContextParameters.SELECTED_BLOCK)
 	);
 
 	public static final Power.Type<ModifyBlockUsePower> MODIFY_BLOCK_USE = registerInternal(
@@ -198,8 +198,8 @@ public final class NeoApoliPowerTypes {
 		params -> params
 			.required(ModifyBlockUsePower.USED_BLOCK)
 			.required(ModifyBlockUsePower.USED_SIDE)
-			.required(NeoApoliContextParams.USED_ITEM_SLOT)
-			.required(NeoApoliContextParams.USED_ITEM)
+			.required(NeoApoliContextParameters.USED_ITEM_SLOT)
+			.required(NeoApoliContextParameters.USED_ITEM)
 	);
 
 	public static final Power.Type<ModifyClimbingPower> MODIFY_CLIMBING = registerInternal(
@@ -214,12 +214,12 @@ public final class NeoApoliPowerTypes {
 		ModifyDamageDealtPower.CODEC,
 		ModifyDamageDealtPower.STREAM_CODEC,
 		keys -> keys
-			.required(NeoApoliContextParams.ACTOR_ENTITY)
-			.required(NeoApoliContextParams.TARGET_ENTITY)
-			.required(NeoApoliContextParams.DEALT_DAMAGE_SOURCE)
-			.required(NeoApoliContextParams.DEALT_DAMAGE_AMOUNT)
-			.optional(NeoApoliContextParams.DAMAGING_ENTITY)
-			.optional(NeoApoliContextParams.DIRECT_DAMAGING_ENTITY)
+			.required(NeoApoliContextParameters.ACTOR_ENTITY)
+			.required(NeoApoliContextParameters.TARGET_ENTITY)
+			.required(NeoApoliContextParameters.DEALT_DAMAGE_SOURCE)
+			.required(NeoApoliContextParameters.DEALT_DAMAGE_AMOUNT)
+			.optional(NeoApoliContextParameters.DAMAGING_ENTITY)
+			.optional(NeoApoliContextParameters.DIRECT_DAMAGING_ENTITY)
 	);
 
 	public static final Power.Type<ModifyDamageInvulnerabilityPower> MODIFY_DAMAGE_INVULNERABILITY = registerInternal(
@@ -227,11 +227,11 @@ public final class NeoApoliPowerTypes {
 		ModifyDamageInvulnerabilityPower.CODEC,
 		ModifyDamageInvulnerabilityPower.STREAM_CODEC,
 		keys -> keys
-			.optional(NeoApoliContextParams.ACTOR_ENTITY)
-			.required(NeoApoliContextParams.TARGET_ENTITY)
-			.required(NeoApoliContextParams.DEALT_DAMAGE_SOURCE)
-			.optional(NeoApoliContextParams.DAMAGING_ENTITY)
-			.optional(NeoApoliContextParams.DIRECT_DAMAGING_ENTITY)
+			.optional(NeoApoliContextParameters.ACTOR_ENTITY)
+			.required(NeoApoliContextParameters.TARGET_ENTITY)
+			.required(NeoApoliContextParameters.DEALT_DAMAGE_SOURCE)
+			.optional(NeoApoliContextParameters.DAMAGING_ENTITY)
+			.optional(NeoApoliContextParameters.DIRECT_DAMAGING_ENTITY)
 	);
 
 	public static final Power.Type<ModifyDamageTakenPower> MODIFY_DAMAGE_TAKEN = registerInternal(
@@ -239,12 +239,12 @@ public final class NeoApoliPowerTypes {
 		ModifyDamageTakenPower.CODEC,
 		ModifyDamageTakenPower.STREAM_CODEC,
 		keys -> keys
-			.optional(NeoApoliContextParams.ACTOR_ENTITY)
-			.required(NeoApoliContextParams.TARGET_ENTITY)
-			.required(NeoApoliContextParams.TAKEN_DAMAGE_SOURCE)
-			.required(NeoApoliContextParams.TAKEN_DAMAGE_AMOUNT)
-			.optional(NeoApoliContextParams.DAMAGING_ENTITY)
-			.optional(NeoApoliContextParams.DIRECT_DAMAGING_ENTITY)
+			.optional(NeoApoliContextParameters.ACTOR_ENTITY)
+			.required(NeoApoliContextParameters.TARGET_ENTITY)
+			.required(NeoApoliContextParameters.TAKEN_DAMAGE_SOURCE)
+			.required(NeoApoliContextParameters.TAKEN_DAMAGE_AMOUNT)
+			.optional(NeoApoliContextParameters.DAMAGING_ENTITY)
+			.optional(NeoApoliContextParameters.DIRECT_DAMAGING_ENTITY)
 	);
 
 	public static final Power.Type<ModifyEffectDurationPower> MODIFY_EFFECT_DURATION = registerInternal(
@@ -252,9 +252,9 @@ public final class NeoApoliPowerTypes {
 		ModifyEffectDurationPower.CODEC,
 		ModifyEffectDurationPower.STREAM_CODEC,
 		keys -> keys
-			.optional(NeoApoliContextParams.ACTOR_ENTITY)
-			.required(NeoApoliContextParams.TARGET_ENTITY)
-			.required(NeoApoliContextParams.APPLIED_EFFECT)
+			.optional(NeoApoliContextParameters.ACTOR_ENTITY)
+			.required(NeoApoliContextParameters.TARGET_ENTITY)
+			.required(NeoApoliContextParameters.APPLIED_EFFECT)
 	);
 
 	public static final Power.Type<ModifyEffectImmunityPower> MODIFY_EFFECT_IMMUNITY = registerInternal(
@@ -262,9 +262,9 @@ public final class NeoApoliPowerTypes {
 		ModifyEffectImmunityPower.CODEC,
 		ModifyEffectImmunityPower.STREAM_CODEC,
 		keys -> keys
-			.optional(NeoApoliContextParams.ACTOR_ENTITY)
-			.required(NeoApoliContextParams.TARGET_ENTITY)
-			.required(NeoApoliContextParams.APPLIED_EFFECT)
+			.optional(NeoApoliContextParameters.ACTOR_ENTITY)
+			.required(NeoApoliContextParameters.TARGET_ENTITY)
+			.required(NeoApoliContextParameters.APPLIED_EFFECT)
 	);
 
 	public static final Power.Type<ModifyElytraFlightPower> MODIFY_ELYTRA_FLIGHT = registerInternal(
@@ -307,8 +307,8 @@ public final class NeoApoliPowerTypes {
 		ModifyGlowingOtherPower.CODEC,
 		ModifyGlowingOtherPower.STREAM_CODEC,
 		keys -> keys
-			.required(NeoApoliContextParams.ACTOR_ENTITY)
-			.required(NeoApoliContextParams.TARGET_ENTITY)
+			.required(NeoApoliContextParameters.ACTOR_ENTITY)
+			.required(NeoApoliContextParameters.TARGET_ENTITY)
 	);
 
 	public static final Power.Type<ModifyGlowingSelfPower> MODIFY_GLOWING_SELF = registerInternal(
@@ -316,8 +316,8 @@ public final class NeoApoliPowerTypes {
 		ModifyGlowingSelfPower.CODEC,
 		ModifyGlowingSelfPower.STREAM_CODEC,
 		keys -> keys
-			.optional(NeoApoliContextParams.ACTOR_ENTITY)
-			.required(NeoApoliContextParams.TARGET_ENTITY)
+			.optional(NeoApoliContextParameters.ACTOR_ENTITY)
+			.required(NeoApoliContextParameters.TARGET_ENTITY)
 	);
 
 	public static final Power.Type<ModifyInvisibilityPower> MODIFY_INVISIBILITY = registerInternal(
@@ -325,8 +325,8 @@ public final class NeoApoliPowerTypes {
 		ModifyInvisibilityPower.CODEC,
 		ModifyInvisibilityPower.STREAM_CODEC,
 		keys -> keys
-			.optional(NeoApoliContextParams.ACTOR_ENTITY)
-			.required(NeoApoliContextParams.TARGET_ENTITY)
+			.optional(NeoApoliContextParameters.ACTOR_ENTITY)
+			.required(NeoApoliContextParameters.TARGET_ENTITY)
 	);
 
 	public static final Power.Type<ModifyItemUsePower> MODIFY_ITEM_USE = registerInternal(
@@ -334,8 +334,8 @@ public final class NeoApoliPowerTypes {
 		ModifyItemUsePower.CODEC,
 		ModifyItemUsePower.STREAM_CODEC,
 		keys -> keys
-			.required(NeoApoliContextParams.USED_ITEM_SLOT)
-			.required(NeoApoliContextParams.USED_ITEM)
+			.required(NeoApoliContextParameters.USED_ITEM_SLOT)
+			.required(NeoApoliContextParameters.USED_ITEM)
 	);
 
 	public static final Power.Type<ModifyItemWearablePower> MODIFY_ITEM_WEARABLE = registerInternal(
@@ -357,8 +357,8 @@ public final class NeoApoliPowerTypes {
 		ModifyModelColorOtherPower.CODEC,
 		ModifyModelColorOtherPower.STREAM_CODEC,
 		keys -> keys
-			.required(NeoApoliContextParams.ACTOR_ENTITY)
-			.required(NeoApoliContextParams.TARGET_ENTITY)
+			.required(NeoApoliContextParameters.ACTOR_ENTITY)
+			.required(NeoApoliContextParameters.TARGET_ENTITY)
 	);
 
 	public static final Power.Type<ModifyModelColorSelfPower> MODIFY_MODEL_COLOR_SELF = registerInternal(
@@ -366,8 +366,8 @@ public final class NeoApoliPowerTypes {
 		ModifyModelColorSelfPower.CODEC,
 		ModifyModelColorSelfPower.STREAM_CODEC,
 		keys -> keys
-			.optional(NeoApoliContextParams.ACTOR_ENTITY)
-			.required(NeoApoliContextParams.TARGET_ENTITY)
+			.optional(NeoApoliContextParameters.ACTOR_ENTITY)
+			.required(NeoApoliContextParameters.TARGET_ENTITY)
 	);
 
 	public static final Power.Type<ModifyModelShakingPower> MODIFY_MODEL_SHAKING = registerInternal(
@@ -420,9 +420,9 @@ public final class NeoApoliPowerTypes {
 		ReplaceLootTablePower.CODEC,
 		ReplaceLootTablePower.STREAM_CODEC,
 		builder -> builder
-			.required(NeoApoliContextParams.ACTOR_ENTITY)
-			.optional(NeoApoliContextParams.TARGET_ENTITY)
-			.optional(NeoApoliContextParams.BROKEN_BLOCK)
+			.required(NeoApoliContextParameters.ACTOR_ENTITY)
+			.optional(NeoApoliContextParameters.TARGET_ENTITY)
+			.optional(NeoApoliContextParameters.BROKEN_BLOCK)
 			.optional(ReplaceLootTablePower.TOOL_ITEM)
 	);
 
@@ -437,14 +437,14 @@ public final class NeoApoliPowerTypes {
 
 	}
 
-	private static <P extends Power> Power.Type<P> registerInternal(String path, MapCodec<P> mapCodec, StreamCodec<RegistryFriendlyByteBuf, P> streamCodec, UnaryOperator<ContextKeySet.Builder> parametersBuilder) {
+	private static <P extends Power> Power.Type<P> registerInternal(String path, MapCodec<P> mapCodec, StreamCodec<RegistryFriendlyByteBuf, P> streamCodec, UnaryOperator<ContextParams.Builder> parametersBuilder) {
 		return register(NeoApoli.id(path), mapCodec, streamCodec, parametersBuilder);
 	}
 
-	public static <P extends Power> Power.Type<P> register(ResourceLocation id, MapCodec<P> mapCodec, StreamCodec<RegistryFriendlyByteBuf, P> streamCodec, UnaryOperator<ContextKeySet.Builder> parametersBuilder) {
+	public static <P extends Power> Power.Type<P> register(ResourceLocation id, MapCodec<P> mapCodec, StreamCodec<RegistryFriendlyByteBuf, P> streamCodec, UnaryOperator<ContextParams.Builder> parametersBuilder) {
 
-		ContextKeySet parameters = parametersBuilder.apply(new ContextKeySet.Builder())
-			.required(NeoApoliContextParams.THIS_ENTITY)
+		ContextParams parameters = parametersBuilder.apply(new ContextParams.Builder())
+			.required(NeoApoliContextParameters.THIS_ENTITY)
 			.build();
 
 		return Registry.register(NeoApoliRegistries.POWER_TYPE, id, new Power.Type<>(parameters, mapCodec, streamCodec));

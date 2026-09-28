@@ -10,7 +10,7 @@ import io.github.eggohito.neo_apoli.modifier.Modifier;
 import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.entity.Powers;
 import io.github.eggohito.neo_apoli.registry.NeoApoliPowerTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameters;
 import io.github.eggohito.neo_apoli.util.MiscUtil;
 import io.github.eggohito.neo_apoli.util.RegistryUtil;
 import io.github.eggohito.neo_apoli.util.Reporter;
@@ -100,7 +100,7 @@ public record ModifyAttributePower(Optional<Condition> activeCondition, Holder<A
 
 			Context simpleContext = new Context.Builder()
 				.withReporter(new Reporter("{\"" + RegistryUtil.getId(BuiltInRegistries.ATTRIBUTE, attributeInstance.getAttribute().value()) + "\"}"))
-				.withRequired(NeoApoliContextParams.THIS_ENTITY, entity)
+				.withRequired(NeoApoliContextParameters.THIS_ENTITY, entity)
 				.build(entity.level());
 
 			MiscUtil.iterate(
