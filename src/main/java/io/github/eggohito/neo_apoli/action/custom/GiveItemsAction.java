@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.action.Action;
 import io.github.eggohito.neo_apoli.context.Context;
-import io.github.eggohito.neo_apoli.context.ContextParams;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.parameter.ItemContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.SlotContextParameter;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
@@ -29,7 +29,7 @@ public record GiveItemsAction(Action giveAction, List<IndexedStack> stacks, Enti
 	public static final SlotContextParameter GIVEN_SLOT = new SlotContextParameter(NeoApoli.id("given_slot"));
 	public static final ItemContextParameter GIVEN_ITEM = new ItemContextParameter(NeoApoli.id("given_item"));
 
-	public static final ContextParams ACTION_PARAMETER_SET = new ContextParams.Builder()
+	public static final ContextValidator.Parameters ACTION_PARAMETER_SET = new ContextValidator.Parameters.Builder()
 		.required(GIVEN_SLOT)
 		.required(GIVEN_ITEM)
 		.build();
@@ -118,7 +118,7 @@ public record GiveItemsAction(Action giveAction, List<IndexedStack> stacks, Enti
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Action.super.validate(validator);
 		giveAction().validate(validator.withParams(ACTION_PARAMETER_SET).forChild(".give_action"));
 		entity().validate(validator.forChild(".entity"));

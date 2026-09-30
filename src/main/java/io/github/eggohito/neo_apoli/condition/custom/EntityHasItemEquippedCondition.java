@@ -7,7 +7,7 @@ import io.github.eggohito.neo_apoli.comparison.Comparator;
 import io.github.eggohito.neo_apoli.comparison.custom.IntComparison;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
-import io.github.eggohito.neo_apoli.context.ContextParams;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.parameter.ItemContextParameter;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
 import io.github.eggohito.neo_apoli.provider.custom.item.ContextItemProvider;
@@ -24,7 +24,7 @@ import net.minecraft.world.entity.LivingEntity;
 public record EntityHasItemEquippedCondition(Condition equippedCondition, EquipmentSlotGroup slot, EntityProvider entity) implements Condition {
 
 	public static final ItemContextParameter EQUIPPED_ITEM = new ItemContextParameter(NeoApoli.id("equipped_item"));
-	public static final ContextParams CONDITION_PARAMETER_SET = new ContextParams.Builder().required(EQUIPPED_ITEM).build();
+	public static final ContextValidator.Parameters CONDITION_PARAMETER_SET = new ContextValidator.Parameters.Builder().required(EQUIPPED_ITEM).build();
 
 	public static final MapCodec<EntityHasItemEquippedCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Condition.CODEC.optionalFieldOf("equipped_condition", new CompareCondition(new IntComparison(Comparator.GREATER_THAN, new ItemCountIntProvider(new ContextItemProvider(EQUIPPED_ITEM)), new ConstantIntProvider(0)))).forGetter(EntityHasItemEquippedCondition::equippedCondition),
@@ -75,7 +75,7 @@ public record EntityHasItemEquippedCondition(Condition equippedCondition, Equipm
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Condition.super.validate(validator);
 		equippedCondition().validate(validator.withParams(CONDITION_PARAMETER_SET).forChild(".equipped_condition"));
 		entity().validate(validator.forChild(".entity"));

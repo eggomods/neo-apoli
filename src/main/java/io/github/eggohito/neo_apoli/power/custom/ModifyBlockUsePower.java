@@ -11,6 +11,7 @@ import io.github.eggohito.neo_apoli.codec.NeoApoliStreamCodecs;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.ContextUser;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.parameter.BlockContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.DirectionContextParameter;
 import io.github.eggohito.neo_apoli.exception.PosOutOfBoundsException;
@@ -78,7 +79,7 @@ public record ModifyBlockUsePower(Optional<Condition> activeCondition, Actions a
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		PrioritizedPower.super.validate(validator);
 		actions().validate(validator);
 		conditions().validate(validator);
@@ -132,7 +133,7 @@ public record ModifyBlockUsePower(Optional<Condition> activeCondition, Actions a
 		);
 
 		@Override
-		public void validate(Context.Validator validator) {
+		public void validate(ContextValidator validator) {
 			ContextUser.super.validate(validator);
 			action().validate(validator.forChild(".action"));
 		}

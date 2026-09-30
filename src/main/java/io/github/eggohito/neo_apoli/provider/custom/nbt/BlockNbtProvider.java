@@ -3,6 +3,7 @@ package io.github.eggohito.neo_apoli.provider.custom.nbt;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.block.BlockProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliNbtProviderTypes;
 import io.github.eggohito.neo_apoli.util.CachedBlock;
@@ -42,7 +43,7 @@ public record BlockNbtProvider(BlockProvider block) implements NbtProvider {
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		NbtProvider.super.validate(validator);
 		block().validate(validator.forChild(".block"));
 	}

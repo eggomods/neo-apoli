@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.condition.custom.ConstantCondition;
 import io.github.eggohito.neo_apoli.context.Context;
-import io.github.eggohito.neo_apoli.context.ContextParams;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.IntProvider;
 import io.github.eggohito.neo_apoli.provider.custom.vec3.Vec3Provider;
@@ -24,7 +24,7 @@ import java.util.Optional;
 
 public record EntitiesInRadiusIntProvider(Condition condition, Vec3Provider position, Shape shape, FloatProvider radius) implements IntProvider {
 
-	private static final ContextParams CONDITION_PARAMETER_SET = new ContextParams.Builder()
+	private static final ContextValidator.Parameters CONDITION_PARAMETER_SET = new ContextValidator.Parameters.Builder()
 		.required(NeoApoliContextParameters.TARGET_ENTITY)
 		.build();
 
@@ -82,7 +82,7 @@ public record EntitiesInRadiusIntProvider(Condition condition, Vec3Provider posi
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		IntProvider.super.validate(validator);
 		condition().validate(validator.withParams(CONDITION_PARAMETER_SET).forChild(".condition"));
 		position().validate(validator.forChild(".position"));

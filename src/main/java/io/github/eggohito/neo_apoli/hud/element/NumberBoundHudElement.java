@@ -1,7 +1,8 @@
 package io.github.eggohito.neo_apoli.hud.element;
 
 import io.github.eggohito.neo_apoli.NeoApoli;
-import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
+import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.IntContextParameter;
 import io.github.eggohito.neo_apoli.provider.custom.number.IntProvider;
 
@@ -22,7 +23,7 @@ public interface NumberBoundHudElement extends HudElement {
 	Optional<IntProvider> max();
 
 	@Override
-	default void validate(Context.Validator validator) {
+	default void validate(ContextValidator validator) {
 
 		HudElement.super.validate(validator);
 
@@ -32,9 +33,9 @@ public interface NumberBoundHudElement extends HudElement {
 
 	}
 
-	static void validateKeyAndField(Context.Validator validator, Context.Parameter<?> key, Optional<IntProvider> fieldMethod, String fieldName) {
+	static void validateKeyAndField(ContextValidator validator, ContextParameter<?> key, Optional<IntProvider> fieldMethod, String fieldName) {
 
-		boolean keyIsAllowed = validator.params().allowed().contains(key);
+		boolean keyIsAllowed = validator.parameters().allowed().contains(key);
 		boolean fieldIsPresent = fieldMethod.isPresent();
 
 		if (keyIsAllowed == fieldIsPresent) {

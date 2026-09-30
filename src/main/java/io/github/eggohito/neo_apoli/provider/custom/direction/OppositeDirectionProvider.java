@@ -2,6 +2,7 @@ package io.github.eggohito.neo_apoli.provider.custom.direction;
 
 import com.mojang.serialization.MapCodec;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliDirectionProviderTypes;
 import io.github.eggohito.neo_apoli.util.MapCodecUtil;
 import io.github.eggohito.neo_apoli.util.StreamCodecUtil;
@@ -28,7 +29,7 @@ public record OppositeDirectionProvider(DirectionProvider direction) implements 
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		DirectionProvider.super.validate(validator);
 		direction().validate(validator.forChild(".direction"));
 	}

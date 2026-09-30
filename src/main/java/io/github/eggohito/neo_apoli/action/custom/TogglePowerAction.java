@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.action.Action;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.PowerIdentifier;
 import io.github.eggohito.neo_apoli.power.custom.TogglePower;
@@ -47,7 +48,7 @@ public record TogglePowerAction(PowerIdentifier power, EntityProvider entity) im
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Action.super.validate(validator);
 		power().validate(validator.forChild(".power"), TogglePower.class, () -> power().asDisplayString() + " cannot be toggled!");
 		entity().validate(validator.forChild(".entity"));

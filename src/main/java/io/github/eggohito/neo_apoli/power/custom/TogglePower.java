@@ -7,6 +7,7 @@ import io.github.eggohito.neo_apoli.action.Action;
 import io.github.eggohito.neo_apoli.action.custom.NothingAction;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.key.KeyReference;
 import io.github.eggohito.neo_apoli.key.KeyState;
 import io.github.eggohito.neo_apoli.power.Power;
@@ -52,7 +53,7 @@ public record TogglePower(Optional<Condition> activeCondition, Action action, Ke
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 
 		Power.super.validate(validator);
 

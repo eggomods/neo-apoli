@@ -8,7 +8,7 @@ import io.github.eggohito.neo_apoli.codec.NeoApoliCodecs;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.condition.custom.ConstantCondition;
 import io.github.eggohito.neo_apoli.context.Context;
-import io.github.eggohito.neo_apoli.context.ContextParams;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.parameter.EntityContextParameter;
 import io.github.eggohito.neo_apoli.provider.custom.bool.BooleanProvider;
 import io.github.eggohito.neo_apoli.provider.custom.bool.ConstantBooleanProvider;
@@ -29,7 +29,7 @@ import net.minecraft.world.phys.Vec3;
 public record SpawnParticlesAction(ParticleOptions particle, Condition viewCondition, Vec3Provider position, Vec3Provider spread, FloatProvider speed, IntProvider count, BooleanProvider force) implements Action {
 
 	public static final EntityContextParameter VIEWER_ENTITY = new EntityContextParameter(NeoApoli.id("viewer_entity"));
-	public static final ContextParams CONDITION_PARAMETER_SET = new ContextParams.Builder().required(VIEWER_ENTITY).build();
+	public static final ContextValidator.Parameters CONDITION_PARAMETER_SET = new ContextValidator.Parameters.Builder().required(VIEWER_ENTITY).build();
 
 	public static final MapCodec<SpawnParticlesAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		NeoApoliCodecs.PARTICLE_OPTIONS.fieldOf("particle").forGetter(SpawnParticlesAction::particle),
@@ -99,7 +99,7 @@ public record SpawnParticlesAction(ParticleOptions particle, Condition viewCondi
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Action.super.validate(validator);
 		viewCondition().validate(validator.withParams(CONDITION_PARAMETER_SET).forChild(".view_condition"));
 		position().validate(validator.forChild(".position"));

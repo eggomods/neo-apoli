@@ -3,6 +3,7 @@ package io.github.eggohito.neo_apoli.condition.custom;
 import com.mojang.serialization.MapCodec;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.bool.BooleanProvider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliConditionTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -31,7 +32,7 @@ public record DynamicCondition(BooleanProvider value) implements Condition {
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Condition.super.validate(validator);
 		value().validate(validator.forChild(".value"));
 	}

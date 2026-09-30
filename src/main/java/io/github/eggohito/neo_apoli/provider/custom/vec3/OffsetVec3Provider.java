@@ -3,6 +3,7 @@ package io.github.eggohito.neo_apoli.provider.custom.vec3;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliVec3ProviderTypes;
 import io.github.eggohito.neo_apoli.util.MapCodecUtil;
 import io.github.eggohito.neo_apoli.util.StreamCodecUtil;
@@ -39,7 +40,7 @@ public record OffsetVec3Provider(Vec3Provider vector, Vec3Provider offset) imple
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 
 		Vec3Provider.super.validate(validator);
 

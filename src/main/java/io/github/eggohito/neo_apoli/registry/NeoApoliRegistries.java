@@ -5,7 +5,7 @@ import io.github.eggohito.neo_apoli.color.Color;
 import io.github.eggohito.neo_apoli.comparison.Comparison;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.container_menu.ContainerMenu;
-import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
 import io.github.eggohito.neo_apoli.hud.element.HudElement;
 import io.github.eggohito.neo_apoli.modifier.Modifier;
 import io.github.eggohito.neo_apoli.power.Power;
@@ -55,7 +55,7 @@ public final class NeoApoliRegistries {
 	public static final Registry<Color.Type<?>> COLOR_TYPE = create(NeoApoliRegistryKeys.COLOR_TYPE);
 	public static final Registry<HudElement.Type<?>> HUD_ELEMENT_TYPE = create(NeoApoliRegistryKeys.HUD_ELEMENT_TYPE);
 
-	public static final Registry<Context.Parameter.Type<?, ?>> CONTEXT_PARAMETER_TYPE = create(NeoApoliRegistryKeys.CONTEXT_PARAMETER_TYPE);
+	public static final Registry<ContextParameter.Type<?, ?>> CONTEXT_PARAMETER_TYPE = create(NeoApoliRegistryKeys.CONTEXT_PARAMETER_TYPE);
 
 	private static <T> Registry<T> create(ResourceKey<Registry<T>> key) {
 		return FabricRegistryBuilder.createSimple(key)

@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
-import io.github.eggohito.neo_apoli.context.ContextParams;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.parameter.BlockContextParameter;
 import io.github.eggohito.neo_apoli.provider.custom.number.IntProvider;
 import io.github.eggohito.neo_apoli.provider.custom.vec3.Vec3Provider;
@@ -25,7 +25,7 @@ import java.util.Optional;
 public record AdjacentBlocksIntProvider(Condition condition, Vec3Provider position) implements IntProvider {
 
 	public static final BlockContextParameter ADJACENT_BLOCK = new BlockContextParameter(NeoApoli.id("adjacent_block"));
-	public static final ContextParams CONDITION_PARAMETER_SET = new ContextParams.Builder().required(ADJACENT_BLOCK).build();
+	public static final ContextValidator.Parameters CONDITION_PARAMETER_SET = new ContextValidator.Parameters.Builder().required(ADJACENT_BLOCK).build();
 
 	public static final MapCodec<AdjacentBlocksIntProvider> CODEC = MapCodecUtil.lazy(AdjacentBlocksIntProvider.class.getSimpleName(), () -> RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Condition.CODEC.fieldOf("condition").forGetter(AdjacentBlocksIntProvider::condition),
@@ -82,7 +82,7 @@ public record AdjacentBlocksIntProvider(Condition condition, Vec3Provider positi
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		IntProvider.super.validate(validator);
 		condition().validate(validator.withParams(CONDITION_PARAMETER_SET).forChild(".condition"));
 		position().validate(validator.forChild(".position"));

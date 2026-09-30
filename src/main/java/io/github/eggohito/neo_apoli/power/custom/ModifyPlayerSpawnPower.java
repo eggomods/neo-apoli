@@ -9,7 +9,7 @@ import dev.isxander.yacl3.config.v3.ConfigEntry;
 import io.github.eggohito.neo_apoli.codec.NeoApoliCodecs;
 import io.github.eggohito.neo_apoli.codec.NeoApoliStreamCodecs;
 import io.github.eggohito.neo_apoli.config.AbstractJsonCodecConfig;
-import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.visitor.ClearableVisitor;
 import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.custom.misc.PrioritizedPower;
@@ -76,7 +76,7 @@ public record ModifyPlayerSpawnPower(ResourceKey<Level> dimension, Optional<Eith
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		PrioritizedPower.super.validate(validator);
 		RegistryUtil.validateKey(validator.forChild(".dimension"), this.dimension());
 		this.biome().ifPresent(biome -> RegistryUtil.validateKeyOrTag(validator.forChild(".biome"), biome));

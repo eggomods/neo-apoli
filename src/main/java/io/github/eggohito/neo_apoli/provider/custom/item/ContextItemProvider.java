@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.ItemContextParameter;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliItemProviderTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -48,7 +49,7 @@ public record ContextItemProvider(ItemContextParameter parameter) implements Ite
 	}
 
 	@Override
-	public Set<Context.Parameter<?>> getRequiredParameters() {
+	public Set<ContextParameter<?>> getRequiredParameters() {
 		return Set.of(parameter());
 	}
 

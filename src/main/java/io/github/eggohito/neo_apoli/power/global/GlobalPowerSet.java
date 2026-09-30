@@ -5,8 +5,8 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.codec.NeoApoliCodecs;
-import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.ContextUser;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.power.PowerHolder;
 import io.github.eggohito.neo_apoli.util.tag.LazyTagLike;
 import net.minecraft.resources.ResourceLocation;
@@ -26,7 +26,7 @@ public record GlobalPowerSet(LazyTagLike<EntityType<?>> entityTypes, LazyTagLike
 	).apply(instance, GlobalPowerSet::new));
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		entityTypes().validate(validator.forChild(".entity_types"));
 		powers().validate(validator.forChild(".powers"));
 	}

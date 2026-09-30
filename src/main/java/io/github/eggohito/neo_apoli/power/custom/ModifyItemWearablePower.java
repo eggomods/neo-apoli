@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.parameter.ItemContextParameter;
 import io.github.eggohito.neo_apoli.context.visitor.ClearableVisitor;
 import io.github.eggohito.neo_apoli.power.Power;
@@ -55,14 +56,14 @@ public record ModifyItemWearablePower(EnumMap<EquipmentSlot, CompositeConditiona
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 
 		Power.super.validate(validator);
-		Context.Validator slotsValidator = validator.forChild(".slots");
+		ContextValidator slotsValidator = validator.forChild(".slots");
 
 		this.slots().forEach((slot, entry) -> {
 
-			Context.Validator entryValidator = slotsValidator.forChild("." + slot.getSerializedName());
+			ContextValidator entryValidator = slotsValidator.forChild("." + slot.getSerializedName());
 
 			entry.condition().validate(entryValidator.forChild(".condition"));
 			entry.value().validate(entryValidator.forChild(".allow"));

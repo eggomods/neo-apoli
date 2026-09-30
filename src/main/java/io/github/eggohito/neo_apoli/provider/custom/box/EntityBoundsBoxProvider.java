@@ -3,6 +3,7 @@ package io.github.eggohito.neo_apoli.provider.custom.box;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliBoxProviderTypes;
 import io.github.eggohito.neo_apoli.util.MapCodecUtil;
@@ -40,7 +41,7 @@ public record EntityBoundsBoxProvider(EntityProvider entity) implements BoxProvi
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		BoxProvider.super.validate(validator);
 		entity().validate(validator.forChild(".entity"));
 	}

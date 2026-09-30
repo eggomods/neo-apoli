@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.comparison.Comparison;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliComparisonTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -43,7 +44,7 @@ public record EntityComparison(EntityProvider first, EntityProvider second) impl
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Comparison.super.validate(validator);
 		first().validate(validator.forChild(".first"));
 		second().validate(validator.forChild(".second"));

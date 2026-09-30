@@ -3,6 +3,7 @@ package io.github.eggohito.neo_apoli.provider.custom.number.ints;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.key.manager.KeyStateManager;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.IntProvider;
@@ -41,7 +42,7 @@ public record KeyPressedTimeIntProvider(StringProvider id, EntityProvider entity
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		IntProvider.super.validate(validator);
 		id().validate(validator.forChild(".id"));
 		entity().validate(validator.forChild(".entity"));

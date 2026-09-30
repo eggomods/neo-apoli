@@ -12,8 +12,8 @@ import io.github.eggohito.neo_apoli.codec.NeoApoliStreamCodecs;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.condition.custom.ConstantCondition;
 import io.github.eggohito.neo_apoli.context.Context;
-import io.github.eggohito.neo_apoli.context.ContextParams;
 import io.github.eggohito.neo_apoli.context.ContextValidatable;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.parameter.BlockContextParameter;
 import io.github.eggohito.neo_apoli.mixin.access.BlockPatternAccessor;
 import io.netty.buffer.ByteBuf;
@@ -43,7 +43,7 @@ import java.util.function.Function;
 public final class ContextBlockPattern implements ContextValidatable {
 
 	public static final BlockContextParameter MATCHING_BLOCK = new BlockContextParameter(NeoApoli.id("matching_block"));
-	public static final ContextParams MATCHING_PARAMETER_SET = new ContextParams.Builder().required(MATCHING_BLOCK).build();
+	public static final ContextValidator.Parameters MATCHING_PARAMETER_SET = new ContextValidator.Parameters.Builder().required(MATCHING_BLOCK).build();
 	
 	private static final Joiner COMMA_JOINED = Joiner.on(", ");
 	private static final char RESERVED_SYMBOL = ' ';
@@ -127,9 +127,9 @@ public final class ContextBlockPattern implements ContextValidatable {
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 
-		Context.Validator keysValidator = validator
+		ContextValidator keysValidator = validator
 			.forChild(".keys")
 			.withParams(MATCHING_PARAMETER_SET);
 

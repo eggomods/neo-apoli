@@ -3,6 +3,7 @@ package io.github.eggohito.neo_apoli.provider.custom.slot;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.block.BlockProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.IntProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliSlotProviderTypes;
@@ -65,7 +66,7 @@ public record BlockSlotProvider(BlockProvider block, IntProvider slot) implement
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		SlotProvider.super.validate(validator);
 		block().validate(validator.forChild(".block"));
 		slot().validate(validator.forChild(".slot"));

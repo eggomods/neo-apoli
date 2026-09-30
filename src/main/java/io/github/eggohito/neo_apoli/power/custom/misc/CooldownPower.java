@@ -5,6 +5,7 @@ import com.mojang.datafixers.util.Unit;
 import com.mojang.serialization.*;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.hud.element.HudElement;
 import io.github.eggohito.neo_apoli.hud.element.NumberBoundHudElement;
 import io.github.eggohito.neo_apoli.power.Power;
@@ -20,7 +21,7 @@ public interface CooldownPower extends Power {
 	IntProvider cooldown();
 
 	@Override
-	default void validate(Context.Validator validator) {
+	default void validate(ContextValidator validator) {
 		Power.super.validate(validator);
 		hudElement().validate(validator.forChild(".hud_element"));
 		cooldown().validate(validator.forChild(".cooldown"));

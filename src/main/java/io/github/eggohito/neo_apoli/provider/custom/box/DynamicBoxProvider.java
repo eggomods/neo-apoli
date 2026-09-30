@@ -3,6 +3,7 @@ package io.github.eggohito.neo_apoli.provider.custom.box;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.vec3.Vec3Provider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliBoxProviderTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -38,7 +39,7 @@ public record DynamicBoxProvider(Vec3Provider min, Vec3Provider max) implements 
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 
 		BoxProvider.super.validate(validator);
 

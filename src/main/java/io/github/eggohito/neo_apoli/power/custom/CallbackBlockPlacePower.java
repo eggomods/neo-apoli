@@ -9,6 +9,7 @@ import io.github.eggohito.neo_apoli.codec.NeoApoliCodecs;
 import io.github.eggohito.neo_apoli.codec.NeoApoliStreamCodecs;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.parameter.BlockContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.DirectionContextParameter;
 import io.github.eggohito.neo_apoli.mixin.access.UseOnContextAccessor;
@@ -66,7 +67,7 @@ public record CallbackBlockPlacePower(Optional<Condition> activeCondition, Actio
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		PrioritizedPower.super.validate(validator);
 		onPlaceAction().validate(validator.forChild(".on_place_action"));
 	}

@@ -9,6 +9,7 @@ import io.github.eggohito.neo_apoli.codec.MultiAlternativeCodec;
 import io.github.eggohito.neo_apoli.color.Color;
 import io.github.eggohito.neo_apoli.color.custom.Argb;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.hud.Sprite;
 import io.github.eggohito.neo_apoli.provider.custom.bool.BooleanProvider;
 import io.github.eggohito.neo_apoli.provider.custom.bool.ConstantBooleanProvider;
@@ -49,7 +50,7 @@ public interface OverlayHudElement extends HudElement {
 	}
 
 	@Override
-	default void validate(Context.Validator validator) {
+	default void validate(ContextValidator validator) {
 		HudElement.super.validate(validator);
 		color().validate(validator.forChild(".color"));
 		shouldRender().validate(validator.forChild(".should_render"));

@@ -8,6 +8,7 @@ import io.github.eggohito.neo_apoli.action.Action;
 import io.github.eggohito.neo_apoli.action.custom.NothingAction;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.parameter.BlockContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.ItemContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.SlotContextParameter;
@@ -71,7 +72,7 @@ public record ModifyRecipeCraftingPower(Optional<Condition> activeCondition, Opt
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		PrioritizedPower.super.validate(validator);
 		onCraftAction().validate(validator.forChild(".on_craft_action"));
 		onTakeAction().validate(validator.forChild(".on_take_action"));

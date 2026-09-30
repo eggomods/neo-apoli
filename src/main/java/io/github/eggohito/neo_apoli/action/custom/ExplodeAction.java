@@ -9,8 +9,8 @@ import io.github.eggohito.neo_apoli.codec.NeoApoliStreamCodecs;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.condition.custom.ConstantCondition;
 import io.github.eggohito.neo_apoli.context.Context;
-import io.github.eggohito.neo_apoli.context.ContextParams;
 import io.github.eggohito.neo_apoli.context.ContextUser;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.parameter.BlockContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.EntityContextParameter;
 import io.github.eggohito.neo_apoli.provider.custom.bool.BooleanProvider;
@@ -52,14 +52,14 @@ public record ExplodeAction(Condition damageableCondition, Condition destructibl
 	public static final EntityContextParameter EMITTER_ENTITY = new EntityContextParameter(NeoApoli.id("emitter_entity"));
 	public static final EntityContextParameter EXPLODED_ENTITY = new EntityContextParameter(NeoApoli.id("exploded_entity"));
 
-	public static final ContextParams DAMAGEABLE_PARAMETER_SET = new ContextParams.Builder()
+	public static final ContextValidator.Parameters DAMAGEABLE_PARAMETER_SET = new ContextValidator.Parameters.Builder()
 		.required(EXPLODED_ENTITY)
 		.optional(EMITTER_ENTITY)
 		.build();
-	public static final ContextParams DESTRUCTIBLE_PARAMETER_SET = new ContextParams.Builder()
+	public static final ContextValidator.Parameters DESTRUCTIBLE_PARAMETER_SET = new ContextValidator.Parameters.Builder()
 		.required(EXPLODED_BLOCK)
 		.build();
-	public static final ContextParams KNOCKBACK_MULTIPLIER_PARAMETER_SET = new ContextParams.Builder()
+	public static final ContextValidator.Parameters KNOCKBACK_MULTIPLIER_PARAMETER_SET = new ContextValidator.Parameters.Builder()
 		.required(EXPLODED_ENTITY)
 		.optional(EMITTER_ENTITY)
 		.build();
@@ -143,7 +143,7 @@ public record ExplodeAction(Condition damageableCondition, Condition destructibl
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Action.super.validate(validator);
 		damageableCondition().validate(validator.withParams(DAMAGEABLE_PARAMETER_SET).forChild(".damageable_condition"));
 		destructibleCondition().validate(validator.withParams(DESTRUCTIBLE_PARAMETER_SET).forChild(".destructible_condition"));
@@ -170,7 +170,7 @@ public record ExplodeAction(Condition damageableCondition, Condition destructibl
 		);
 
 		@Override
-		public void validate(Context.Validator validator) {
+		public void validate(ContextValidator validator) {
 			ContextUser.super.validate(validator);
 			power().validate(validator.forChild(".power"));
 			knockbackMultiplier().validate(validator.withParams(KNOCKBACK_MULTIPLIER_PARAMETER_SET).forChild(".knockback_multiplier"));

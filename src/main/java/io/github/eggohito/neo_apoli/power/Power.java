@@ -7,8 +7,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
-import io.github.eggohito.neo_apoli.context.ContextParams;
 import io.github.eggohito.neo_apoli.context.ContextUser;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
+import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
 import io.github.eggohito.neo_apoli.network.packet.clientbound.ClientboundUpdatePowerDataPacket;
 import io.github.eggohito.neo_apoli.power.entity.Powers;
 import io.github.eggohito.neo_apoli.power.manager.PowerManager;
@@ -61,7 +62,7 @@ public interface Power extends ContextUser {
 	}
 
 	@Override
-	default void validate(Context.Validator validator) {
+	default void validate(ContextValidator validator) {
 		this.activeCondition().ifPresent(activeCondition -> activeCondition.validate(validator.forChild(".active_condition")));
 	}
 
@@ -88,12 +89,12 @@ public interface Power extends ContextUser {
 		}
 
 		@Override
-		public Set<Context.Parameter<?>> getRequiredParameters() {
+		public Set<ContextParameter<?>> getRequiredParameters() {
 			return power.getRequiredParameters();
 		}
 
 		@Override
-		public void validate(Context.Validator validator) {
+		public void validate(ContextValidator validator) {
 			power.validate(validator);
 		}
 
@@ -191,7 +192,7 @@ public interface Power extends ContextUser {
 
 	}
 
-	record Type<P extends Power>(ContextParams parameters, MapCodec<P> mapCodec, StreamCodec<RegistryFriendlyByteBuf, P> streamCodec) {
+	record Type<P extends Power>(ContextValidator.Parameters parameters, MapCodec<P> mapCodec, StreamCodec<RegistryFriendlyByteBuf, P> streamCodec) {
 
 		public static final FixedRegistryAlias<Type<?>> ALIASES = FixedRegistryAlias.of(NeoApoliRegistries.POWER_TYPE);
 

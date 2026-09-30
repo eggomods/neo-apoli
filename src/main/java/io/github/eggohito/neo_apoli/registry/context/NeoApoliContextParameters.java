@@ -39,7 +39,7 @@ public final class NeoApoliContextParameters {
 		addPathAlias("this", THIS_ENTITY);
 	}
 
-	public static <P extends Context.Parameter<?>> void addPathAlias(String from, P to) {
+	public static <P extends ContextParameter<?>> void addPathAlias(String from, P to) {
 		Context.ALIASES.getPaths().addAlias(from, to.name().getPath());
 	}
 

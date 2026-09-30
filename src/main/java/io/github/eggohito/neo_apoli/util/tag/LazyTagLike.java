@@ -5,8 +5,8 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import io.github.eggohito.neo_apoli.codec.NeoApoliStreamCodecs;
-import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.ContextUser;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import net.minecraft.core.HolderLookup;
@@ -32,7 +32,7 @@ public class LazyTagLike<T> extends TagLike<T> implements ContextUser {
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		elementsGetter.get().resultOrPartial(validator::reportProblem);
 	}
 

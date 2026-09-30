@@ -3,6 +3,7 @@ package io.github.eggohito.neo_apoli.provider.custom.direction;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.DirectionContextParameter;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliDirectionProviderTypes;
 import net.minecraft.core.Direction;
@@ -42,7 +43,7 @@ public record ContextDirectionProvider(DirectionContextParameter parameter) impl
 	}
 
 	@Override
-	public Set<Context.Parameter<?>> getRequiredParameters() {
+	public Set<ContextParameter<?>> getRequiredParameters() {
 		return Set.of(parameter());
 	}
 

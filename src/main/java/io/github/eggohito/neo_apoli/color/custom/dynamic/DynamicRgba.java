@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.color.DynamicColor;
 import io.github.eggohito.neo_apoli.color.custom.Argb;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliColorTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -33,7 +34,7 @@ public record DynamicRgba(FloatProvider red, FloatProvider green, FloatProvider 
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		DynamicColor.super.validate(validator);
 		red().validate(validator.forChild(".red"));
 		green().validate(validator.forChild(".green"));

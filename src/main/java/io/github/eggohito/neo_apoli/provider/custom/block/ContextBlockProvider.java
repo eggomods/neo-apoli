@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.parameter.BlockContextParameter;
+import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliBlockProviderTypes;
 import io.github.eggohito.neo_apoli.util.CachedBlock;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -48,7 +49,7 @@ public record ContextBlockProvider(BlockContextParameter parameter) implements B
 	}
 
 	@Override
-	public Set<Context.Parameter<?>> getRequiredParameters() {
+	public Set<ContextParameter<?>> getRequiredParameters() {
 		return Set.of(parameter());
 	}
 

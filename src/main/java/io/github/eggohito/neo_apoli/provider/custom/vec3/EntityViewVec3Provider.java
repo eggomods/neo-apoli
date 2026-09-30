@@ -3,6 +3,7 @@ package io.github.eggohito.neo_apoli.provider.custom.vec3;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.floats.ConstantFloatProvider;
@@ -40,7 +41,7 @@ public record EntityViewVec3Provider(EntityProvider entity, FloatProvider delta)
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Vec3Provider.super.validate(validator);
 		entity().validate(validator.forChild(".entity"));
 		delta().validate(validator.forChild(".delta"));

@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.util.MiscUtil;
 import io.github.eggohito.neo_apoli.util.conditional.CompositeConditional;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -47,7 +48,7 @@ public interface CompositeConditionalValueProvider<Value, Provider extends Value
 	}
 
 	@Override
-	default void validate(Context.Validator validator) {
+	default void validate(ContextValidator validator) {
 
 		ValueProvider.super.validate(validator);
 
@@ -55,7 +56,7 @@ public interface CompositeConditionalValueProvider<Value, Provider extends Value
 			entries(),
 			(index, entry) -> {
 
-				Context.Validator entryValidator = validator.forChild(".entries[" + index + "]");
+				ContextValidator entryValidator = validator.forChild(".entries[" + index + "]");
 
 				entry.condition().validate(entryValidator.forChild(".condition"));
 				entry.value().validate(entryValidator.forChild(".value"));

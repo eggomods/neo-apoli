@@ -8,7 +8,7 @@ import io.github.eggohito.neo_apoli.action.Action;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.condition.custom.ConstantCondition;
 import io.github.eggohito.neo_apoli.context.Context;
-import io.github.eggohito.neo_apoli.context.ContextParams;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.parameter.BlockContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.EntityContextParameter;
 import io.github.eggohito.neo_apoli.exception.PosOutOfBoundsException;
@@ -31,7 +31,7 @@ public record AreaOfEffectAction(AreaTarget areaTarget, Action areaAction, Condi
 	public static final EntityContextParameter ENTITY_IN_AREA = new EntityContextParameter(NeoApoli.id("entity_in_area"));
 	public static final BlockContextParameter BLOCK_IN_AREA = new BlockContextParameter(NeoApoli.id("block_in_area"));
 
-	public static final ContextParams AREA_PARAMETER_SET = new ContextParams.Builder()
+	public static final ContextValidator.Parameters AREA_PARAMETER_SET = new ContextValidator.Parameters.Builder()
 		.optional(ENTITY_IN_AREA)
 		.optional(BLOCK_IN_AREA)
 		.build();
@@ -68,7 +68,7 @@ public record AreaOfEffectAction(AreaTarget areaTarget, Action areaAction, Condi
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 
 		Action.super.validate(validator);
 		var areaValidator = validator.withParams(AREA_PARAMETER_SET);

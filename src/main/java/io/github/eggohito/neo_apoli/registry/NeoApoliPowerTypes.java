@@ -2,7 +2,7 @@ package io.github.eggohito.neo_apoli.registry;
 
 import com.mojang.serialization.MapCodec;
 import io.github.eggohito.neo_apoli.NeoApoli;
-import io.github.eggohito.neo_apoli.context.ContextParams;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.hud.element.NumberBoundHudElement;
 import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.custom.*;
@@ -437,13 +437,13 @@ public final class NeoApoliPowerTypes {
 
 	}
 
-	private static <P extends Power> Power.Type<P> registerInternal(String path, MapCodec<P> mapCodec, StreamCodec<RegistryFriendlyByteBuf, P> streamCodec, UnaryOperator<ContextParams.Builder> parametersBuilder) {
+	private static <P extends Power> Power.Type<P> registerInternal(String path, MapCodec<P> mapCodec, StreamCodec<RegistryFriendlyByteBuf, P> streamCodec, UnaryOperator<ContextValidator.Parameters.Builder> parametersBuilder) {
 		return register(NeoApoli.id(path), mapCodec, streamCodec, parametersBuilder);
 	}
 
-	public static <P extends Power> Power.Type<P> register(ResourceLocation id, MapCodec<P> mapCodec, StreamCodec<RegistryFriendlyByteBuf, P> streamCodec, UnaryOperator<ContextParams.Builder> parametersBuilder) {
+	public static <P extends Power> Power.Type<P> register(ResourceLocation id, MapCodec<P> mapCodec, StreamCodec<RegistryFriendlyByteBuf, P> streamCodec, UnaryOperator<ContextValidator.Parameters.Builder> parametersBuilder) {
 
-		ContextParams parameters = parametersBuilder.apply(new ContextParams.Builder())
+		ContextValidator.Parameters parameters = parametersBuilder.apply(new ContextValidator.Parameters.Builder())
 			.required(NeoApoliContextParameters.THIS_ENTITY)
 			.build();
 

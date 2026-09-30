@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
-import io.github.eggohito.neo_apoli.context.ContextParams;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.parameter.BlockContextParameter;
 import io.github.eggohito.neo_apoli.exception.PosOutOfBoundsException;
 import io.github.eggohito.neo_apoli.exception.PosUnloadedException;
@@ -21,7 +21,7 @@ import net.minecraft.world.level.Level;
 public record IsEntitySteppingOnBlockCondition(Condition steppedOnCondition, EntityProvider entity) implements Condition {
 
 	public static final BlockContextParameter STEPPED_ON_BLOCK = new BlockContextParameter(NeoApoli.id("stepped_on_block"));
-	public static final ContextParams CONDITION_PARAMETER_SET = new ContextParams.Builder().required(STEPPED_ON_BLOCK).build();
+	public static final ContextValidator.Parameters CONDITION_PARAMETER_SET = new ContextValidator.Parameters.Builder().required(STEPPED_ON_BLOCK).build();
 
 	public static final MapCodec<IsEntitySteppingOnBlockCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Condition.CODEC.optionalFieldOf("stepped_on_condition", new ConstantCondition(true)).forGetter(IsEntitySteppingOnBlockCondition::steppedOnCondition),
@@ -83,7 +83,7 @@ public record IsEntitySteppingOnBlockCondition(Condition steppedOnCondition, Ent
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Condition.super.validate(validator);
 		steppedOnCondition().validate(validator.withParams(CONDITION_PARAMETER_SET).forChild(".stepped_on_condition"));
 		entity().validate(validator.forChild(".entity"));

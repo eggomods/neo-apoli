@@ -7,8 +7,7 @@ import com.google.gson.JsonElement;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import io.github.eggohito.neo_apoli.NeoApoli;
-import io.github.eggohito.neo_apoli.context.Context;
-import io.github.eggohito.neo_apoli.context.ContextParams;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.event.DependencyManager;
 import io.github.eggohito.neo_apoli.event.ReloadableServerResourcesEvents;
 import io.github.eggohito.neo_apoli.power.PowerHolder;
@@ -212,7 +211,7 @@ public final class GlobalPowerSetManager extends AbstractContentManager<Resource
 				GlobalPowerSet set = entry.getValue();
 
 				Reporter setReporter = reporter.forChild("{\"" + id + "\"}");
-				Context.Validator validator = new Context.Validator(ContextParams.INTENTIONALLY_EMPTY, setReporter).withResolver(MiscUtil.getLookupProvider(resources));
+				ContextValidator validator = new ContextValidator(ContextValidator.Parameters.INTENTIONALLY_EMPTY, setReporter).withResolver(MiscUtil.getLookupProvider(resources));
 
 				set.validate(validator);
 

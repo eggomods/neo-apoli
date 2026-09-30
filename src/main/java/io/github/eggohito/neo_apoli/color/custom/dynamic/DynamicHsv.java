@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.color.DynamicColor;
 import io.github.eggohito.neo_apoli.color.custom.Hsv;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliColorTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -38,7 +39,7 @@ public record DynamicHsv(FloatProvider hue, FloatProvider saturation, FloatProvi
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		DynamicColor.super.validate(validator);
 		hue().validate(validator.forChild(".hue"));
 		saturation().validate(validator.forChild(".saturation"));

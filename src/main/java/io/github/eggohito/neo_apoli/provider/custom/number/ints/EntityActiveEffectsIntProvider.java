@@ -6,7 +6,7 @@ import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.condition.custom.ConstantCondition;
 import io.github.eggohito.neo_apoli.context.Context;
-import io.github.eggohito.neo_apoli.context.ContextParams;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.parameter.EffectContextParameter;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.IntProvider;
@@ -21,7 +21,7 @@ import java.util.Optional;
 public record EntityActiveEffectsIntProvider(Condition condition, EntityProvider entity) implements IntProvider {
 
 	public static final EffectContextParameter ACTIVE_EFFECT = new EffectContextParameter(NeoApoli.id("active_effect"));
-	public static final ContextParams CONDITION_PARAMETER_SET = new ContextParams.Builder().required(ACTIVE_EFFECT).build();
+	public static final ContextValidator.Parameters CONDITION_PARAMETER_SET = new ContextValidator.Parameters.Builder().required(ACTIVE_EFFECT).build();
 
 	public static final MapCodec<EntityActiveEffectsIntProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Condition.CODEC.optionalFieldOf("condition", new ConstantCondition(true)).forGetter(EntityActiveEffectsIntProvider::condition),
@@ -66,7 +66,7 @@ public record EntityActiveEffectsIntProvider(Condition condition, EntityProvider
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		IntProvider.super.validate(validator);
 		condition().validate(validator.withParams(CONDITION_PARAMETER_SET).forChild(".condition"));
 		entity().validate(validator.forChild(".entity"));

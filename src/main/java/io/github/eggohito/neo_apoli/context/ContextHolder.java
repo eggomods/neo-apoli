@@ -1,5 +1,6 @@
 package io.github.eggohito.neo_apoli.context;
 
+import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -9,12 +10,12 @@ import java.util.Set;
 
 public interface ContextHolder {
 
-	Set<Context.Parameter<?>> parameters();
+	Set<ContextParameter<?>> parameters();
 
 	@Nullable
-	<T> T getNullable(Context.Parameter<T> parameter);
+	<T> T getNullable(ContextParameter<T> parameter);
 
-	default <T> T getRequired(Context.Parameter<T> parameter) {
+	default <T> T getRequired(ContextParameter<T> parameter) {
 
 		T object = this.getNullable(parameter);
 		if (object == null) {
@@ -25,19 +26,19 @@ public interface ContextHolder {
 
 	}
 
-	default <T> Optional<T> getOptional(Context.Parameter<T> parameter) {
+	default <T> Optional<T> getOptional(ContextParameter<T> parameter) {
 		return Optional.ofNullable(this.getNullable(parameter));
 	}
 
-	default boolean hasParameter(Context.Parameter<?> parameter) {
+	default boolean hasParameter(ContextParameter<?> parameter) {
 		return this.getNullable(parameter) != null;
 	}
 
-	default boolean hasAllParameters(Collection<Context.Parameter<?>> parameters) {
-		return hasAllParameters(parameters.toArray(Context.Parameter[]::new));
+	default boolean hasAllParameters(Collection<ContextParameter<?>> parameters) {
+		return hasAllParameters(parameters.toArray(ContextParameter[]::new));
 	}
 
-	default boolean hasAllParameters(Context.Parameter<?>... parameters) {
+	default boolean hasAllParameters(ContextParameter<?>... parameters) {
 
 		for (var parameter : parameters) {
 
@@ -51,11 +52,11 @@ public interface ContextHolder {
 
 	}
 
-	default boolean hasAnyParameters(Collection<Context.Parameter<?>> parameters) {
-		return hasAnyParameters(parameters.toArray(Context.Parameter[]::new));
+	default boolean hasAnyParameters(Collection<ContextParameter<?>> parameters) {
+		return hasAnyParameters(parameters.toArray(ContextParameter[]::new));
 	}
 
-	default boolean hasAnyParameters(Context.Parameter<?>... parameters) {
+	default boolean hasAnyParameters(ContextParameter<?>... parameters) {
 
 		for (var parameter : parameters) {
 
