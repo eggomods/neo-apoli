@@ -7,6 +7,7 @@ import com.mojang.brigadier.tree.CommandNode;
 import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.command.ConditionCommand;
 import io.github.eggohito.neo_apoli.command.argument.ConditionArgument;
+import io.github.eggohito.neo_apoli.command.argument.ContextParametersArgument;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.commands.ExecuteCommand;
@@ -29,15 +30,11 @@ public abstract class ExecuteCommandMixin {
 	private static ArgumentBuilder<CommandSourceStack, ?> addParameterConditionals(ArgumentBuilder<CommandSourceStack, ?> original, CommandNode<CommandSourceStack> rootNode, LiteralArgumentBuilder<CommandSourceStack> builder, boolean positive, CommandBuildContext buildContext) {
 
 		var baseNode = literal(NeoApoli.id("condition").toString()).build();
-		var withNode = literal("with").build();
-		var forNode = literal("for").build();
-		var conditionNode = addConditional(rootNode, argument("condition", ConditionArgument.inlineCondition(buildContext)), positive, ConditionCommand.Test::test).build();
+		var conditionNode = argument("condition", ConditionArgument.inlineCondition(buildContext)).build();
+		var withNode = literal("with").then(addConditional(rootNode, argument("parameters", ContextParametersArgument.parameters(buildContext)), positive, ConditionCommand.Test::test)).build();
 
-//		NeoApoliContextParameters.addAsArguments(buildContext, baseNode, withNode);
-
-		forNode.addChild(conditionNode);
-		baseNode.addChild(withNode);
-		baseNode.addChild(forNode);
+		conditionNode.addChild(withNode);
+		baseNode.addChild(conditionNode);
 
 		return builder.then(baseNode);
 

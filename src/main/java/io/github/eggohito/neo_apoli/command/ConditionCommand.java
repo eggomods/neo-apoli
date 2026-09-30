@@ -8,9 +8,18 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import io.github.eggohito.neo_apoli.command.argument.ConditionArgument;
+import io.github.eggohito.neo_apoli.command.argument.ContextParametersArgument;
 import io.github.eggohito.neo_apoli.condition.Condition;
+import io.github.eggohito.neo_apoli.condition.manager.ConditionManager;
+import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextParameterMap;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
+import io.github.eggohito.neo_apoli.registry.NeoApoliRegistries;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameters;
 import io.github.eggohito.neo_apoli.util.JsonTextFormatter;
 import io.github.eggohito.neo_apoli.util.MiscUtil;
+import io.github.eggohito.neo_apoli.util.Reporter;
+import net.minecraft.Util;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -18,7 +27,6 @@ import net.minecraft.network.chat.Component;
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 
-//  FIXME: Bring me back!!
 public class ConditionCommand {
 
 	public static void register(CommandBuildContext buildContext, CommandNode<CommandSourceStack> rootNode) {
@@ -82,18 +90,13 @@ public class ConditionCommand {
 
 		public static CommandNode<CommandSourceStack> node(CommandBuildContext buildContext) {
 
-			var testNode = literal("test").build();
-			var withNode = literal("with").build();
-			var forNode = literal("for").build();
-			var conditionNode = argument("condition", ConditionArgument.inlineCondition(buildContext)).executes(Test::testAsInt).build();
+			var testNode = literal("test")
+				.then(argument("condition", ConditionArgument.inlineCondition(buildContext))
+					.then(literal("with")
+						.then(argument("parameters", ContextParametersArgument.parameters(buildContext))
+							.executes(Test::testAsInt))));
 
-//			NeoApoliContextParameters.addAsArguments(buildContext, testNode, withNode);
-
-			forNode.addChild(conditionNode);
-			testNode.addChild(withNode);
-			testNode.addChild(forNode);
-
-			return testNode;
+			return testNode.build();
 
 		}
 
@@ -113,31 +116,35 @@ public class ConditionCommand {
 
 		public static boolean test(CommandContext<CommandSourceStack> commandContext) throws CommandSyntaxException {
 
-//			CommandSourceStack source = commandContext.getSource();
-//			Context.Builder contextBuilder = source.neo_apoli$getContextBuilder();
-//
-//			Condition condition = ConditionArgument.getCondition(commandContext, "condition");
-//			String path = ConditionManager.getInstance().getKeyAsResult(condition).mapOrElse(id -> "{\"" + id + "\"}", error -> "{type: \"" + Util.getRegisteredName(NeoApoliRegistries.CONDITION_TYPE, condition.getType()) + "\"}");
-//
-//			Reporter reporter = new Reporter(path);
-//			Context.Validator validator = new Context.Validator(contextBuilder.toKeySet(), reporter).withResolver(source.registryAccess());
-//
-//			condition.validate(validator);
-//
-//			if (reporter.hasProblems()) {
-//				throw MiscUtil.createCommandException(Component.literal("Found errors while validating the condition\n" + reporter.getReport()));
-//			}
-//
-//			Context context = contextBuilder.withReporter(reporter).build(source.getLevel());
-//			boolean result = condition.test(context);
-//
-//			if (reporter.hasProblems()) {
-//				throw MiscUtil.createCommandException(Component.literal("Found errors while testing the condition\n" + reporter.getReport()));
-//			}
-//
-//			return result;
+			CommandSourceStack source = commandContext.getSource();
+			ContextParameterMap parameters = ContextParametersArgument.getParameters(commandContext, "parameters");
 
-			return false;
+			Condition condition = ConditionArgument.getCondition(commandContext, "condition");
+			String path = ConditionManager.getInstance().getKeyAsResult(condition).mapOrElse(id -> "{\"" + id + "\"}", error -> "{type: \"" + Util.getRegisteredName(NeoApoliRegistries.CONDITION_TYPE, condition.getType()) + "\"}");
+
+			Reporter reporter = new Reporter(path);
+			ContextValidator validator = new ContextValidator(parameters.forValidation(), reporter).withResolver(source.registryAccess());
+
+			condition.validate(validator);
+
+			if (reporter.hasProblems()) {
+				throw MiscUtil.createCommandException(Component.literal("Found errors while validating the condition\n" + reporter.getReport()));
+			}
+
+			Context baseContext = new Context.Builder()
+				.withReporter(reporter)
+				.withNullable(NeoApoliContextParameters.COMMAND_ENTITY, source.getEntity())
+				.withRequired(NeoApoliContextParameters.COMMAND_POSITION, source.getPosition())
+				.build(source.getLevel());
+
+			Context context = parameters.forUser(baseContext, ctx -> ctx.forChild(".parameters"));
+			boolean result = condition.test(context);
+
+			if (reporter.hasProblems()) {
+				throw MiscUtil.createCommandException(Component.literal("Found errors while testing the condition\n" + reporter.getReport()));
+			}
+
+			return result;
 
 		}
 

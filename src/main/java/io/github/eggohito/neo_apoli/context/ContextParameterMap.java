@@ -10,12 +10,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 
-public record ContextParameters(Map<ContextParameter<?>, ValueProvider<?>> map) implements ContextValidatable {
+public record ContextParameterMap(Map<ContextParameter<?>, ValueProvider<?>> map) implements ContextValidatable {
 
-	public static final ContextParameters EMPTY = new ContextParameters(Map.of());
+	public static final ContextParameterMap EMPTY = new ContextParameterMap(Map.of());
 
-	public static final Codec<ContextParameters> CODEC = ContextParameter.VALUE_MAP_CODEC.xmap(ContextParameters::new, ContextParameters::map);
-	public static final StreamCodec<RegistryFriendlyByteBuf, ContextParameters> STREAM_CODEC = ContextParameter.VALUE_MAP_STREAM_CODEC.map(ContextParameters::new, ContextParameters::map);
+	public static final Codec<ContextParameterMap> CODEC = ContextParameter.VALUE_MAP_CODEC.xmap(ContextParameterMap::new, ContextParameterMap::map);
+	public static final StreamCodec<RegistryFriendlyByteBuf, ContextParameterMap> STREAM_CODEC = ContextParameter.VALUE_MAP_STREAM_CODEC.map(ContextParameterMap::new, ContextParameterMap::map);
 
 	@Override
 	public void validate(ContextValidator validator) {

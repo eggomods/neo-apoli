@@ -12,6 +12,7 @@ import io.github.eggohito.neo_apoli.provider.custom.item.ItemProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.IntProvider;
 import io.github.eggohito.neo_apoli.provider.custom.slot.SlotProvider;
+import io.github.eggohito.neo_apoli.provider.custom.vec3.Vec3Provider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliRegistries;
 import net.minecraft.core.Registry;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -30,6 +31,7 @@ public final class NeoApoliContextParameterTypes {
 	public static final ContextParameter.Type<IntContextParameter, IntProvider> INT = registerInternal("int", IntProvider.CODEC, IntProvider.STREAM_CODEC, IntContextParameter::new);
 	public static final ContextParameter.Type<ItemContextParameter, ItemProvider> ITEM = registerInternal("item", ItemProvider.CODEC, ItemProvider.STREAM_CODEC, ItemContextParameter::new);
 	public static final ContextParameter.Type<SlotContextParameter, SlotProvider> SLOT = registerInternal("slot", SlotProvider.CODEC, SlotProvider.STREAM_CODEC, SlotContextParameter::new);
+	public static final ContextParameter.Type<Vec3ContextParameter, Vec3Provider> VEC3 = registerInternal("vec3", Vec3Provider.CODEC, Vec3Provider.STREAM_CODEC, Vec3ContextParameter::new);
 
 	public static void registerAll() {
 

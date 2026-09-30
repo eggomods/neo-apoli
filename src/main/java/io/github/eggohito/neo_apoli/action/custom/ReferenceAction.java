@@ -7,7 +7,7 @@ import io.github.eggohito.neo_apoli.action.Action;
 import io.github.eggohito.neo_apoli.action.ActionHolder;
 import io.github.eggohito.neo_apoli.action.manager.ActionManager;
 import io.github.eggohito.neo_apoli.context.Context;
-import io.github.eggohito.neo_apoli.context.ContextParameters;
+import io.github.eggohito.neo_apoli.context.ContextParameterMap;
 import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.registry.NeoApoliActionTypes;
 import io.github.eggohito.neo_apoli.registry.NeoApoliRegistryKeys;
@@ -16,16 +16,16 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
-public record ReferenceAction(ResourceLocation value, ContextParameters parameters) implements Action {
+public record ReferenceAction(ResourceLocation value, ContextParameterMap parameters) implements Action {
 
 	public static final MapCodec<ReferenceAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		ResourceLocation.CODEC.fieldOf("value").forGetter(ReferenceAction::value),
-		ContextParameters.CODEC.optionalFieldOf("parameters", ContextParameters.EMPTY).forGetter(ReferenceAction::parameters)
+		ContextParameterMap.CODEC.optionalFieldOf("parameters", ContextParameterMap.EMPTY).forGetter(ReferenceAction::parameters)
 	).apply(instance, ReferenceAction::new));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ReferenceAction> STREAM_CODEC = StreamCodec.composite(
 		ResourceLocation.STREAM_CODEC, ReferenceAction::value,
-		ContextParameters.STREAM_CODEC, ReferenceAction::parameters,
+		ContextParameterMap.STREAM_CODEC, ReferenceAction::parameters,
 		ReferenceAction::new
 	);
 

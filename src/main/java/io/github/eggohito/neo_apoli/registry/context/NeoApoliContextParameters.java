@@ -6,6 +6,9 @@ import io.github.eggohito.neo_apoli.context.parameter.*;
 
 public final class NeoApoliContextParameters {
 
+	public static final EntityContextParameter COMMAND_ENTITY = new EntityContextParameter(NeoApoli.id("command/entity"));
+	public static final Vec3ContextParameter COMMAND_POSITION = new  Vec3ContextParameter(NeoApoli.id("command/position"));
+
 	public static final EntityContextParameter ACTOR_ENTITY = new EntityContextParameter(NeoApoli.id("actor_entity"));
 	public static final EntityContextParameter PROJECTILE_ENTITY = new EntityContextParameter(NeoApoli.id("projectile_entity"));
 	public static final EntityContextParameter TARGET_ENTITY = new EntityContextParameter(NeoApoli.id("target_entity"));

@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.condition.manager.ConditionManager;
 import io.github.eggohito.neo_apoli.context.Context;
-import io.github.eggohito.neo_apoli.context.ContextParameters;
+import io.github.eggohito.neo_apoli.context.ContextParameterMap;
 import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.registry.NeoApoliConditionTypes;
 import io.github.eggohito.neo_apoli.registry.NeoApoliRegistryKeys;
@@ -14,16 +14,16 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
-public record ReferenceCondition(ResourceLocation value, ContextParameters parameters) implements Condition {
+public record ReferenceCondition(ResourceLocation value, ContextParameterMap parameters) implements Condition {
 
 	public static final MapCodec<ReferenceCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		ResourceLocation.CODEC.fieldOf("value").forGetter(ReferenceCondition::value),
-		ContextParameters.CODEC.optionalFieldOf("parameters", ContextParameters.EMPTY).forGetter(ReferenceCondition::parameters)
+		ContextParameterMap.CODEC.optionalFieldOf("parameters", ContextParameterMap.EMPTY).forGetter(ReferenceCondition::parameters)
 	).apply(instance, ReferenceCondition::new));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ReferenceCondition> STREAM_CODEC = StreamCodec.composite(
 		ResourceLocation.STREAM_CODEC, ReferenceCondition::value,
-		ContextParameters.STREAM_CODEC, ReferenceCondition::parameters,
+		ContextParameterMap.STREAM_CODEC, ReferenceCondition::parameters,
 		ReferenceCondition::new
 	);
 
