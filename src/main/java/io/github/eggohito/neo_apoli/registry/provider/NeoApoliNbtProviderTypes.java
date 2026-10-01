@@ -14,6 +14,7 @@ public final class NeoApoliNbtProviderTypes {
 	public static final NbtProvider.Type<CompositeConditionalNbtProvider> COMPOSITE_CONDITIONAL = registerInternal("conditional/composite", CompositeConditionalNbtProvider.MAP_CODEC, CompositeConditionalNbtProvider.STREAM_CODEC);
 	public static final NbtProvider.Type<ConditionalNbtProvider> CONDITIONAL = registerInternal("conditional", ConditionalNbtProvider.MAP_CODEC, ConditionalNbtProvider.STREAM_CODEC);
 	public static final NbtProvider.Type<ConstantNbtProvider> CONSTANT = registerInternal("constant", ConstantNbtProvider.MAP_CODEC, ConstantNbtProvider.STREAM_CODEC);
+	public static final NbtProvider.Type<ContextNbtProvider> CONTEXT = registerInternal("context", ContextNbtProvider.CODEC, ContextNbtProvider.STREAM_CODEC);
 
 	public static final NbtProvider.Type<BlockNbtProvider> BLOCK = registerInternal("block", BlockNbtProvider.MAP_CODEC, BlockNbtProvider.STREAM_CODEC);
 	public static final NbtProvider.Type<EntityNbtProvider> ENTITY = registerInternal("entity", EntityNbtProvider.MAP_CODEC, EntityNbtProvider.STREAM_CODEC);

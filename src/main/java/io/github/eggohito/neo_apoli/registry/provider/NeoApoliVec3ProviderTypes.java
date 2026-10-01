@@ -15,6 +15,7 @@ public final class NeoApoliVec3ProviderTypes {
 	public static final Vec3Provider.Type<CompositeConditionalVec3Provider> COMPOSITE_CONDITIONAL = registerInternal("conditional/composite", CompositeConditionalVec3Provider.CODEC, CompositeConditionalVec3Provider.STREAM_CODEC);
 	public static final Vec3Provider.Type<ConditionalVec3Provider> CONDITIONAL = registerInternal("conditional", ConditionalVec3Provider.CODEC, ConditionalVec3Provider.STREAM_CODEC);
 	public static final Vec3Provider.Type<ConstantVec3Provider> CONSTANT = registerInternal("constant", ConstantVec3Provider.CODEC, ConstantVec3Provider.STREAM_CODEC);
+	public static final Vec3Provider.Type<ContextVec3Provider> CONTEXT = registerInternal("context", ContextVec3Provider.CODEC, ContextVec3Provider.STREAM_CODEC);
 	public static final Vec3Provider.Type<DirectionVec3Provider> DIRECTION = registerInternal("direction", DirectionVec3Provider.CODEC, DirectionVec3Provider.STREAM_CODEC);
 	public static final Vec3Provider.Type<DynamicVec3Provider> DYNAMIC = registerInternal("dynamic", DynamicVec3Provider.CODEC, DynamicVec3Provider.STREAM_CODEC);
 	public static final Vec3Provider.Type<EntityPositionVec3Provider> ENTITY_POSITION = registerInternal("entity/position", EntityPositionVec3Provider.CODEC, EntityPositionVec3Provider.STREAM_CODEC);
