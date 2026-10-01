@@ -16,7 +16,7 @@ import java.util.Optional;
 
 public record EntityNbtProvider(EntityProvider entity) implements NbtProvider {
 
-	public static final MapCodec<EntityNbtProvider> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final MapCodec<EntityNbtProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		EntityProvider.CODEC.fieldOf("entity").forGetter(EntityNbtProvider::entity)
 	).apply(instance, EntityNbtProvider::new));
 

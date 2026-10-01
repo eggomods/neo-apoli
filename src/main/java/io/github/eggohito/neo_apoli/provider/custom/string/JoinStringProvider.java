@@ -21,7 +21,7 @@ import java.util.Optional;
 
 public record JoinStringProvider(List<StringProvider> strings, StringProvider separator) implements StringProvider {
 
-	public static final MapCodec<JoinStringProvider> MAP_CODEC = MapCodecUtil.lazy(JoinStringProvider.class.getSimpleName(), () -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final MapCodec<JoinStringProvider> CODEC = MapCodecUtil.lazy(JoinStringProvider.class.getSimpleName(), () -> RecordCodecBuilder.mapCodec(instance -> instance.group(
 		ExtraCodecs.nonEmptyList(StringProvider.CODEC.listOf()).fieldOf("strings").forGetter(JoinStringProvider::strings),
 		StringProvider.CODEC.fieldOf("separator").forGetter(JoinStringProvider::separator)
 	).apply(instance, JoinStringProvider::new)));

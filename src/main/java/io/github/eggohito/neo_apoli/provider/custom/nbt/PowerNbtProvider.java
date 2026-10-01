@@ -19,7 +19,7 @@ import java.util.Optional;
 
 public record PowerNbtProvider(PowerIdentifier power, EntityProvider entity) implements NbtProvider {
 
-	public static final MapCodec<PowerNbtProvider> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final MapCodec<PowerNbtProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		PowerIdentifier.CODEC.fieldOf("power").forGetter(PowerNbtProvider::power),
 		EntityProvider.CODEC.fieldOf("entity").forGetter(PowerNbtProvider::entity)
 	).apply(instance, PowerNbtProvider::new));

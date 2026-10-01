@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public record EntityUuidStringProvider(EntityProvider entity) implements StringProvider {
 
-	public static final MapCodec<EntityUuidStringProvider> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance
+	public static final MapCodec<EntityUuidStringProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
 		.group(EntityProvider.CODEC.fieldOf("entity").forGetter(EntityUuidStringProvider::entity))
 		.apply(instance, EntityUuidStringProvider::new)
 	);

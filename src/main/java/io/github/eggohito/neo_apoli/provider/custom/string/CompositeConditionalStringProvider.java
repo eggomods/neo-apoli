@@ -14,7 +14,7 @@ import java.util.List;
 
 public record CompositeConditionalStringProvider(List<CompositeConditional.Entry<StringProvider>> entries, StringProvider defaultValue) implements StringProvider, CompositeConditionalValueProvider<String, StringProvider> {
 
-	public static final MapCodec<CompositeConditionalStringProvider> MAP_CODEC = MapCodecUtil.lazy(CompositeConditionalStringProvider.class.getSimpleName(), () -> CompositeConditionalValueProvider.mapCodec(StringProvider.CODEC, CompositeConditionalStringProvider::new));
+	public static final MapCodec<CompositeConditionalStringProvider> CODEC = MapCodecUtil.lazy(CompositeConditionalStringProvider.class.getSimpleName(), () -> CompositeConditionalValueProvider.mapCodec(StringProvider.CODEC, CompositeConditionalStringProvider::new));
 	public static final StreamCodec<RegistryFriendlyByteBuf, CompositeConditionalStringProvider> STREAM_CODEC = StreamCodecUtil.lazy(CompositeConditionalStringProvider.class.getSimpleName(), () -> CompositeConditionalValueProvider.streamCodec(StringProvider.STREAM_CODEC, CompositeConditionalStringProvider::new));
 
 	@Override

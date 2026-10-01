@@ -18,7 +18,7 @@ import java.util.Optional;
 
 public record ConstantBoxProvider(Vec3 min, Vec3 max) implements BoxProvider {
 
-	public static final MapCodec<ConstantBoxProvider> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final MapCodec<ConstantBoxProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		NeoApoliCodecs.VECTOR_3_DOUBLE.fieldOf("min").forGetter(ConstantBoxProvider::min),
 		NeoApoliCodecs.VECTOR_3_DOUBLE.fieldOf("max").forGetter(ConstantBoxProvider::max)
 	).apply(instance, ConstantBoxProvider::new));

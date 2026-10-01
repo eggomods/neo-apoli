@@ -21,7 +21,7 @@ import java.util.Optional;
 
 public record BlockBoundsBoxProvider(ClipContext.Block shapeType, BlockProvider block) implements BoxProvider {
 
-	public static final MapCodec<BlockBoundsBoxProvider> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final MapCodec<BlockBoundsBoxProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		NeoApoliCodecs.BLOCK_CLIP_CONTEXT.optionalFieldOf("shape_type", ClipContext.Block.OUTLINE).forGetter(BlockBoundsBoxProvider::shapeType),
 		BlockProvider.CODEC.fieldOf("block").forGetter(BlockBoundsBoxProvider::block)
 	).apply(instance, BlockBoundsBoxProvider::new));

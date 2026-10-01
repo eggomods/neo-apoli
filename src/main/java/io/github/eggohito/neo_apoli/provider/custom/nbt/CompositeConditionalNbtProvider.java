@@ -15,7 +15,7 @@ import java.util.List;
 
 public record CompositeConditionalNbtProvider(List<CompositeConditional.Entry<NbtProvider>> entries, NbtProvider defaultValue) implements NbtProvider, CompositeConditionalValueProvider<Tag, NbtProvider> {
 
-	public static final MapCodec<CompositeConditionalNbtProvider> MAP_CODEC = MapCodecUtil.lazy(CompositeConditionalNbtProvider.class.getSimpleName(), () -> CompositeConditionalValueProvider.mapCodec(NbtProvider.CODEC, CompositeConditionalNbtProvider::new));
+	public static final MapCodec<CompositeConditionalNbtProvider> CODEC = MapCodecUtil.lazy(CompositeConditionalNbtProvider.class.getSimpleName(), () -> CompositeConditionalValueProvider.mapCodec(NbtProvider.CODEC, CompositeConditionalNbtProvider::new));
 	public static final StreamCodec<RegistryFriendlyByteBuf, CompositeConditionalNbtProvider> STREAM_CODEC = StreamCodecUtil.lazy(CompositeConditionalNbtProvider.class.getSimpleName(), () -> CompositeConditionalValueProvider.streamCodec(NbtProvider.STREAM_CODEC, CompositeConditionalNbtProvider::new));
 
 	@Override

@@ -19,7 +19,7 @@ import java.util.Optional;
 
 public record NbtStringProvider(NbtProvider source, NbtPathArgument.NbtPath path) implements StringProvider {
 
-	public static final MapCodec<NbtStringProvider> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final MapCodec<NbtStringProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		NbtProvider.CODEC.fieldOf("source").forGetter(NbtStringProvider::source),
 		NbtPathArgument.NbtPath.CODEC.fieldOf("path").forGetter(NbtStringProvider::path)
 	).apply(instance, NbtStringProvider::new));

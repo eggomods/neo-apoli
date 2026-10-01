@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public record ConditionResultBooleanProvider(Condition condition) implements BooleanProvider {
 
-	public static final MapCodec<ConditionResultBooleanProvider> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final MapCodec<ConditionResultBooleanProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Condition.CODEC.fieldOf("condition").forGetter(ConditionResultBooleanProvider::condition)
 	).apply(instance, ConditionResultBooleanProvider::new));
 

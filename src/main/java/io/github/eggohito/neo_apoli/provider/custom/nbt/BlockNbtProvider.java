@@ -20,7 +20,7 @@ import java.util.Optional;
 
 public record BlockNbtProvider(BlockProvider block) implements NbtProvider {
 
-	public static final MapCodec<BlockNbtProvider> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance
+	public static final MapCodec<BlockNbtProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
 		.group(BlockProvider.CODEC.fieldOf("block").forGetter(BlockNbtProvider::block))
 		.apply(instance, BlockNbtProvider::new)
 	);

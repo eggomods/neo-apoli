@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public record ConstantBooleanProvider(boolean value) implements BooleanProvider {
 
-	public static final MapCodec<ConstantBooleanProvider> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance
+	public static final MapCodec<ConstantBooleanProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
 		.group(Codec.BOOL.fieldOf("value").forGetter(ConstantBooleanProvider::value))
 		.apply(instance, ConstantBooleanProvider::new)
 	);

@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public record DynamicBoxProvider(Vec3Provider min, Vec3Provider max) implements BoxProvider {
 
-	public static final MapCodec<DynamicBoxProvider> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final MapCodec<DynamicBoxProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Vec3Provider.CODEC.fieldOf("min").forGetter(DynamicBoxProvider::min),
 		Vec3Provider.CODEC.fieldOf("max").forGetter(DynamicBoxProvider::max)
 	).apply(instance, DynamicBoxProvider::new));

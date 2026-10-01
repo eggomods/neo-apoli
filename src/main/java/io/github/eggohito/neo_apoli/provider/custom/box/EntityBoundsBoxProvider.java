@@ -19,7 +19,7 @@ import java.util.Optional;
 
 public record EntityBoundsBoxProvider(EntityProvider entity) implements BoxProvider {
 
-	public static final MapCodec<EntityBoundsBoxProvider> MAP_CODEC = MapCodecUtil.lazy(EntityBoundsBoxProvider.class.getSimpleName(), () -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final MapCodec<EntityBoundsBoxProvider> CODEC = MapCodecUtil.lazy(EntityBoundsBoxProvider.class.getSimpleName(), () -> RecordCodecBuilder.mapCodec(instance -> instance.group(
 		EntityProvider.CODEC.fieldOf("entity").forGetter(EntityBoundsBoxProvider::entity)
 	).apply(instance, EntityBoundsBoxProvider::new)));
 

@@ -18,7 +18,7 @@ import java.util.Optional;
 
 public record ItemNbtProvider(ItemProvider item) implements NbtProvider {
 
-	public static final MapCodec<ItemNbtProvider> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance
+	public static final MapCodec<ItemNbtProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
 		.group(ItemProvider.CODEC.fieldOf("item").forGetter(ItemNbtProvider::item))
 		.apply(instance, ItemNbtProvider::new)
 	);

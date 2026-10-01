@@ -15,7 +15,7 @@ import java.util.List;
 
 public record CompositeConditionalBoxProvider(List<CompositeConditional.Entry<BoxProvider>> entries, BoxProvider defaultValue) implements BoxProvider, CompositeConditionalValueProvider<AABB, BoxProvider> {
 
-	public static final MapCodec<CompositeConditionalBoxProvider> MAP_CODEC = MapCodecUtil.lazy(CompositeConditionalBoxProvider.class.getSimpleName(), () -> CompositeConditionalValueProvider.mapCodec(BoxProvider.CODEC, CompositeConditionalBoxProvider::new));
+	public static final MapCodec<CompositeConditionalBoxProvider> CODEC = MapCodecUtil.lazy(CompositeConditionalBoxProvider.class.getSimpleName(), () -> CompositeConditionalValueProvider.mapCodec(BoxProvider.CODEC, CompositeConditionalBoxProvider::new));
 	public static final StreamCodec<RegistryFriendlyByteBuf, CompositeConditionalBoxProvider> STREAM_CODEC = StreamCodecUtil.lazy(CompositeConditionalBoxProvider.class.getSimpleName(), () -> CompositeConditionalValueProvider.streamCodec(BoxProvider.STREAM_CODEC, CompositeConditionalBoxProvider::new));
 
 	@Override

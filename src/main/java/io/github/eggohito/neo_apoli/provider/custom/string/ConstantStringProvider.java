@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public record ConstantStringProvider(String value) implements StringProvider {
 
-	public static final MapCodec<ConstantStringProvider> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final MapCodec<ConstantStringProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Codec.STRING.fieldOf("value").forGetter(ConstantStringProvider::value)
 	).apply(instance, ConstantStringProvider::new));
 

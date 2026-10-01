@@ -18,7 +18,7 @@ import java.util.Optional;
 
 public record TranslateBoxProvider(BoxProvider box, Vec3Provider translation) implements BoxProvider {
 
-	public static final MapCodec<TranslateBoxProvider> MAP_CODEC = MapCodecUtil.lazy(TranslateBoxProvider.class.getSimpleName(), () -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final MapCodec<TranslateBoxProvider> CODEC = MapCodecUtil.lazy(TranslateBoxProvider.class.getSimpleName(), () -> RecordCodecBuilder.mapCodec(instance -> instance.group(
 		BoxProvider.CODEC.fieldOf("box").forGetter(TranslateBoxProvider::box),
 		Vec3Provider.CODEC.fieldOf("translation").forGetter(TranslateBoxProvider::translation)
 	).apply(instance, TranslateBoxProvider::new)));

@@ -16,7 +16,7 @@ import java.util.Optional;
 
 public record OffsetBoxProvider(BoxProvider box, BoxProvider offset) implements BoxProvider {
 
-	public static final MapCodec<OffsetBoxProvider> MAP_CODEC = MapCodecUtil.lazy(OffsetBoxProvider.class.getSimpleName(), () -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final MapCodec<OffsetBoxProvider> CODEC = MapCodecUtil.lazy(OffsetBoxProvider.class.getSimpleName(), () -> RecordCodecBuilder.mapCodec(instance -> instance.group(
 		BoxProvider.CODEC.fieldOf("box").forGetter(OffsetBoxProvider::box),
 		BoxProvider.CODEC.fieldOf("offset").forGetter(OffsetBoxProvider::offset)
 	).apply(instance, OffsetBoxProvider::new)));
