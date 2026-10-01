@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.ItemContextParameter;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameterTypes;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliItemProviderTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -18,17 +19,17 @@ import java.util.Set;
 public record ContextItemProvider(ItemContextParameter parameter) implements ItemProvider {
 
 	public static final MapCodec<ContextItemProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
-		.group(ItemContextParameter.CODEC.fieldOf("parameter").forGetter(ContextItemProvider::parameter))
+		.group(NeoApoliContextParameterTypes.ITEM.codec().fieldOf("parameter").forGetter(ContextItemProvider::parameter))
 		.apply(instance, ContextItemProvider::new)
 	);
 
-	public static final Codec<ContextItemProvider> INLINE_CODEC = ItemContextParameter.CODEC.xmap(
+	public static final Codec<ContextItemProvider> INLINE_CODEC = NeoApoliContextParameterTypes.ITEM.codec().xmap(
 		ContextItemProvider::new,
 		ContextItemProvider::parameter
 	);
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ContextItemProvider> STREAM_CODEC = StreamCodec.composite(
-		ItemContextParameter.STREAM_CODEC, ContextItemProvider::parameter,
+		NeoApoliContextParameterTypes.ITEM.streamCodec(), ContextItemProvider::parameter,
 		ContextItemProvider::new
 	);
 

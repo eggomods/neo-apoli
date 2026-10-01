@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.parameter.BooleanContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameterTypes;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliBooleanProviderTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -16,12 +17,12 @@ import java.util.Set;
 public record ContextBooleanProvider(BooleanContextParameter parameter) implements BooleanProvider {
 
 	public static final MapCodec<ContextBooleanProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
-		.group(BooleanContextParameter.CODEC.fieldOf("parameter").forGetter(ContextBooleanProvider::parameter))
+		.group(NeoApoliContextParameterTypes.BOOLEAN.codec().fieldOf("parameter").forGetter(ContextBooleanProvider::parameter))
 		.apply(instance, ContextBooleanProvider::new)
 	);
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ContextBooleanProvider> STREAM_CODEC = StreamCodec.composite(
-		BooleanContextParameter.STREAM_CODEC, ContextBooleanProvider::parameter,
+		NeoApoliContextParameterTypes.BOOLEAN.streamCodec(), ContextBooleanProvider::parameter,
 		ContextBooleanProvider::new
 	);
 

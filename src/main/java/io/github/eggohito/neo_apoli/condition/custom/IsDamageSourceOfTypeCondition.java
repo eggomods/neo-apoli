@@ -8,6 +8,7 @@ import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.DamageSourceContextParameter;
 import io.github.eggohito.neo_apoli.registry.NeoApoliConditionTypes;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameterTypes;
 import io.github.eggohito.neo_apoli.util.RegistryUtil;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -21,12 +22,12 @@ public record IsDamageSourceOfTypeCondition(ResourceKey<DamageType> damageType, 
 
 	public static final MapCodec<IsDamageSourceOfTypeCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		ResourceKey.codec(Registries.DAMAGE_TYPE).fieldOf("damage_type").forGetter(IsDamageSourceOfTypeCondition::damageType),
-		DamageSourceContextParameter.CODEC.fieldOf("damage_source").forGetter(IsDamageSourceOfTypeCondition::damageSource)
+		NeoApoliContextParameterTypes.DAMAGE_SOURCE.codec().fieldOf("damage_source").forGetter(IsDamageSourceOfTypeCondition::damageSource)
 	).apply(instance, IsDamageSourceOfTypeCondition::new));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, IsDamageSourceOfTypeCondition> STREAM_CODEC = StreamCodec.composite(
 		ResourceKey.streamCodec(Registries.DAMAGE_TYPE), IsDamageSourceOfTypeCondition::damageType,
-		DamageSourceContextParameter.STREAM_CODEC, IsDamageSourceOfTypeCondition::damageSource,
+		NeoApoliContextParameterTypes.DAMAGE_SOURCE.streamCodec(), IsDamageSourceOfTypeCondition::damageSource,
 		IsDamageSourceOfTypeCondition::new
 	);
 

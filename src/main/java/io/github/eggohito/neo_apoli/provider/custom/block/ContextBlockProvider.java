@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.parameter.BlockContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameterTypes;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliBlockProviderTypes;
 import io.github.eggohito.neo_apoli.util.CachedBlock;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -18,17 +19,17 @@ import java.util.Set;
 public record ContextBlockProvider(BlockContextParameter parameter) implements BlockProvider {
 
 	public static final MapCodec<ContextBlockProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
-		.group(BlockContextParameter.CODEC.fieldOf("parameter").forGetter(ContextBlockProvider::parameter))
+		.group(NeoApoliContextParameterTypes.BLOCK.codec().fieldOf("parameter").forGetter(ContextBlockProvider::parameter))
 		.apply(instance, ContextBlockProvider::new)
 	);
 
-	public static final Codec<ContextBlockProvider> INLINE_CODEC = BlockContextParameter.CODEC.xmap(
+	public static final Codec<ContextBlockProvider> INLINE_CODEC = NeoApoliContextParameterTypes.BLOCK.codec().xmap(
 		ContextBlockProvider::new,
 		ContextBlockProvider::parameter
 	);
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ContextBlockProvider> STREAM_CODEC = StreamCodec.composite(
-		BlockContextParameter.STREAM_CODEC, ContextBlockProvider::parameter,
+		NeoApoliContextParameterTypes.BLOCK.streamCodec(), ContextBlockProvider::parameter,
 		ContextBlockProvider::new
 	);
 

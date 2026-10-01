@@ -7,6 +7,7 @@ import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.IntContextParameter;
 import io.github.eggohito.neo_apoli.provider.custom.number.IntProvider;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameterTypes;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliIntProviderTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -18,17 +19,17 @@ import java.util.Set;
 public record ContextIntProvider(IntContextParameter parameter) implements IntProvider {
 
 	public static final MapCodec<ContextIntProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
-		.group(IntContextParameter.CODEC.fieldOf("parameter").forGetter(ContextIntProvider::parameter))
+		.group(NeoApoliContextParameterTypes.INT.codec().fieldOf("parameter").forGetter(ContextIntProvider::parameter))
 		.apply(instance, ContextIntProvider::new)
 	);
 
-	public static final Codec<ContextIntProvider> INLINE_CODEC = IntContextParameter.CODEC.xmap(
+	public static final Codec<ContextIntProvider> INLINE_CODEC = NeoApoliContextParameterTypes.INT.codec().xmap(
 		ContextIntProvider::new,
 		ContextIntProvider::parameter
 	);
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ContextIntProvider> STREAM_CODEC = StreamCodec.composite(
-		IntContextParameter.STREAM_CODEC, ContextIntProvider::parameter,
+		NeoApoliContextParameterTypes.INT.streamCodec(), ContextIntProvider::parameter,
 		ContextIntProvider::new
 	);
 

@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableSet;
 import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
 import io.github.eggohito.neo_apoli.context.visitor.Visitor;
 import io.github.eggohito.neo_apoli.util.Reporter;
-import io.github.eggohito.neo_apoli.util.alias.ResourceLocationAlias;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.Getter;
@@ -19,8 +18,6 @@ import java.util.Set;
 
 @SuppressWarnings("unchecked")
 public final class Context implements ContextHolder {
-
-	public static final ResourceLocationAlias ALIASES = new ResourceLocationAlias();
 
 	@Getter
 	private final Level level;

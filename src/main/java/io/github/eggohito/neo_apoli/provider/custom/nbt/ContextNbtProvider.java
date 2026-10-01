@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.NbtContextParameter;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameterTypes;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliNbtProviderTypes;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -17,12 +18,12 @@ import java.util.Set;
 public record ContextNbtProvider(NbtContextParameter parameter) implements NbtProvider {
 
 	public static final MapCodec<ContextNbtProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
-		.group(NbtContextParameter.CODEC.fieldOf("parameter").forGetter(ContextNbtProvider::parameter))
+		.group(NeoApoliContextParameterTypes.NBT.codec().fieldOf("parameter").forGetter(ContextNbtProvider::parameter))
 		.apply(instance, ContextNbtProvider::new)
 	);
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ContextNbtProvider> STREAM_CODEC = StreamCodec.composite(
-		NbtContextParameter.STREAM_CODEC, ContextNbtProvider::parameter,
+		NeoApoliContextParameterTypes.NBT.streamCodec(), ContextNbtProvider::parameter,
 		ContextNbtProvider::new
 	);
 

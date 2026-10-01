@@ -28,31 +28,40 @@ import java.util.function.Function;
 
 public final class NeoApoliContextParameterTypes {
 
-	public static final ContextParameter.Type<BlockContextParameter, BlockProvider> BLOCK = registerInternal("block", BlockProvider.CODEC, BlockProvider.STREAM_CODEC, BlockContextParameter::new);
-	public static final ContextParameter.Type<BooleanContextParameter, BooleanProvider> BOOLEAN = registerInternal("boolean", BooleanProvider.CODEC, BooleanProvider.STREAM_CODEC, BooleanContextParameter::new);
-	public static final ContextParameter.Type<BoxContextParameter, BoxProvider> BOX = registerInternal("box", BoxProvider.CODEC, BoxProvider.STREAM_CODEC, BoxContextParameter::new);
-	public static final ContextParameter.Type<CommandSourceContextParameter, CommandSourceProvider> COMMAND_SOURCE = registerInternal("command_source", CommandSourceProvider.CODEC, CommandSourceProvider.STREAM_CODEC, CommandSourceContextParameter::new);
-	public static final ContextParameter.Type<DirectionContextParameter, DirectionProvider> DIRECTION = registerInternal("direction", DirectionProvider.CODEC, DirectionProvider.STREAM_CODEC, DirectionContextParameter::new);
-	public static final ContextParameter.Type<EffectContextParameter, EffectProvider> EFFECT = registerInternal("effect", EffectProvider.CODEC, EffectProvider.STREAM_CODEC, EffectContextParameter::new);
-	public static final ContextParameter.Type<EntityContextParameter, EntityProvider> ENTITY = registerInternal("entity", EntityProvider.CODEC, EntityProvider.STREAM_CODEC, EntityContextParameter::new);
-	public static final ContextParameter.Type<FloatContextParameter, FloatProvider> FLOAT = registerInternal("float", FloatProvider.CODEC, FloatProvider.STREAM_CODEC, FloatContextParameter::new);
-	public static final ContextParameter.Type<IntContextParameter, IntProvider> INT = registerInternal("int", IntProvider.CODEC, IntProvider.STREAM_CODEC, IntContextParameter::new);
-	public static final ContextParameter.Type<ItemContextParameter, ItemProvider> ITEM = registerInternal("item", ItemProvider.CODEC, ItemProvider.STREAM_CODEC, ItemContextParameter::new);
-	public static final ContextParameter.Type<NbtContextParameter, NbtProvider> NBT = registerInternal("nbt", NbtProvider.CODEC, NbtProvider.STREAM_CODEC, NbtContextParameter::new);
-	public static final ContextParameter.Type<SlotContextParameter, SlotProvider> SLOT = registerInternal("slot", SlotProvider.CODEC, SlotProvider.STREAM_CODEC, SlotContextParameter::new);
-	public static final ContextParameter.Type<StringContextParameter, StringProvider> STRING = registerInternal("string", StringProvider.CODEC, StringProvider.STREAM_CODEC, StringContextParameter::new);
-	public static final ContextParameter.Type<Vec3ContextParameter, Vec3Provider> VEC3 = registerInternal("vec3", Vec3Provider.CODEC, Vec3Provider.STREAM_CODEC, Vec3ContextParameter::new);
+	public static final ContextParameter.TypeWithProvider<BlockContextParameter, BlockProvider> BLOCK = registerWithProviderInternal("block", BlockProvider.CODEC, BlockProvider.STREAM_CODEC, BlockContextParameter::new);
+	public static final ContextParameter.TypeWithProvider<BooleanContextParameter, BooleanProvider> BOOLEAN = registerWithProviderInternal("boolean", BooleanProvider.CODEC, BooleanProvider.STREAM_CODEC, BooleanContextParameter::new);
+	public static final ContextParameter.TypeWithProvider<BoxContextParameter, BoxProvider> BOX = registerWithProviderInternal("box", BoxProvider.CODEC, BoxProvider.STREAM_CODEC, BoxContextParameter::new);
+	public static final ContextParameter.TypeWithProvider<CommandSourceContextParameter, CommandSourceProvider> COMMAND_SOURCE = registerWithProviderInternal("command_source", CommandSourceProvider.CODEC, CommandSourceProvider.STREAM_CODEC, CommandSourceContextParameter::new);
+	public static final ContextParameter.Type<DamageSourceContextParameter> DAMAGE_SOURCE = registerSimpleInternal("damage_source", DamageSourceContextParameter::new);
+	public static final ContextParameter.TypeWithProvider<DirectionContextParameter, DirectionProvider> DIRECTION = registerWithProviderInternal("direction", DirectionProvider.CODEC, DirectionProvider.STREAM_CODEC, DirectionContextParameter::new);
+	public static final ContextParameter.TypeWithProvider<EffectContextParameter, EffectProvider> EFFECT = registerWithProviderInternal("effect", EffectProvider.CODEC, EffectProvider.STREAM_CODEC, EffectContextParameter::new);
+	public static final ContextParameter.TypeWithProvider<EntityContextParameter, EntityProvider> ENTITY = registerWithProviderInternal("entity", EntityProvider.CODEC, EntityProvider.STREAM_CODEC, EntityContextParameter::new);
+	public static final ContextParameter.TypeWithProvider<FloatContextParameter, FloatProvider> FLOAT = registerWithProviderInternal("float", FloatProvider.CODEC, FloatProvider.STREAM_CODEC, FloatContextParameter::new);
+	public static final ContextParameter.TypeWithProvider<IntContextParameter, IntProvider> INT = registerWithProviderInternal("int", IntProvider.CODEC, IntProvider.STREAM_CODEC, IntContextParameter::new);
+	public static final ContextParameter.TypeWithProvider<ItemContextParameter, ItemProvider> ITEM = registerWithProviderInternal("item", ItemProvider.CODEC, ItemProvider.STREAM_CODEC, ItemContextParameter::new);
+	public static final ContextParameter.TypeWithProvider<NbtContextParameter, NbtProvider> NBT = registerWithProviderInternal("nbt", NbtProvider.CODEC, NbtProvider.STREAM_CODEC, NbtContextParameter::new);
+	public static final ContextParameter.TypeWithProvider<SlotContextParameter, SlotProvider> SLOT = registerWithProviderInternal("slot", SlotProvider.CODEC, SlotProvider.STREAM_CODEC, SlotContextParameter::new);
+	public static final ContextParameter.TypeWithProvider<StringContextParameter, StringProvider> STRING = registerWithProviderInternal("string", StringProvider.CODEC, StringProvider.STREAM_CODEC, StringContextParameter::new);
+	public static final ContextParameter.TypeWithProvider<Vec3ContextParameter, Vec3Provider> VEC3 = registerWithProviderInternal("vec3", Vec3Provider.CODEC, Vec3Provider.STREAM_CODEC, Vec3ContextParameter::new);
 
 	public static void registerAll() {
 
 	}
 
-	public static <V, Parameter extends ContextParameter<V>, Provider extends ValueProvider<V>> ContextParameter.Type<Parameter, Provider> register(ResourceLocation id, Codec<Provider> providerCodec, StreamCodec<RegistryFriendlyByteBuf, Provider> providerStreamCodec, Function<ResourceLocation, Parameter> factory) {
-		return Registry.register(NeoApoliRegistries.CONTEXT_PARAMETER_TYPE, id, new ContextParameter.Type<>(providerCodec, providerStreamCodec, factory));
+	public static <V, Parameter extends ContextParameter<V>, Provider extends ValueProvider<V>> ContextParameter.TypeWithProvider<Parameter, Provider> registerWithProvider(ResourceLocation id, Codec<Provider> providerCodec, StreamCodec<RegistryFriendlyByteBuf, Provider> providerStreamCodec, Function<ResourceLocation, Parameter> factory) {
+		return Registry.register(NeoApoliRegistries.CONTEXT_PARAMETER_TYPE, id, new ContextParameter.TypeWithProvider<>(providerCodec, providerStreamCodec, factory));
 	}
 
-	private static <V, Parameter extends ContextParameter<V>, Provider extends ValueProvider<V>> ContextParameter.Type<Parameter, Provider> registerInternal(String path, Codec<Provider> providerCodec, StreamCodec<RegistryFriendlyByteBuf, Provider> providerStreamCodec, Function<ResourceLocation, Parameter> factory) {
-		return register(NeoApoli.id(path), providerCodec, providerStreamCodec, factory);
+	public static <V, Parameter extends ContextParameter<V>> ContextParameter.Type<Parameter> registerSimple(ResourceLocation id, Function<ResourceLocation, Parameter> factory) {
+		return Registry.register(NeoApoliRegistries.CONTEXT_PARAMETER_TYPE, id, new ContextParameter.SimpleType<>(factory));
+	}
+
+	private static <V, Parameter extends ContextParameter<V>, Provider extends ValueProvider<V>> ContextParameter.TypeWithProvider<Parameter, Provider> registerWithProviderInternal(String path, Codec<Provider> providerCodec, StreamCodec<RegistryFriendlyByteBuf, Provider> providerStreamCodec, Function<ResourceLocation, Parameter> factory) {
+		return registerWithProvider(NeoApoli.id(path), providerCodec, providerStreamCodec, factory);
+	}
+
+	private static <V, Parameter extends ContextParameter<V>> ContextParameter.Type<Parameter> registerSimpleInternal(String path, Function<ResourceLocation, Parameter> factory) {
+		return registerSimple(NeoApoli.id(path), factory);
 	}
 
 }

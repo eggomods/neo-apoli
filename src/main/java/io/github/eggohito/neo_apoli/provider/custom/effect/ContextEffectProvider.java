@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.EffectContextParameter;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameterTypes;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliEffectProviderTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -18,17 +19,17 @@ import java.util.Set;
 public record ContextEffectProvider(EffectContextParameter parameter) implements EffectProvider {
 
 	public static final MapCodec<ContextEffectProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
-		.group(EffectContextParameter.CODEC.fieldOf("parameter").forGetter(ContextEffectProvider::parameter))
+		.group(NeoApoliContextParameterTypes.EFFECT.codec().fieldOf("parameter").forGetter(ContextEffectProvider::parameter))
 		.apply(instance, ContextEffectProvider::new)
 	);
 
-	public static final Codec<ContextEffectProvider> INLINE_CODEC = EffectContextParameter.CODEC.xmap(
+	public static final Codec<ContextEffectProvider> INLINE_CODEC = NeoApoliContextParameterTypes.EFFECT.codec().xmap(
 		ContextEffectProvider::new,
 		ContextEffectProvider::parameter
 	);
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ContextEffectProvider> STREAM_CODEC = StreamCodec.composite(
-		EffectContextParameter.STREAM_CODEC, ContextEffectProvider::parameter,
+		NeoApoliContextParameterTypes.EFFECT.streamCodec(), ContextEffectProvider::parameter,
 		ContextEffectProvider::new
 	);
 

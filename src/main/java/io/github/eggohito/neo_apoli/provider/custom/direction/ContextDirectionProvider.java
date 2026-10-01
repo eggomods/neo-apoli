@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.DirectionContextParameter;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameterTypes;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliDirectionProviderTypes;
 import net.minecraft.core.Direction;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -17,12 +18,12 @@ import java.util.Set;
 public record ContextDirectionProvider(DirectionContextParameter parameter) implements DirectionProvider {
 
 	public static final MapCodec<ContextDirectionProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
-		.group(DirectionContextParameter.CODEC.fieldOf("parameter").forGetter(ContextDirectionProvider::parameter))
+		.group(NeoApoliContextParameterTypes.DIRECTION.codec().fieldOf("parameter").forGetter(ContextDirectionProvider::parameter))
 		.apply(instance, ContextDirectionProvider::new)
 	);
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ContextDirectionProvider> STREAM_CODEC = StreamCodec.composite(
-		DirectionContextParameter.STREAM_CODEC, ContextDirectionProvider::parameter,
+		NeoApoliContextParameterTypes.DIRECTION.streamCodec(), ContextDirectionProvider::parameter,
 		ContextDirectionProvider::new
 	);
 

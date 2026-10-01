@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.SlotContextParameter;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameterTypes;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliSlotProviderTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -18,17 +19,17 @@ import java.util.Set;
 public record ContextSlotProvider(SlotContextParameter parameter) implements SlotProvider {
 
 	public static final MapCodec<ContextSlotProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
-		.group(SlotContextParameter.CODEC.fieldOf("parameter").forGetter(ContextSlotProvider::parameter))
+		.group(NeoApoliContextParameterTypes.SLOT.codec().fieldOf("parameter").forGetter(ContextSlotProvider::parameter))
 		.apply(instance, ContextSlotProvider::new)
 	);
 
-	public static final Codec<ContextSlotProvider> INLINE_CODEC = SlotContextParameter.CODEC.xmap(
+	public static final Codec<ContextSlotProvider> INLINE_CODEC = NeoApoliContextParameterTypes.SLOT.codec().xmap(
 		ContextSlotProvider::new,
 		ContextSlotProvider::parameter
 	);
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ContextSlotProvider> STREAM_CODEC = StreamCodec.composite(
-		SlotContextParameter.STREAM_CODEC, ContextSlotProvider::parameter,
+		NeoApoliContextParameterTypes.SLOT.streamCodec(), ContextSlotProvider::parameter,
 		ContextSlotProvider::new
 	);
 

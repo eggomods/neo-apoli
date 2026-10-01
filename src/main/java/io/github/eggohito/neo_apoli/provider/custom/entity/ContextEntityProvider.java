@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.EntityContextParameter;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameterTypes;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliEntityProviderTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -18,17 +19,17 @@ import java.util.Set;
 public record ContextEntityProvider(EntityContextParameter parameter) implements EntityProvider {
 
 	public static final MapCodec<ContextEntityProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
-		.group(EntityContextParameter.CODEC.fieldOf("parameter").forGetter(ContextEntityProvider::parameter))
+		.group(NeoApoliContextParameterTypes.ENTITY.codec().fieldOf("parameter").forGetter(ContextEntityProvider::parameter))
 		.apply(instance, ContextEntityProvider::new)
 	);
 
-	public static final Codec<ContextEntityProvider> INLINE_CODEC = EntityContextParameter.CODEC.xmap(
+	public static final Codec<ContextEntityProvider> INLINE_CODEC = NeoApoliContextParameterTypes.ENTITY.codec().xmap(
 		ContextEntityProvider::new,
 		ContextEntityProvider::parameter
 	);
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ContextEntityProvider> STREAM_CODEC = StreamCodec.composite(
-		EntityContextParameter.STREAM_CODEC, ContextEntityProvider::parameter,
+		NeoApoliContextParameterTypes.ENTITY.streamCodec(), ContextEntityProvider::parameter,
 		ContextEntityProvider::new
 	);
 

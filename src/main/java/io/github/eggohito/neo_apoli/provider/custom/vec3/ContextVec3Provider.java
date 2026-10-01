@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.Vec3ContextParameter;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameterTypes;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliVec3ProviderTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -17,12 +18,12 @@ import java.util.Set;
 public record ContextVec3Provider(Vec3ContextParameter parameter) implements Vec3Provider {
 
 	public static final MapCodec<ContextVec3Provider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
-		.group(Vec3ContextParameter.CODEC.fieldOf("parameter").forGetter(ContextVec3Provider::parameter))
+		.group(NeoApoliContextParameterTypes.VEC3.codec().fieldOf("parameter").forGetter(ContextVec3Provider::parameter))
 		.apply(instance, ContextVec3Provider::new)
 	);
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ContextVec3Provider> STREAM_CODEC = StreamCodec.composite(
-		Vec3ContextParameter.STREAM_CODEC, ContextVec3Provider::parameter,
+		NeoApoliContextParameterTypes.VEC3.streamCodec(), ContextVec3Provider::parameter,
 		ContextVec3Provider::new
 	);
 

@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.StringContextParameter;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameterTypes;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliStringProviderTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -16,12 +17,12 @@ import java.util.Set;
 public record ContextStringProvider(StringContextParameter parameter) implements StringProvider {
 
 	public static final MapCodec<ContextStringProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
-		.group(StringContextParameter.CODEC.fieldOf("parameter").forGetter(ContextStringProvider::parameter))
+		.group(NeoApoliContextParameterTypes.STRING.codec().fieldOf("parameter").forGetter(ContextStringProvider::parameter))
 		.apply(instance, ContextStringProvider::new)
 	);
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ContextStringProvider> STREAM_CODEC = StreamCodec.composite(
-		StringContextParameter.STREAM_CODEC, ContextStringProvider::parameter,
+		NeoApoliContextParameterTypes.STRING.streamCodec(), ContextStringProvider::parameter,
 		ContextStringProvider::new
 	);
 

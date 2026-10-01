@@ -61,7 +61,7 @@ public final class NeoApoliRegistryKeys {
 	public static final ResourceKey<Registry<Color.Type<?>>> COLOR_TYPE = create("color_type");
 	public static final ResourceKey<Registry<HudElement.Type<?>>> HUD_ELEMENT_TYPE = create("hud_element_type");
 
-	public static final ResourceKey<Registry<ContextParameter.Type<?, ?>>> CONTEXT_PARAMETER_TYPE = create("context/parameter_type");
+	public static final ResourceKey<Registry<ContextParameter.Type<?>>> CONTEXT_PARAMETER_TYPE = create("context/parameter_type");
 
 	private static <T> ResourceKey<Registry<T>> create(String path) {
 		return ResourceKey.createRegistryKey(NeoApoli.id(path));

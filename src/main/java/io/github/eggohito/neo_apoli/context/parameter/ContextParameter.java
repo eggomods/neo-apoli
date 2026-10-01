@@ -5,23 +5,23 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.datafixers.util.Unit;
 import com.mojang.serialization.*;
 import io.github.eggohito.neo_apoli.NeoApoli;
-import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.provider.ValueProvider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliRegistries;
 import io.github.eggohito.neo_apoli.registry.NeoApoliRegistryKeys;
 import io.github.eggohito.neo_apoli.util.ResourceLocationUtil;
 import io.github.eggohito.neo_apoli.util.alias.FixedRegistryAlias;
+import io.github.eggohito.neo_apoli.util.alias.ResourceLocationAlias;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import lombok.Getter;
+import net.minecraft.Util;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -30,8 +30,7 @@ public interface ContextParameter<T> {
 	@SuppressWarnings("unchecked")
 	Codec<Map<ContextParameter<?>, ValueProvider<?>>> VALUE_MAP_CODEC = new Codec<>() {
 
-		private final static Codec<ResourceLocation> ID_CODEC = ResourceLocationUtil.codecWithDefaultNamespace(NeoApoli.MOD_NAMESPACE);
-		private final static MapCodec<Type<?, ?>> TYPE_CODEC = Type.CODEC.fieldOf("type");
+		private final static MapCodec<Type<?>> TYPE_CODEC = Type.CODEC.fieldOf("type");
 
 		@Override
 		public <I> DataResult<Pair<Map<ContextParameter<?>, ValueProvider<?>>, I>> decode(DynamicOps<I> ops, I input) {
@@ -48,45 +47,50 @@ public interface ContextParameter<T> {
 			Map<ContextParameter<?>, ValueProvider<?>> succeeded = new Object2ObjectLinkedOpenHashMap<>();
 			DataResult<Unit> result = input.entries().reduce(
 				DataResult.success(Unit.INSTANCE, Lifecycle.stable()),
-				(identity, keyAndValue) -> {
+				(identity, rawKeyAndValue) -> {
 
-					DataResult<String> keyResult = Codec.STRING.parse(ops, keyAndValue.getFirst());
-					DataResult<MapLike<I>> valueResult = ops.getMap(keyAndValue.getSecond());
+					I rawKey = rawKeyAndValue.getFirst();
+					DataResult<String> keyResult = Codec.STRING.parse(ops, rawKey);
 
 					if (keyResult.isError()) {
 						return identity.apply2stable((unit, o) -> unit, keyResult);
 					}
 
+					String key = keyResult.getOrThrow();
+					DataResult<MapLike<I>> valueResult = ops.getMap(rawKeyAndValue.getSecond());
+
 					if (valueResult.isError()) {
 						return identity.apply2stable((unit, o) -> unit, valueResult);
 					}
 
-					String key = keyResult.getOrThrow();
 					MapLike<I> valueMap = valueResult.getOrThrow();
-
-					DataResult<ResourceLocation> idResult = ID_CODEC
-						.parse(ops, keyAndValue.getFirst())
-						.map(id -> Context.ALIASES.resolve(id, Predicate.not(id::equals)));
-
-					if (idResult.isError()) {
-						return identity.apply2stable((unit, ignored) -> unit, idResult);
-					}
-
-					ResourceLocation id = idResult.getOrThrow();
-					DataResult<Type<?, ?>> typeResult = TYPE_CODEC.decode(ops, valueMap);
+					DataResult<Type<?>> typeResult = TYPE_CODEC.decode(ops, valueMap);
 
 					if (typeResult.isError()) {
-						return identity.apply2stable((unit, ignored) -> unit, typeResult);
+						return identity.apply2stable((unit, o) -> unit, typeResult);
 					}
 
-					Type<?, ValueProvider<?>> type = (Type<?, ValueProvider<?>>) typeResult.getOrThrow();
-					DataResult<ValueProvider<?>> providerResult = type.providerCodec().parse(ops, valueMap.get("value"));
+					Type<?> type = typeResult.getOrThrow();
 
-					if (providerResult.isSuccess() && succeeded.putIfAbsent(type.create(id), providerResult.getOrThrow()) != null) {
+					if (!(type instanceof ContextParameter.TypeWithProvider<?, ?> typeWithProvider)) {
+						return identity.apply2stable((unit, o) -> unit, DataResult.error(() -> "Parameter type \"" + Util.getRegisteredName(NeoApoliRegistries.CONTEXT_PARAMETER_TYPE, type) + "\" doesn't have a corresponding value provider!"));
+					}
+
+					TypeWithProvider<ContextParameter<?>, ValueProvider<?>> castedTypeWithProvider = (TypeWithProvider<ContextParameter<?>, ValueProvider<?>>) typeWithProvider;
+					DataResult<ValueProvider<?>> providerResult = castedTypeWithProvider.providerCodec().parse(ops, valueMap.get("value"));
+
+					if (providerResult.isError()) {
+						return identity.apply2stable((unit, o) -> unit, providerResult);
+					}
+
+					ValueProvider<?> provider = providerResult.getOrThrow();
+					DataResult<ContextParameter<?>> parameterResult = castedTypeWithProvider.codec().parse(ops, rawKey);
+
+					if (parameterResult.isSuccess() && succeeded.putIfAbsent(parameterResult.getOrThrow(), provider) != null) {
 						return identity.apply2stable((unit, o) -> unit, DataResult.error(() -> "Duplicate key: \"" + key + "\""));
 					}
 
-					return identity.apply2stable((unit, ignored) -> unit, providerResult);
+					return identity.apply2stable((unit, o) -> unit, parameterResult);
 
 				},
 				(first, second) ->
@@ -105,17 +109,16 @@ public interface ContextParameter<T> {
 				ContextParameter<?> parameter = entry.getKey();
 				ValueProvider<?> provider = entry.getValue();
 
-				Type<?, ValueProvider<?>> parameterType = (Type<?, ValueProvider<?>>) parameter.getType();
-
-				if (parameterType != null) {
-
-					RecordBuilder<O> mapBuilder = TYPE_CODEC
-						.encode(parameterType, ops, ops.mapBuilder()
-							.add("value", parameterType.providerCodec().encodeStart(ops, provider)));
-
-					prefix.add(entry.getKey().name().toString(), mapBuilder.build(ops.empty()));
-
+				if (!(parameter.getType() instanceof ContextParameter.TypeWithProvider<?, ?> type)) {
+					continue;
 				}
+
+				TypeWithProvider<?, ValueProvider<?>> casted = (TypeWithProvider<?, ValueProvider<?>>) type;
+				RecordBuilder<O> mapBuilder = TYPE_CODEC
+					.encode(type, ops, ops.mapBuilder()
+						.add("value", casted.providerCodec().encodeStart(ops, provider)));
+
+				prefix.add(entry.getKey().name().toString(), mapBuilder.build(ops.empty()));
 
 			}
 
@@ -136,10 +139,14 @@ public interface ContextParameter<T> {
 
 			for (int i = 0; i < size; i++) {
 
-				Type<?, ?> type = Type.STREAM_CODEC.decode(buf);
+				Type<?> type = Type.STREAM_CODEC.decode(buf);
 
-				ContextParameter<?> parameter = type.create(buf.readResourceLocation());
-				ValueProvider<?> provider = type.providerStreamCodec().decode(buf);
+				if (!(type instanceof ContextParameter.TypeWithProvider<?,?> typeWithProvider)) {
+					throw new IllegalStateException("Received parameter type \"" + Util.getRegisteredName(NeoApoliRegistries.CONTEXT_PARAMETER_TYPE, type) + "\", which doesn't have a corresponding value provider!");
+				}
+
+				ContextParameter<?> parameter = typeWithProvider.create(buf.readResourceLocation());
+				ValueProvider<?> provider = typeWithProvider.providerStreamCodec().decode(buf);
 
 				map.put(parameter, provider);
 
@@ -152,30 +159,22 @@ public interface ContextParameter<T> {
 		@Override
 		public void encode(RegistryFriendlyByteBuf buf, Map<ContextParameter<?>, ValueProvider<?>> map) {
 
-			Map<ContextParameter<?>, ValueProvider<?>> filtered = new Object2ObjectLinkedOpenHashMap<>();
+			buf.writeInt(map.size());
 
 			for (var entry : map.entrySet()) {
 
 				ContextParameter<?> parameter = entry.getKey();
-
-				if (parameter.getType() != null) {
-					filtered.put(parameter, entry.getValue());
-				}
-
-			}
-
-			buf.writeInt(filtered.size());
-
-			for (var entry : filtered.entrySet()) {
-
-				ContextParameter<?> parameter = entry.getKey();
 				ValueProvider<?> provider = entry.getValue();
 
-				Type<?, ValueProvider<?>> type = (Type<?, ValueProvider<?>>) Objects.requireNonNull(parameter.getType(), "Unfiltered parameter \"" + parameter.name() + "\" without a type got through! This is not supposed to happen!");
-				Type.STREAM_CODEC.encode(buf, parameter.getType());
+				if (!(parameter.getType() instanceof ContextParameter.TypeWithProvider<?, ?> typeWithProvider)) {
+					throw new IllegalStateException("Couldn't send parameter \"" + parameter.name() + "\" with type \"" + Util.getRegisteredName(NeoApoliRegistries.CONTEXT_PARAMETER_TYPE, parameter.getType()) + "\", as it doesn't have a corresponding value provider!");
+				}
+
+				TypeWithProvider<?, ValueProvider<?>> casted = (TypeWithProvider<?, ValueProvider<?>>) typeWithProvider;
+				Type.STREAM_CODEC.encode(buf, casted);
 
 				buf.writeResourceLocation(parameter.name());
-				type.providerStreamCodec().encode(buf, provider);
+				casted.providerStreamCodec().encode(buf, provider);
 
 			}
 
@@ -185,33 +184,61 @@ public interface ContextParameter<T> {
 
 	ResourceLocation name();
 
-	@Nullable
-	Type<?, ?> getType();
+	Type<?> getType();
 
-	static <T, P extends ContextParameter<T>> Codec<P> codec(Function<ResourceLocation, P> constructor) {
-		return ResourceLocation.CODEC.xmap(constructor, ContextParameter::name);
-	}
+	@Getter
+	sealed class Type<Parameter extends ContextParameter<?>> {
 
-	static <T, P extends ContextParameter<T>> Codec<P> codec(String defaultNamespace, Function<ResourceLocation, P> constructor) {
-		return ResourceLocationUtil.codecWithDefaultNamespace(defaultNamespace)
-			.xmap(id -> Context.ALIASES.resolve(id, Predicate.not(id::equals)), Function.identity())
-			.xmap(constructor, ContextParameter::name);
-	}
+		public static final FixedRegistryAlias<Type<?>> ALIASES = FixedRegistryAlias.of(NeoApoliRegistries.CONTEXT_PARAMETER_TYPE);
+		public static final Codec<Type<?>> CODEC = ALIASES.createCodec(NeoApoli.MOD_NAMESPACE);
+		public static final StreamCodec<RegistryFriendlyByteBuf, Type<?>> STREAM_CODEC = ByteBufCodecs.registry(NeoApoliRegistryKeys.CONTEXT_PARAMETER_TYPE);
 
-	static <T, P extends ContextParameter<T>> StreamCodec<ByteBuf, P> streamCodec(Function<ResourceLocation, P> constructor) {
-		return ResourceLocation.STREAM_CODEC.map(constructor, ContextParameter::name);
-	}
+		private final Codec<Parameter> codec;
+		private final StreamCodec<ByteBuf, Parameter> streamCodec;
 
-	record Type<Parameter extends ContextParameter<?>, Provider extends ValueProvider<?>>(Codec<Provider> providerCodec, StreamCodec<RegistryFriendlyByteBuf, Provider> providerStreamCodec, Function<ResourceLocation, Parameter> factory) {
+		private final ResourceLocationAlias aliases;
+		private final Function<ResourceLocation, Parameter> factory;
 
-		public static final FixedRegistryAlias<Type<?, ?>> ALIASES = FixedRegistryAlias.of(NeoApoliRegistries.CONTEXT_PARAMETER_TYPE);
-
-		public static final Codec<Type<?, ?>> CODEC = ALIASES.createCodec(NeoApoli.MOD_NAMESPACE);
-
-		public static final StreamCodec<RegistryFriendlyByteBuf, Type<?, ?>> STREAM_CODEC = ByteBufCodecs.registry(NeoApoliRegistryKeys.CONTEXT_PARAMETER_TYPE);
+		public Type(ResourceLocationAlias aliases, Function<ResourceLocation, Parameter> factory) {
+			this.codec = ResourceLocationUtil.codecWithDefaultNamespace(NeoApoli.MOD_NAMESPACE).xmap(id -> aliases.resolve(id, Predicate.not(id::equals)), Function.identity()).xmap(factory, ContextParameter::name);
+			this.streamCodec = ResourceLocation.STREAM_CODEC.map(factory, ContextParameter::name);
+			this.aliases = aliases;
+			this.factory = factory;
+		}
 
 		public Parameter create(ResourceLocation name) {
 			return factory().apply(name);
+		}
+
+	}
+
+	@Getter
+	final class TypeWithProvider<Parameter extends ContextParameter<?>, Provider extends ValueProvider<?>> extends Type<Parameter> {
+
+		private final Codec<Provider> providerCodec;
+		private final StreamCodec<RegistryFriendlyByteBuf, Provider> providerStreamCodec;
+
+		public TypeWithProvider(Codec<Provider> providerCodec, StreamCodec<RegistryFriendlyByteBuf, Provider> providerStreamCodec, ResourceLocationAlias aliases, Function<ResourceLocation, Parameter> factory) {
+			super(aliases, factory);
+			this.providerCodec = providerCodec;
+			this.providerStreamCodec = providerStreamCodec;
+		}
+
+		public TypeWithProvider(Codec<Provider> providerCodec, StreamCodec<RegistryFriendlyByteBuf, Provider> providerStreamCodec, Function<ResourceLocation, Parameter> factory) {
+			this(providerCodec, providerStreamCodec, new ResourceLocationAlias(), factory);
+		}
+
+	}
+
+	@Getter
+	final class SimpleType<Parameter extends ContextParameter<?>> extends Type<Parameter> {
+
+		public SimpleType(ResourceLocationAlias aliases, Function<ResourceLocation, Parameter> factory) {
+			super(aliases, factory);
+		}
+
+		public SimpleType(Function<ResourceLocation, Parameter> factory) {
+			this(new ResourceLocationAlias(), factory);
 		}
 
 	}

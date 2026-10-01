@@ -1,7 +1,6 @@
 package io.github.eggohito.neo_apoli.registry.context;
 
 import io.github.eggohito.neo_apoli.NeoApoli;
-import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.parameter.*;
 
 public final class NeoApoliContextParameters {
@@ -36,14 +35,14 @@ public final class NeoApoliContextParameters {
 	public static final SlotContextParameter USED_ITEM_SLOT = new SlotContextParameter(NeoApoli.id("used_item_slot"));
 
 	public static void registerAll() {
-		addPathAlias("actor", ACTOR_ENTITY);
-		addPathAlias("projectile", PROJECTILE_ENTITY);
-		addPathAlias("target", TARGET_ENTITY);
-		addPathAlias("this", THIS_ENTITY);
+		addPathAlias(NeoApoliContextParameterTypes.ENTITY, "actor", ACTOR_ENTITY);
+		addPathAlias(NeoApoliContextParameterTypes.ENTITY, "projectile", PROJECTILE_ENTITY);
+		addPathAlias(NeoApoliContextParameterTypes.ENTITY, "target", TARGET_ENTITY);
+		addPathAlias(NeoApoliContextParameterTypes.ENTITY, "this", THIS_ENTITY);
 	}
 
-	public static <P extends ContextParameter<?>> void addPathAlias(String from, P to) {
-		Context.ALIASES.getPaths().addAlias(from, to.name().getPath());
+	public static <T extends ContextParameter.Type<P>, P extends ContextParameter<?>> void addPathAlias(T type, String from, P to) {
+		type.aliases().getPaths().addAlias(from, to.name().getPath());
 	}
 
 }

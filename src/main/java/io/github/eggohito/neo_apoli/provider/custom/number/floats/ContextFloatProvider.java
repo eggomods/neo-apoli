@@ -7,6 +7,7 @@ import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.FloatContextParameter;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameterTypes;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliFloatProviderTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -18,17 +19,17 @@ import java.util.Set;
 public record ContextFloatProvider(FloatContextParameter parameter) implements FloatProvider {
 
 	public static final MapCodec<ContextFloatProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
-		.group(FloatContextParameter.CODEC.fieldOf("parameter").forGetter(ContextFloatProvider::parameter))
+		.group(NeoApoliContextParameterTypes.FLOAT.codec().fieldOf("parameter").forGetter(ContextFloatProvider::parameter))
 		.apply(instance, ContextFloatProvider::new)
 	);
 
-	public static final Codec<ContextFloatProvider> INLINE_CODEC = FloatContextParameter.CODEC.xmap(
+	public static final Codec<ContextFloatProvider> INLINE_CODEC = NeoApoliContextParameterTypes.FLOAT.codec().xmap(
 		ContextFloatProvider::new,
 		ContextFloatProvider::parameter
 	);
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ContextFloatProvider> STREAM_CODEC = StreamCodec.composite(
-		FloatContextParameter.STREAM_CODEC, ContextFloatProvider::parameter,
+		NeoApoliContextParameterTypes.FLOAT.streamCodec(), ContextFloatProvider::parameter,
 		ContextFloatProvider::new
 	);
 
