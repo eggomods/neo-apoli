@@ -229,7 +229,7 @@ public final class NeoApoliPowerTypes {
 		keys -> keys
 			.optional(NeoApoliContextParameters.ACTOR_ENTITY)
 			.required(NeoApoliContextParameters.TARGET_ENTITY)
-			.required(NeoApoliContextParameters.DEALT_DAMAGE_SOURCE)
+			.required(NeoApoliContextParameters.TAKEN_DAMAGE_SOURCE)
 			.optional(NeoApoliContextParameters.DAMAGING_ENTITY)
 			.optional(NeoApoliContextParameters.DIRECT_DAMAGING_ENTITY)
 	);
