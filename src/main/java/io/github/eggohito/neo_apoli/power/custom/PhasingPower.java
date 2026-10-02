@@ -3,15 +3,17 @@ package io.github.eggohito.neo_apoli.power.custom;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.condition.custom.IsEntitySneakingCondition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.parameter.BlockContextParameter;
 import io.github.eggohito.neo_apoli.context.visitor.ClearableVisitor;
 import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.entity.Powers;
 import io.github.eggohito.neo_apoli.registry.NeoApoliPowerTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameters;
 import io.github.eggohito.neo_apoli.util.CachedBlock;
 import io.github.eggohito.neo_apoli.util.CodecUtil;
 import io.github.eggohito.neo_apoli.util.StreamCodecUtil;
@@ -32,11 +34,11 @@ import java.util.function.BiPredicate;
 public record PhasingPower(Optional<Condition> activeCondition, Condition phaseDownCondition, RenderEffect renderEffect, float viewDistance) implements Power {
 
 	public static final ClearableVisitor<Instance> VISITOR = ClearableVisitor.createThreadLocalized();
-	public static final Context.Parameter<CachedBlock> PHASED_BLOCK = NeoApoliContextParams.registerInternal("phased_block", BlockContextParameter::new);
+	public static final BlockContextParameter PHASED_BLOCK = new BlockContextParameter(NeoApoli.id("phased_block"));
 
 	public static final MapCodec<PhasingPower> CODEC = RecordCodecBuilder.mapCodec(instance -> Power
 		.addActiveConditionField(instance)
-		.and(Condition.CODEC.optionalFieldOf("phase_down_condition", new IsEntitySneakingCondition(NeoApoliContextParams.THIS_ENTITY)).forGetter(PhasingPower::phaseDownCondition))
+		.and(Condition.CODEC.optionalFieldOf("phase_down_condition", new IsEntitySneakingCondition(NeoApoliContextParameters.THIS_ENTITY)).forGetter(PhasingPower::phaseDownCondition))
 		.and(RenderEffect.CODEC.optionalFieldOf("render_effect", RenderEffect.BLINDNESS).forGetter(PhasingPower::renderEffect))
 		.and(Codec.floatRange(2.0F, Float.MAX_VALUE).optionalFieldOf("view_distance", 8.0F).forGetter(PhasingPower::viewDistance))
 		.apply(instance, PhasingPower::new)
@@ -61,7 +63,7 @@ public record PhasingPower(Optional<Condition> activeCondition, Condition phaseD
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Power.super.validate(validator);
 		phaseDownCondition().validate(validator.forChild(".phase_down_condition"));
 	}

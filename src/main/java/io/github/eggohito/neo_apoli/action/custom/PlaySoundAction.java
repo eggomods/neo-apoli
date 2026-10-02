@@ -7,6 +7,7 @@ import io.github.eggohito.neo_apoli.codec.NeoApoliCodecs;
 import io.github.eggohito.neo_apoli.codec.NeoApoliStreamCodecs;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.ContextValidatable;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.floats.ConstantFloatProvider;
@@ -105,7 +106,7 @@ public record PlaySoundAction(Holder<SoundEvent> sound, SoundSource category, Li
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Action.super.validate(validator);
 		ContextValidatable.validate(targets(), validator, index -> ".targets[" + index + "]");
 		position().validate(validator.forChild(".position"));

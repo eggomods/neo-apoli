@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.action.Action;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.ContextValidatable;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.registry.NeoApoliActionTypes;
 import io.github.eggohito.neo_apoli.util.MiscUtil;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -36,7 +37,7 @@ public record SequenceAction(List<Action> actions) implements Action {
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Action.super.validate(validator);
 		ContextValidatable.validate(actions(), validator, index -> ".actions[" + index + "]");
 	}

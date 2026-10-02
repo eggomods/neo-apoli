@@ -16,7 +16,7 @@ import java.util.Optional;
 
 public record ConstantNbtProvider(Tag value) implements NbtProvider {
 
-	public static final MapCodec<ConstantNbtProvider> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final MapCodec<ConstantNbtProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		NeoApoliCodecs.REGULAR_OR_STRINGIFIED_TAG.fieldOf("value").forGetter(ConstantNbtProvider::value)
 	).apply(instance, ConstantNbtProvider::new));
 

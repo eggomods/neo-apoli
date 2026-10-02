@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 public record ConditionalStringProvider(Condition condition, StringProvider onTrue, StringProvider onFalse) implements StringProvider, ConditionalValueProvider<String, StringProvider> {
 
-	public static final MapCodec<ConditionalStringProvider> MAP_CODEC = MapCodecUtil.lazy(ConditionalStringProvider.class.getSimpleName(), () -> ConditionalValueProvider.mapCodec(StringProvider.CODEC, ConditionalStringProvider::new));
+	public static final MapCodec<ConditionalStringProvider> CODEC = MapCodecUtil.lazy(ConditionalStringProvider.class.getSimpleName(), () -> ConditionalValueProvider.mapCodec(StringProvider.CODEC, ConditionalStringProvider::new));
 	public static final StreamCodec<RegistryFriendlyByteBuf, ConditionalStringProvider> STREAM_CODEC = StreamCodecUtil.lazy(ConditionalStringProvider.class.getSimpleName(), () -> ConditionalValueProvider.streamCodec(StringProvider.STREAM_CODEC, ConditionalStringProvider::new));
 
 	@Override

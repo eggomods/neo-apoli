@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 public record ConditionalNbtProvider(Condition condition, NbtProvider onTrue, NbtProvider onFalse) implements NbtProvider, ConditionalValueProvider<Tag, NbtProvider> {
 
-	public static final MapCodec<ConditionalNbtProvider> MAP_CODEC = MapCodecUtil.lazy(ConditionalNbtProvider.class.getSimpleName(), () -> ConditionalValueProvider.mapCodec(NbtProvider.CODEC, ConditionalNbtProvider::new));
+	public static final MapCodec<ConditionalNbtProvider> CODEC = MapCodecUtil.lazy(ConditionalNbtProvider.class.getSimpleName(), () -> ConditionalValueProvider.mapCodec(NbtProvider.CODEC, ConditionalNbtProvider::new));
 	public static final StreamCodec<RegistryFriendlyByteBuf, ConditionalNbtProvider> STREAM_CODEC = StreamCodecUtil.lazy(ConditionalNbtProvider.class.getSimpleName(), () -> ConditionalValueProvider.streamCodec(NbtProvider.STREAM_CODEC, ConditionalNbtProvider::new));
 
 	@Override

@@ -5,12 +5,13 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.visitor.ClearableVisitor;
 import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.custom.misc.PrioritizedPower;
 import io.github.eggohito.neo_apoli.provider.custom.bool.BooleanProvider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliPowerTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameters;
 import io.github.eggohito.neo_apoli.util.CachedBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -53,7 +54,7 @@ public record ModifyBlockSelectablePower(Optional<Condition> activeCondition, Bo
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		PrioritizedPower.super.validate(validator);
 		allow().validate(validator.forChild(".allow"));
 	}
@@ -66,7 +67,7 @@ public record ModifyBlockSelectablePower(Optional<Condition> activeCondition, Bo
 
 		public Context createContext(Entity holder, BlockPos blockPos, BlockState blockState, @Nullable BlockEntity blockEntity) {
 			return this.createHolderContextBuilder(holder)
-				.withRequired(NeoApoliContextParams.SELECTED_BLOCK, new CachedBlock(blockPos, blockState, blockEntity))
+				.withRequired(NeoApoliContextParameters.SELECTED_BLOCK, new CachedBlock(blockPos, blockState, blockEntity))
 				.build(holder.level());
 		}
 

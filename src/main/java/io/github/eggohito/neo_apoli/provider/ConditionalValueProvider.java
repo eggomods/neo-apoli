@@ -6,6 +6,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.util.conditional.Conditional;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -39,7 +40,7 @@ public interface ConditionalValueProvider<Value, Provider extends ValueProvider<
 	}
 
 	@Override
-	default void validate(Context.Validator validator) {
+	default void validate(ContextValidator validator) {
 
 		ValueProvider.super.validate(validator);
 		condition().validate(validator.forChild(".condition"));

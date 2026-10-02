@@ -6,7 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.action.Action;
 import io.github.eggohito.neo_apoli.action.custom.NothingAction;
 import io.github.eggohito.neo_apoli.condition.Condition;
-import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.power.Power;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -20,7 +20,7 @@ public interface CallbackPower extends Power {
 	Action action();
 
 	@Override
-	default void validate(Context.Validator validator) {
+	default void validate(ContextValidator validator) {
 		Power.super.validate(validator);
 		action().validate(validator.forChild(".action"));
 	}

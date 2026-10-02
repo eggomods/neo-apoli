@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.ContextUser;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.visitor.Visitor;
 import io.github.eggohito.neo_apoli.power.PowerIdentifier;
 import io.github.eggohito.neo_apoli.power.entity.Powers;
@@ -60,7 +61,7 @@ public record EntityHasActivePowerCondition(PowerIdentifier power, EntityProvide
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Condition.super.validate(validator);
 		power().validate(validator.forChild(".power"));
 		entity().validate(validator.forChild(".entity"));

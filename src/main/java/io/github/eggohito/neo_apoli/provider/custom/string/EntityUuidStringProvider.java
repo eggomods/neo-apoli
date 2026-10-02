@@ -3,6 +3,7 @@ package io.github.eggohito.neo_apoli.provider.custom.string;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliStringProviderTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -14,7 +15,7 @@ import java.util.Optional;
 
 public record EntityUuidStringProvider(EntityProvider entity) implements StringProvider {
 
-	public static final MapCodec<EntityUuidStringProvider> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance
+	public static final MapCodec<EntityUuidStringProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
 		.group(EntityProvider.CODEC.fieldOf("entity").forGetter(EntityUuidStringProvider::entity))
 		.apply(instance, EntityUuidStringProvider::new)
 	);
@@ -37,7 +38,7 @@ public record EntityUuidStringProvider(EntityProvider entity) implements StringP
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		StringProvider.super.validate(validator);
 		entity().validate(validator.forChild(".entity"));
 	}

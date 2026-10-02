@@ -1,19 +1,20 @@
 package io.github.eggohito.neo_apoli.hud.element;
 
-import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.NeoApoli;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
+import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
+import io.github.eggohito.neo_apoli.context.parameter.IntContextParameter;
 import io.github.eggohito.neo_apoli.provider.custom.number.IntProvider;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
-import net.minecraft.util.context.ContextKey;
 
 import java.util.Optional;
 
 public interface NumberBoundHudElement extends HudElement {
 
-	Context.Parameter<Integer> CURRENT_VALUE = NeoApoliContextParams.registerSimpleInternal("hud/value", Integer.class);
+	IntContextParameter CURRENT_VALUE = new IntContextParameter(NeoApoli.id("hud/value"));
 
-	Context.Parameter<Integer> MAX_VALUE = NeoApoliContextParams.registerSimpleInternal("hud/max_value", Integer.class);
+	IntContextParameter MAX_VALUE = new IntContextParameter(NeoApoli.id("hud/max_value"));
 
-	Context.Parameter<Integer> MIN_VALUE = NeoApoliContextParams.registerSimpleInternal("hud/min_value", Integer.class);
+	IntContextParameter MIN_VALUE = new IntContextParameter(NeoApoli.id("hud/min_value"));
 
 	Optional<IntProvider> value();
 
@@ -22,7 +23,7 @@ public interface NumberBoundHudElement extends HudElement {
 	Optional<IntProvider> max();
 
 	@Override
-	default void validate(Context.Validator validator) {
+	default void validate(ContextValidator validator) {
 
 		HudElement.super.validate(validator);
 
@@ -32,9 +33,9 @@ public interface NumberBoundHudElement extends HudElement {
 
 	}
 
-	static void validateKeyAndField(Context.Validator validator, ContextKey<?> key, Optional<IntProvider> fieldMethod, String fieldName) {
+	static void validateKeyAndField(ContextValidator validator, ContextParameter<?> key, Optional<IntProvider> fieldMethod, String fieldName) {
 
-		boolean keyIsAllowed = validator.keySet().allowed().contains(key);
+		boolean keyIsAllowed = validator.parameters().allowed().contains(key);
 		boolean fieldIsPresent = fieldMethod.isPresent();
 
 		if (keyIsAllowed == fieldIsPresent) {

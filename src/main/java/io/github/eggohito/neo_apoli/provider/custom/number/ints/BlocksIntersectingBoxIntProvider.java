@@ -2,17 +2,18 @@ package io.github.eggohito.neo_apoli.provider.custom.number.ints;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
+import io.github.eggohito.neo_apoli.context.parameter.BlockContextParameter;
 import io.github.eggohito.neo_apoli.provider.custom.box.BoxProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.IntProvider;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliIntProviderTypes;
 import io.github.eggohito.neo_apoli.util.CachedBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
@@ -21,8 +22,8 @@ import java.util.Optional;
 
 public record BlocksIntersectingBoxIntProvider(Condition condition, BoxProvider box) implements IntProvider {
 
-	public static final Context.Parameter<CachedBlock> BLOCK_INTERSECTING_BOX = NeoApoliContextParams.registerSimpleInternal("block_intersecting_box", CachedBlock.class);
-	public static final ContextKeySet CONDITION_PARAMETER_SET = new ContextKeySet.Builder().required(BLOCK_INTERSECTING_BOX).build();
+	public static final BlockContextParameter BLOCK_INTERSECTING_BOX = new BlockContextParameter(NeoApoli.id("block_intersecting_box"));
+	public static final ContextValidator.Parameters CONDITION_PARAMETER_SET = new ContextValidator.Parameters.Builder().required(BLOCK_INTERSECTING_BOX).build();
 
 	public static final MapCodec<BlocksIntersectingBoxIntProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Condition.CODEC.fieldOf("condition").forGetter(BlocksIntersectingBoxIntProvider::condition),
@@ -78,9 +79,9 @@ public record BlocksIntersectingBoxIntProvider(Condition condition, BoxProvider 
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		IntProvider.super.validate(validator);
-		condition().validate(validator.withAdditionalKeysFromSets(CONDITION_PARAMETER_SET).forChild(".condition"));
+		condition().validate(validator.withParams(CONDITION_PARAMETER_SET).forChild(".condition"));
 		box().validate(validator.forChild(".box"));
 	}
 

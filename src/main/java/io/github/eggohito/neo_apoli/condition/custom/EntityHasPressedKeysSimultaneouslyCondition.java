@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.ContextValidatable;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.key.KeyState;
 import io.github.eggohito.neo_apoli.key.manager.KeyStateManager;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
@@ -96,7 +97,7 @@ public record EntityHasPressedKeysSimultaneouslyCondition(List<StringProvider> k
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Condition.super.validate(validator);
 		ContextValidatable.validate(keys(), validator.forChild(".keys"), index -> ".keys[" + index + "]");
 		offset().validate(validator.forChild(".offset"));

@@ -10,7 +10,7 @@ import io.github.eggohito.neo_apoli.modifier.Modifier;
 import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.entity.Powers;
 import io.github.eggohito.neo_apoli.registry.NeoApoliPowerTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameters;
 import io.github.eggohito.neo_apoli.util.CachedBlock;
 import io.github.eggohito.neo_apoli.util.MiscUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -63,7 +63,7 @@ public record ModifyBlockBreakSpeedPower(Optional<Condition> activeCondition, Li
 
 		public Context createContext(Entity holder, BlockPos blockPos, BlockState blockState, @Nullable BlockEntity blockEntity) {
 			return this.createHolderContextBuilder(holder)
-					.withRequired(NeoApoliContextParams.MINING_BLOCK, new CachedBlock(blockPos, blockState, blockEntity))
+					.withRequired(NeoApoliContextParameters.MINING_BLOCK, new CachedBlock(blockPos, blockState, blockEntity))
 				.build(holder.level());
 		}
 

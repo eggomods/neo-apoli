@@ -2,29 +2,29 @@ package io.github.eggohito.neo_apoli.condition.custom;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.comparison.Comparator;
 import io.github.eggohito.neo_apoli.comparison.custom.IntComparison;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
+import io.github.eggohito.neo_apoli.context.parameter.ItemContextParameter;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
 import io.github.eggohito.neo_apoli.provider.custom.item.ContextItemProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.ints.ConstantIntProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.ints.ItemCountIntProvider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliConditionTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
 
 public record EntityHasItemEquippedCondition(Condition equippedCondition, EquipmentSlotGroup slot, EntityProvider entity) implements Condition {
 
-	public static final Context.Parameter<ItemStack> EQUIPPED_ITEM = NeoApoliContextParams.registerSimpleInternal("equipped_item", ItemStack.class);
-	public static final ContextKeySet CONDITION_PARAMETER_SET = new ContextKeySet.Builder().required(EQUIPPED_ITEM).build();
+	public static final ItemContextParameter EQUIPPED_ITEM = new ItemContextParameter(NeoApoli.id("equipped_item"));
+	public static final ContextValidator.Parameters CONDITION_PARAMETER_SET = new ContextValidator.Parameters.Builder().required(EQUIPPED_ITEM).build();
 
 	public static final MapCodec<EntityHasItemEquippedCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Condition.CODEC.optionalFieldOf("equipped_condition", new CompareCondition(new IntComparison(Comparator.GREATER_THAN, new ItemCountIntProvider(new ContextItemProvider(EQUIPPED_ITEM)), new ConstantIntProvider(0)))).forGetter(EntityHasItemEquippedCondition::equippedCondition),
@@ -75,9 +75,9 @@ public record EntityHasItemEquippedCondition(Condition equippedCondition, Equipm
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Condition.super.validate(validator);
-		equippedCondition().validate(validator.withAdditionalKeysFromSets(CONDITION_PARAMETER_SET).forChild(".equipped_condition"));
+		equippedCondition().validate(validator.withParams(CONDITION_PARAMETER_SET).forChild(".equipped_condition"));
 		entity().validate(validator.forChild(".entity"));
 	}
 

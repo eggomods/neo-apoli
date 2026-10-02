@@ -15,7 +15,7 @@ import io.github.eggohito.neo_apoli.provider.custom.bool.BooleanProvider;
 import io.github.eggohito.neo_apoli.provider.custom.bool.ConstantBooleanProvider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliContainerMenuTypes;
 import io.github.eggohito.neo_apoli.registry.NeoApoliPowerTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameters;
 import io.github.eggohito.neo_apoli.util.InventoryUtil;
 import io.github.eggohito.neo_apoli.util.StackInContainer;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -260,7 +260,7 @@ public record InventoryPower(Optional<Condition> activeCondition, Component titl
 			for (int index = 0; index < this.getContainerSize(); index++) {
 
 				Context itemContext = this.createHolderContextBuilder(holder)
-					.withRequired(NeoApoliContextParams.ITEM_IN_CONTAINER, this.getItem(index))
+					.withRequired(NeoApoliContextParameters.ITEM_IN_CONTAINER, this.getItem(index))
 					.build(serverLevel);
 
 				if (this.shouldDropOnDeath(itemContext)) {

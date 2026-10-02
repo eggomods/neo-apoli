@@ -1,11 +1,12 @@
 package io.github.eggohito.neo_apoli.power.custom;
 
 import com.mojang.serialization.MapCodec;
+import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.action.Action;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.parameter.BlockContextParameter;
-import io.github.eggohito.neo_apoli.context.parameter.EnumContextParameter;
+import io.github.eggohito.neo_apoli.context.parameter.DirectionContextParameter;
 import io.github.eggohito.neo_apoli.exception.PosOutOfBoundsException;
 import io.github.eggohito.neo_apoli.exception.PosUnloadedException;
 import io.github.eggohito.neo_apoli.mixin.access.AABBAccessor;
@@ -13,7 +14,7 @@ import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.custom.misc.CallbackPower;
 import io.github.eggohito.neo_apoli.power.entity.Powers;
 import io.github.eggohito.neo_apoli.registry.NeoApoliPowerTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameters;
 import io.github.eggohito.neo_apoli.util.CachedBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -32,8 +33,8 @@ import java.util.Optional;
 
 public record CallbackProjectileLandPower(Optional<Condition> activeCondition, Action action) implements CallbackPower {
 
-	public static final Context.Parameter<CachedBlock> LANDED_ON_BLOCK = NeoApoliContextParams.registerInternal("landed_on_block", BlockContextParameter::new);
-	public static final Context.Parameter<Direction> LANDED_ON_SIDE = NeoApoliContextParams.registerInternal("landed_on_side", id -> new EnumContextParameter<>(id, Direction.class));
+	public static final BlockContextParameter LANDED_ON_BLOCK = new BlockContextParameter(NeoApoli.id("landed_on_block"));
+	public static final DirectionContextParameter LANDED_ON_SIDE = new DirectionContextParameter(NeoApoli.id("landed_on_side"));
 
 	public static final MapCodec<CallbackProjectileLandPower> CODEC = CallbackPower.codec(CallbackProjectileLandPower::new);
 	public static final StreamCodec<RegistryFriendlyByteBuf, CallbackProjectileLandPower> STREAM_CODEC = CallbackPower.streamCodec(CallbackProjectileLandPower::new);
@@ -92,9 +93,9 @@ public record CallbackProjectileLandPower(Optional<Condition> activeCondition, A
 			return this.createHolderContextBuilder(holder)
 				.withRequired(LANDED_ON_BLOCK, CachedBlock.fromLoadedPos(level, blockPos))
 				.withNullable(LANDED_ON_SIDE, side)
-				.withRequired(NeoApoliContextParams.PROJECTILE_ENTITY, projectile)
-				.withNullable(NeoApoliContextParams.ACTOR_ENTITY, owner)
-				.withNullable(NeoApoliContextParams.TARGET_ENTITY, target)
+				.withRequired(NeoApoliContextParameters.PROJECTILE_ENTITY, projectile)
+				.withNullable(NeoApoliContextParameters.ACTOR_ENTITY, owner)
+				.withNullable(NeoApoliContextParameters.TARGET_ENTITY, target)
 				.build(level);
 
 		}

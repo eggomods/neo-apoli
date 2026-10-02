@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.effect.EffectProvider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliConditionTypes;
 import io.github.eggohito.neo_apoli.util.RegistryUtil;
@@ -39,7 +40,7 @@ public record IsEffectInTagCondition(TagKey<MobEffect> tag, EffectProvider effec
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Condition.super.validate(validator);
 		RegistryUtil.validateTag(validator.forChild(".tag"), tag());
 		effect().validate(validator.forChild(".effect"));

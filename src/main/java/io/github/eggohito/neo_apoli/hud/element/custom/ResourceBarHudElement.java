@@ -8,6 +8,7 @@ import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.config.AbstractJsonCodecConfig;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.ContextUser;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.hud.element.NumberBoundHudElement;
 import io.github.eggohito.neo_apoli.provider.custom.bool.BooleanProvider;
 import io.github.eggohito.neo_apoli.provider.custom.bool.ConstantBooleanProvider;
@@ -61,7 +62,7 @@ public record ResourceBarHudElement(Properties properties, IntProvider x, IntPro
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 
 		NumberBoundHudElement.super.validate(validator);
 
@@ -123,7 +124,7 @@ public record ResourceBarHudElement(Properties properties, IntProvider x, IntPro
 		);
 
 		@Override
-		public void validate(Context.Validator validator) {
+		public void validate(ContextValidator validator) {
 			ContextUser.super.validate(validator);
 			inverted().validate(validator.forChild(".inverted"));
 		}

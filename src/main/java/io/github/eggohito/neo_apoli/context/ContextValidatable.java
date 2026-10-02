@@ -7,9 +7,9 @@ import java.util.function.IntFunction;
 
 public interface ContextValidatable {
 
-	void validate(Context.Validator validator);
+	void validate(ContextValidator validator);
 
-	static <U extends ContextValidatable> void validate(List<U> users, Context.Validator validator, IntFunction<String> pathFunction) {
+	static <U extends ContextValidatable> void validate(List<U> users, ContextValidator validator, IntFunction<String> pathFunction) {
 		MiscUtil.iterateList(users, (index, user) -> user.validate(validator.forChild(pathFunction.apply(index))));
 	}
 

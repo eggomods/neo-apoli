@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.power.PowerIdentifier;
 import io.github.eggohito.neo_apoli.power.entity.Powers;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
@@ -48,7 +49,7 @@ public record EntityHasPowerCondition(PowerIdentifier power, Optional<ResourceLo
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Condition.super.validate(validator);
 		power().validate(validator.forChild(".power"));
 		entity().validate(validator.forChild(".entity"));

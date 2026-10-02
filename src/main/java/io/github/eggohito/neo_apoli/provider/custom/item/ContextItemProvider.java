@@ -4,31 +4,32 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
+import io.github.eggohito.neo_apoli.context.parameter.ItemContextParameter;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameterTypes;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliItemProviderTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.Set;
 
-public record ContextItemProvider(Context.Parameter<ItemStack> parameter) implements ItemProvider {
+public record ContextItemProvider(ItemContextParameter parameter) implements ItemProvider {
 
 	public static final MapCodec<ContextItemProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
-		.group(NeoApoliContextParams.Codecs.ITEM.fieldOf("parameter").forGetter(ContextItemProvider::parameter))
+		.group(NeoApoliContextParameterTypes.ITEM.codec().fieldOf("parameter").forGetter(ContextItemProvider::parameter))
 		.apply(instance, ContextItemProvider::new)
 	);
 
-	public static final Codec<ContextItemProvider> INLINE_CODEC = NeoApoliContextParams.Codecs.ITEM.xmap(
+	public static final Codec<ContextItemProvider> INLINE_CODEC = NeoApoliContextParameterTypes.ITEM.codec().xmap(
 		ContextItemProvider::new,
 		ContextItemProvider::parameter
 	);
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ContextItemProvider> STREAM_CODEC = StreamCodec.composite(
-		NeoApoliContextParams.StreamCodecs.ITEM, ContextItemProvider::parameter,
+		NeoApoliContextParameterTypes.ITEM.streamCodec(), ContextItemProvider::parameter,
 		ContextItemProvider::new
 	);
 
@@ -49,7 +50,7 @@ public record ContextItemProvider(Context.Parameter<ItemStack> parameter) implem
 	}
 
 	@Override
-	public Set<ContextKey<?>> getRequiredParameters() {
+	public Set<ContextParameter<?>> getRequiredParameters() {
 		return Set.of(parameter());
 	}
 

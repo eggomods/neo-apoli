@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.codec.NeoApoliStreamCodecs;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.ValueProvider;
 import io.github.eggohito.neo_apoli.provider.custom.nbt.NbtProvider;
 import io.github.eggohito.neo_apoli.util.MiscUtil;
@@ -23,7 +24,7 @@ import java.util.function.IntFunction;
 public interface NbtNumberProvider<N extends Number> extends ValueProvider<N> {
 
 	@Override
-	default void validate(Context.Validator validator) {
+	default void validate(ContextValidator validator) {
 		ValueProvider.super.validate(validator);
 		source().validate(validator.forChild(".source"));
 	}

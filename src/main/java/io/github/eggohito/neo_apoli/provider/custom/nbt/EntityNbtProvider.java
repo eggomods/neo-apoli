@@ -3,6 +3,7 @@ package io.github.eggohito.neo_apoli.provider.custom.nbt;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliNbtProviderTypes;
 import net.minecraft.advancements.critereon.NbtPredicate;
@@ -15,7 +16,7 @@ import java.util.Optional;
 
 public record EntityNbtProvider(EntityProvider entity) implements NbtProvider {
 
-	public static final MapCodec<EntityNbtProvider> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final MapCodec<EntityNbtProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		EntityProvider.CODEC.fieldOf("entity").forGetter(EntityNbtProvider::entity)
 	).apply(instance, EntityNbtProvider::new));
 
@@ -37,7 +38,7 @@ public record EntityNbtProvider(EntityProvider entity) implements NbtProvider {
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		NbtProvider.super.validate(validator);
 		entity().validate(validator.forChild(".entity"));
 	}

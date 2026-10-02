@@ -6,15 +6,16 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.codec.NeoApoliCodecs;
 import io.github.eggohito.neo_apoli.codec.NeoApoliStreamCodecs;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.condition.custom.ConstantCondition;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.ContextValidatable;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.parameter.BlockContextParameter;
 import io.github.eggohito.neo_apoli.mixin.access.BlockPatternAccessor;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.chars.Char2ObjectArrayMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
@@ -30,7 +31,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.block.state.pattern.BlockPattern;
 import org.jetbrains.annotations.NotNull;
@@ -42,8 +42,8 @@ import java.util.function.Function;
 @Accessors(fluent = true)
 public final class ContextBlockPattern implements ContextValidatable {
 
-	public static final Context.Parameter<CachedBlock> MATCHING_BLOCK = NeoApoliContextParams.registerInternal("matching_block", BlockContextParameter::new);
-	public static final ContextKeySet MATCHING_PARAMETER_SET = new ContextKeySet.Builder().required(MATCHING_BLOCK).build();
+	public static final BlockContextParameter MATCHING_BLOCK = new BlockContextParameter(NeoApoli.id("matching_block"));
+	public static final ContextValidator.Parameters MATCHING_PARAMETER_SET = new ContextValidator.Parameters.Builder().required(MATCHING_BLOCK).build();
 	
 	private static final Joiner COMMA_JOINED = Joiner.on(", ");
 	private static final char RESERVED_SYMBOL = ' ';
@@ -127,11 +127,11 @@ public final class ContextBlockPattern implements ContextValidatable {
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 
-		Context.Validator keysValidator = validator
+		ContextValidator keysValidator = validator
 			.forChild(".keys")
-			.withAdditionalKeysFromSets(MATCHING_PARAMETER_SET);
+			.withParams(MATCHING_PARAMETER_SET);
 
 		this.where.forEach((symbol, condition) -> keysValidator.forChild("." + symbol).validate(condition));
 

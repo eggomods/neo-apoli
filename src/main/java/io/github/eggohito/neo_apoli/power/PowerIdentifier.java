@@ -5,8 +5,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.PrimitiveCodec;
-import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.ContextValidatable;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.power.custom.MultiplePower;
 import io.github.eggohito.neo_apoli.power.manager.PowerManager;
 import io.github.eggohito.neo_apoli.util.MiscUtil;
@@ -53,7 +53,7 @@ public final class PowerIdentifier implements StringDisplayable, ContextValidata
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		PowerManager.getInstance().getAsResult(this).resultOrPartial(validator::reportProblem);
 	}
 
@@ -93,7 +93,7 @@ public final class PowerIdentifier implements StringDisplayable, ContextValidata
 		return subName() != null;
 	}
 
-	public void validate(Context.Validator validator, Class<? extends Power> powerClass, Supplier<String> errorSupplier) {
+	public void validate(ContextValidator validator, Class<? extends Power> powerClass, Supplier<String> errorSupplier) {
 		PowerManager.getInstance().getAsResult(this)
 			.map(PowerHolder::value)
 			.flatMap(MiscUtil.validateType(powerClass, errorSupplier))

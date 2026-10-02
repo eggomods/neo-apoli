@@ -1,6 +1,7 @@
 package io.github.eggohito.neo_apoli.power.custom;
 
 import com.mojang.serialization.MapCodec;
+import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.action.Action;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
@@ -11,7 +12,6 @@ import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.custom.misc.CallbackPower;
 import io.github.eggohito.neo_apoli.power.entity.Powers;
 import io.github.eggohito.neo_apoli.registry.NeoApoliPowerTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
 import io.github.eggohito.neo_apoli.util.CachedBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -25,7 +25,7 @@ import java.util.Optional;
 
 public record CallbackPlayerWakeUpPower(Optional<Condition> activeCondition, Action action) implements CallbackPower {
 
-	public static final Context.Parameter<CachedBlock> SLEPT_ON_BLOCK = NeoApoliContextParams.registerInternal("slept_on_block", BlockContextParameter::new);
+	public static final BlockContextParameter SLEPT_ON_BLOCK = new BlockContextParameter(NeoApoli.id("slept_on_block"));
 
 	public static final MapCodec<CallbackPlayerWakeUpPower> CODEC = CallbackPower.codec(CallbackPlayerWakeUpPower::new);
 	public static final StreamCodec<RegistryFriendlyByteBuf, CallbackPlayerWakeUpPower> STREAM_CODEC = CallbackPower.streamCodec(CallbackPlayerWakeUpPower::new);

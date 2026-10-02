@@ -9,7 +9,7 @@ import io.github.eggohito.neo_apoli.modifier.Modifier;
 import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.entity.Powers;
 import io.github.eggohito.neo_apoli.registry.NeoApoliPowerTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameters;
 import io.github.eggohito.neo_apoli.util.MiscUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -56,9 +56,9 @@ public record ModifyEffectDurationPower(Optional<Condition> activeCondition, Lis
 
 		public Context createContext(Entity holder, MobEffectInstance effectInstance, @Nullable Entity source) {
 			return this.createHolderContextBuilder(holder)
-				.withNullable(NeoApoliContextParams.ACTOR_ENTITY, source)
-				.withRequired(NeoApoliContextParams.TARGET_ENTITY, holder)
-				.withRequired(NeoApoliContextParams.APPLIED_EFFECT, effectInstance)
+				.withNullable(NeoApoliContextParameters.ACTOR_ENTITY, source)
+				.withRequired(NeoApoliContextParameters.TARGET_ENTITY, holder)
+				.withRequired(NeoApoliContextParameters.APPLIED_EFFECT, effectInstance)
 				.build(holder.level());
 		}
 

@@ -6,10 +6,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.action.Action;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.custom.misc.PrioritizedPower;
 import io.github.eggohito.neo_apoli.registry.NeoApoliPowerTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameters;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -47,7 +48,7 @@ public record CallbackDamageDealtPower(Optional<Condition> activeCondition, Acti
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		PrioritizedPower.super.validate(validator);
 		onHitAction().validate(validator.forChild(".on_hit_action"));
 	}
@@ -60,13 +61,13 @@ public record CallbackDamageDealtPower(Optional<Condition> activeCondition, Acti
 
 		public Context createContext(Entity holder, Entity target, DamageSource source, float amount) {
 			return this.createHolderContextBuilder(holder)
-				.withRequired(NeoApoliContextParams.DEALT_DAMAGE_SOURCE, source)
-				.withRequired(NeoApoliContextParams.DEALT_DAMAGE_AMOUNT, amount)
-				.withRequired(NeoApoliContextParams.ACTOR_ENTITY, holder)
-				.withRequired(NeoApoliContextParams.TARGET_ENTITY, target)
-				.withNullable(NeoApoliContextParams.DAMAGING_ENTITY, source.getEntity())
-				.withNullable(NeoApoliContextParams.DIRECT_DAMAGING_ENTITY, source.getDirectEntity())
-				.buildWithRequirements(holder.level(), NeoApoliPowerTypes.CALLBACK_DAMAGE_DEALT.requirements());
+				.withRequired(NeoApoliContextParameters.DEALT_DAMAGE_SOURCE, source)
+				.withRequired(NeoApoliContextParameters.DEALT_DAMAGE_AMOUNT, amount)
+				.withRequired(NeoApoliContextParameters.ACTOR_ENTITY, holder)
+				.withRequired(NeoApoliContextParameters.TARGET_ENTITY, target)
+				.withNullable(NeoApoliContextParameters.DAMAGING_ENTITY, source.getEntity())
+				.withNullable(NeoApoliContextParameters.DIRECT_DAMAGING_ENTITY, source.getDirectEntity())
+				.build(holder.level());
 		}
 
 		public void execute(Context context) {

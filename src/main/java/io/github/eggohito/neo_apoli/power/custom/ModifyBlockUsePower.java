@@ -3,6 +3,7 @@ package io.github.eggohito.neo_apoli.power.custom;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.action.Action;
 import io.github.eggohito.neo_apoli.action.custom.NothingAction;
 import io.github.eggohito.neo_apoli.codec.NeoApoliCodecs;
@@ -10,14 +11,15 @@ import io.github.eggohito.neo_apoli.codec.NeoApoliStreamCodecs;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.ContextUser;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.parameter.BlockContextParameter;
-import io.github.eggohito.neo_apoli.context.parameter.EnumContextParameter;
+import io.github.eggohito.neo_apoli.context.parameter.DirectionContextParameter;
 import io.github.eggohito.neo_apoli.exception.PosOutOfBoundsException;
 import io.github.eggohito.neo_apoli.exception.PosUnloadedException;
 import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.custom.misc.PrioritizedPower;
 import io.github.eggohito.neo_apoli.registry.NeoApoliPowerTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameters;
 import io.github.eggohito.neo_apoli.util.BlockUsePhase;
 import io.github.eggohito.neo_apoli.util.CachedBlock;
 import io.github.eggohito.neo_apoli.util.MiscUtil;
@@ -45,8 +47,8 @@ import java.util.function.Supplier;
 
 public record ModifyBlockUsePower(Optional<Condition> activeCondition, Actions actions, Conditions conditions, EnumSet<BlockUsePhase> usePhases, int priority) implements PrioritizedPower<ModifyBlockUsePower> {
 
-	public static final Context.Parameter<CachedBlock> USED_BLOCK = NeoApoliContextParams.registerInternal("used_block", BlockContextParameter::new);
-	public static final Context.Parameter<Direction> USED_SIDE = NeoApoliContextParams.registerInternal("used_side", id -> new EnumContextParameter<>(id, Direction.class));
+	public static final BlockContextParameter USED_BLOCK = new BlockContextParameter(NeoApoli.id("used_block"));
+	public static final DirectionContextParameter USED_SIDE = new DirectionContextParameter(NeoApoli.id("used_side"));
 
 	public static final MapCodec<ModifyBlockUsePower> CODEC = RecordCodecBuilder.mapCodec(instance -> Power
 		.addActiveConditionField(instance)
@@ -77,7 +79,7 @@ public record ModifyBlockUsePower(Optional<Condition> activeCondition, Actions a
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		PrioritizedPower.super.validate(validator);
 		actions().validate(validator);
 		conditions().validate(validator);
@@ -100,9 +102,9 @@ public record ModifyBlockUsePower(Optional<Condition> activeCondition, Actions a
 			return this.createHolderContextBuilder(holder)
 				.withRequired(USED_BLOCK, CachedBlock.fromLoadedPos(level, blockPos))
 				.withRequired(USED_SIDE, blockResult.getDirection())
-				.withRequired(NeoApoliContextParams.USED_ITEM_SLOT, usedItemSlot)
-				.withRequired(NeoApoliContextParams.USED_ITEM, usedItemSlot.get())
-				.buildWithRequirements(level, NeoApoliPowerTypes.MODIFY_BLOCK_USE.requirements());
+				.withRequired(NeoApoliContextParameters.USED_ITEM_SLOT, usedItemSlot)
+				.withRequired(NeoApoliContextParameters.USED_ITEM, usedItemSlot.get())
+				.build(level);
 
 		}
 
@@ -131,7 +133,7 @@ public record ModifyBlockUsePower(Optional<Condition> activeCondition, Actions a
 		);
 
 		@Override
-		public void validate(Context.Validator validator) {
+		public void validate(ContextValidator validator) {
 			ContextUser.super.validate(validator);
 			action().validate(validator.forChild(".action"));
 		}

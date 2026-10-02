@@ -3,6 +3,7 @@ package io.github.eggohito.neo_apoli.provider.custom.nbt;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.item.ItemProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliNbtProviderTypes;
 import net.minecraft.nbt.NbtOps;
@@ -17,7 +18,7 @@ import java.util.Optional;
 
 public record ItemNbtProvider(ItemProvider item) implements NbtProvider {
 
-	public static final MapCodec<ItemNbtProvider> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance
+	public static final MapCodec<ItemNbtProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
 		.group(ItemProvider.CODEC.fieldOf("item").forGetter(ItemNbtProvider::item))
 		.apply(instance, ItemNbtProvider::new)
 	);
@@ -42,7 +43,7 @@ public record ItemNbtProvider(ItemProvider item) implements NbtProvider {
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		NbtProvider.super.validate(validator);
 		item().validate(validator.forChild(".item"));
 	}

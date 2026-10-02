@@ -3,6 +3,7 @@ package io.github.eggohito.neo_apoli.provider.custom.number.floats;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliFloatProviderTypes;
 import io.github.eggohito.neo_apoli.util.MapCodecUtil;
@@ -69,7 +70,7 @@ public record ClampedFloatProvider(FloatProvider value, FloatProvider min, Float
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		FloatProvider.super.validate(validator);
 		value().validate(validator.forChild(".value"));
 		min().validate(validator.forChild(".min"));

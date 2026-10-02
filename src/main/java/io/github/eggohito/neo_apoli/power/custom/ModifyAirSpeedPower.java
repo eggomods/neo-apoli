@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.visitor.ClearableVisitor;
 import io.github.eggohito.neo_apoli.event.PowerModifyEvents;
 import io.github.eggohito.neo_apoli.modifier.Modifier;
@@ -49,7 +50,7 @@ public record ModifyAirSpeedPower(Optional<Condition> activeCondition, List<Modi
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Power.super.validate(validator);
 		MiscUtil.iterateList(modifiers(), (index, modifier) -> modifier.validate(validator.forChild(".modifiers[" + index + "]")));
 	}

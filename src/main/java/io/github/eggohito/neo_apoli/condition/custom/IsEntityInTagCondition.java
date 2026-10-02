@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliConditionTypes;
 import io.github.eggohito.neo_apoli.util.RegistryUtil;
@@ -50,7 +51,7 @@ public record IsEntityInTagCondition(TagKey<EntityType<?>> tag, EntityProvider e
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Condition.super.validate(validator);
 		RegistryUtil.validateTag(validator.forChild(".tag"), tag());
 		entity().validate(validator.forChild(".entity"));

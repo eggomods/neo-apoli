@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.color.Color;
 import io.github.eggohito.neo_apoli.color.DynamicColor;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.provider.custom.vec3.Vec3Provider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliColorResolvers;
@@ -51,7 +52,7 @@ public record BiomeGrassColor(Vec3Provider position, FloatProvider alpha) implem
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Color.super.validate(validator);
 		position().validate(validator.forChild(".position"));
 		alpha().validate(validator.forChild(".alpha"));

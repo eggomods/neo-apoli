@@ -5,13 +5,14 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.condition.custom.ConstantCondition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.visitor.ClearableVisitor;
 import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.entity.Powers;
 import io.github.eggohito.neo_apoli.provider.custom.bool.BooleanProvider;
 import io.github.eggohito.neo_apoli.provider.custom.bool.ConstantBooleanProvider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliPowerTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameters;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -57,7 +58,7 @@ public record ModifyInvisibilityPower(Optional<Condition> activeCondition, Condi
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Power.super.validate(validator);
 		invisibleToCondition().validate(validator.forChild(".invisible_to_condition"));
 		renderArmor().validate(validator.forChild(".render_armor"));
@@ -72,9 +73,9 @@ public record ModifyInvisibilityPower(Optional<Condition> activeCondition, Condi
 
 		public Context createContext(@NotNull Entity holder, @Nullable Entity viewer) {
 			return this.createHolderContextBuilder(holder)
-				.withNullable(NeoApoliContextParams.ACTOR_ENTITY, viewer)
-				.withRequired(NeoApoliContextParams.TARGET_ENTITY, holder)
-				.buildWithRequirements(holder.level(), NeoApoliPowerTypes.MODIFY_INVISIBILITY.requirements());
+				.withNullable(NeoApoliContextParameters.ACTOR_ENTITY, viewer)
+				.withRequired(NeoApoliContextParameters.TARGET_ENTITY, holder)
+				.build(holder.level());
 		}
 
 		public boolean isInvisibleTo(Context context) {

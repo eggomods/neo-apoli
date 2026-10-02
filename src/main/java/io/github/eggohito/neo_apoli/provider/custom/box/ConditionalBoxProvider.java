@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 public record ConditionalBoxProvider(Condition condition, BoxProvider onTrue, BoxProvider onFalse) implements BoxProvider, ConditionalValueProvider<AABB, BoxProvider> {
 
-	public static final MapCodec<ConditionalBoxProvider> MAP_CODEC = MapCodecUtil.lazy(ConditionalBoxProvider.class.getSimpleName(), () -> ConditionalValueProvider.mapCodec(BoxProvider.CODEC, ConditionalBoxProvider::new));
+	public static final MapCodec<ConditionalBoxProvider> CODEC = MapCodecUtil.lazy(ConditionalBoxProvider.class.getSimpleName(), () -> ConditionalValueProvider.mapCodec(BoxProvider.CODEC, ConditionalBoxProvider::new));
 	public static final StreamCodec<RegistryFriendlyByteBuf, ConditionalBoxProvider> STREAM_CODEC = StreamCodecUtil.lazy(ConditionalBoxProvider.class.getSimpleName(), () -> ConditionalValueProvider.streamCodec(BoxProvider.STREAM_CODEC, ConditionalBoxProvider::new));
 
 	@Override

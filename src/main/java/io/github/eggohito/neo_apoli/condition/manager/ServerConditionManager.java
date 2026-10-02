@@ -9,16 +9,12 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import io.github.eggohito.neo_apoli.condition.Condition;
-import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.event.DependencyManager;
-import io.github.eggohito.neo_apoli.event.ReloadableServerResourcesEvents;
 import io.github.eggohito.neo_apoli.network.packet.clientbound.ClientboundUpdateConditionsPacket;
 import io.github.eggohito.neo_apoli.registry.NeoApoliRegistryKeys;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParamSets;
 import io.github.eggohito.neo_apoli.resource.json.JsonFileToIdConverter;
 import io.github.eggohito.neo_apoli.resource.json.JsonWithSource;
 import io.github.eggohito.neo_apoli.util.MiscUtil;
-import io.github.eggohito.neo_apoli.util.Reporter;
 import io.github.eggohito.neo_apoli.util.ResourceLocationUtil;
 import io.github.eggohito.neo_apoli.util.manager.AbstractContentManager;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -28,7 +24,6 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.Util;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -72,12 +67,8 @@ public class ServerConditionManager extends AbstractContentManager<ResourceLocat
 
 	@Override
 	public void init() {
-
 		ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(ID, this::withOps);
 		ServerPlayConnectionEvents.INIT.register(ID, (handler, server) -> this.send(handler.player));
-
-		ReloadableServerResourcesEvents.TAGS_UPDATED.register(ID, this::finalize);
-
 	}
 
 	private ServerConditionManager withOps(@NotNull HolderLookup.Provider provider) {
@@ -110,38 +101,6 @@ public class ServerConditionManager extends AbstractContentManager<ResourceLocat
 
 		this.contents = builder.build();
 		LOGGER.info("Finished parsing conditions from data packs. Parsed {} condition(s)", contents.size());
-
-	}
-
-	private void finalize(ReloadableServerResources resources) {
-
-		ImmutableMap.Builder<ResourceLocation, Condition> validated = ImmutableMap.builder();
-		int prevSize = contents.size();
-
-		LOGGER.info("Validating {} condition(s)...", prevSize);
-
-		try (Reporter.Scoped reporter = new Reporter.Scoped(errors -> LOGGER.error("Found errors while validating the following conditions:\n{}", errors))) {
-
-			for (var entry : contents.entrySet()) {
-
-				ResourceLocation id = entry.getKey();
-				Condition condition = entry.getValue();
-
-				Reporter conditionReporter = reporter.forChild("{\"" + id + "\"}");
-
-				Context.Validator validator = new Context.Validator(NeoApoliContextParamSets.all(), conditionReporter).withResolver(MiscUtil.getLookupProvider(resources));
-				condition.validate(validator);
-
-				if (!conditionReporter.hasProblems()) {
-					validated.put(id, condition);
-				}
-
-			}
-
-		}
-
-		this.contents = validated.build();
-		LOGGER.info("Finished validating {} condition(s). Condition manager contains {} condition(s)", prevSize, contents.size());
 
 	}
 

@@ -3,6 +3,7 @@ package io.github.eggohito.neo_apoli.provider.custom.box;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliBoxProviderTypes;
 import io.github.eggohito.neo_apoli.util.MapCodecUtil;
 import io.github.eggohito.neo_apoli.util.StreamCodecUtil;
@@ -15,7 +16,7 @@ import java.util.Optional;
 
 public record OffsetBoxProvider(BoxProvider box, BoxProvider offset) implements BoxProvider {
 
-	public static final MapCodec<OffsetBoxProvider> MAP_CODEC = MapCodecUtil.lazy(OffsetBoxProvider.class.getSimpleName(), () -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final MapCodec<OffsetBoxProvider> CODEC = MapCodecUtil.lazy(OffsetBoxProvider.class.getSimpleName(), () -> RecordCodecBuilder.mapCodec(instance -> instance.group(
 		BoxProvider.CODEC.fieldOf("box").forGetter(OffsetBoxProvider::box),
 		BoxProvider.CODEC.fieldOf("offset").forGetter(OffsetBoxProvider::offset)
 	).apply(instance, OffsetBoxProvider::new)));
@@ -39,7 +40,7 @@ public record OffsetBoxProvider(BoxProvider box, BoxProvider offset) implements 
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 
 		BoxProvider.super.validate(validator);
 

@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.config.NeoApoliCommonConfig;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.block.BlockProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliCommandSourceProviderTypes;
 import io.github.eggohito.neo_apoli.util.CachedBlock;
@@ -52,7 +53,7 @@ public record BlockCommandSourceProvider(BlockProvider block) implements Command
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		CommandSourceProvider.super.validate(validator);
 		block().validate(validator.forChild(".block"));
 	}

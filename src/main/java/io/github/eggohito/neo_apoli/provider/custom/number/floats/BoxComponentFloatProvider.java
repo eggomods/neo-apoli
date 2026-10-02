@@ -3,6 +3,7 @@ package io.github.eggohito.neo_apoli.provider.custom.number.floats;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.box.BoxProvider;
 import io.github.eggohito.neo_apoli.provider.custom.direction.DirectionProvider;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
@@ -72,7 +73,7 @@ public record BoxComponentFloatProvider(BoxProvider box, DirectionProvider side)
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		FloatProvider.super.validate(validator);
 		box().validate(validator.forChild(".box"));
 		side().validate(validator.forChild(".side"));

@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.action.Action;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.bool.BooleanProvider;
 import io.github.eggohito.neo_apoli.provider.custom.bool.ConstantBooleanProvider;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
@@ -58,7 +59,7 @@ public record MountAction(EntityProvider vehicle, EntityProvider passenger, Bool
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Action.super.validate(validator);
 		vehicle().validate(validator.forChild(".vehicle"));
 		passenger().validate(validator.forChild(".passenger"));

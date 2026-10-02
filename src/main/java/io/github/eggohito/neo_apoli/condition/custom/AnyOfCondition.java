@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.ContextValidatable;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.registry.NeoApoliConditionTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -50,7 +51,7 @@ public record AnyOfCondition(List<Condition> conditions) implements Condition {
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Condition.super.validate(validator);
 		ContextValidatable.validate(conditions(), validator, index -> ".conditions[" + index + "]");
 	}

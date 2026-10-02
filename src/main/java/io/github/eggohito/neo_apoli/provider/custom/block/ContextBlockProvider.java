@@ -4,31 +4,32 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.context.parameter.BlockContextParameter;
+import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameterTypes;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliBlockProviderTypes;
 import io.github.eggohito.neo_apoli.util.CachedBlock;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.context.ContextKey;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.Set;
 
-public record ContextBlockProvider(Context.Parameter<CachedBlock> parameter) implements BlockProvider {
+public record ContextBlockProvider(BlockContextParameter parameter) implements BlockProvider {
 
 	public static final MapCodec<ContextBlockProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
-		.group(NeoApoliContextParams.Codecs.BLOCK.fieldOf("parameter").forGetter(ContextBlockProvider::parameter))
+		.group(NeoApoliContextParameterTypes.BLOCK.codec().fieldOf("parameter").forGetter(ContextBlockProvider::parameter))
 		.apply(instance, ContextBlockProvider::new)
 	);
 
-	public static final Codec<ContextBlockProvider> INLINE_CODEC = NeoApoliContextParams.Codecs.BLOCK.xmap(
+	public static final Codec<ContextBlockProvider> INLINE_CODEC = NeoApoliContextParameterTypes.BLOCK.codec().xmap(
 		ContextBlockProvider::new,
 		ContextBlockProvider::parameter
 	);
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ContextBlockProvider> STREAM_CODEC = StreamCodec.composite(
-		NeoApoliContextParams.StreamCodecs.BLOCK, ContextBlockProvider::parameter,
+		NeoApoliContextParameterTypes.BLOCK.streamCodec(), ContextBlockProvider::parameter,
 		ContextBlockProvider::new
 	);
 
@@ -49,7 +50,7 @@ public record ContextBlockProvider(Context.Parameter<CachedBlock> parameter) imp
 	}
 
 	@Override
-	public Set<ContextKey<?>> getRequiredParameters() {
+	public Set<ContextParameter<?>> getRequiredParameters() {
 		return Set.of(parameter());
 	}
 

@@ -3,6 +3,7 @@ package io.github.eggohito.neo_apoli.provider.custom.number.ints;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.number.IntProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliIntProviderTypes;
 import io.github.eggohito.neo_apoli.util.MapCodecUtil;
@@ -56,7 +57,7 @@ public record RandomUniformIntProvider(IntProvider min, IntProvider max) impleme
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		IntProvider.super.validate(validator);
 		min().validate(validator.forChild(".min"));
 		max().validate(validator.forChild(".max"));

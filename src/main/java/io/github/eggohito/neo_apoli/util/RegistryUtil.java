@@ -1,7 +1,7 @@
 package io.github.eggohito.neo_apoli.util;
 
 import com.mojang.datafixers.util.Either;
-import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -24,15 +24,15 @@ public final class RegistryUtil {
 		return getId(registry, obj).getPath();
 	}
 
-	public static <T> void validateKey(Context.Validator validator, ResourceKey<T> key) {
+	public static <T> void validateKey(ContextValidator validator, ResourceKey<T> key) {
 		validateKeyOrTag(validator, Either.left(key));
 	}
 
-	public static <T> void validateTag(Context.Validator validator, TagKey<T> tag) {
+	public static <T> void validateTag(ContextValidator validator, TagKey<T> tag) {
 		validateKeyOrTag(validator, Either.right(tag));
 	}
 
-	public static <T> void validateKeyOrTag(Context.Validator validator, Either<ResourceKey<T>, TagKey<T>> keyOrTag) {
+	public static <T> void validateKeyOrTag(ContextValidator validator, Either<ResourceKey<T>, TagKey<T>> keyOrTag) {
 
 		if (!validator.allowsReferences()) {
 			validator.reportProblem("Validator doesn't allow resolving of references!");

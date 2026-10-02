@@ -3,19 +3,20 @@ package io.github.eggohito.neo_apoli.power.custom;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.action.Action;
 import io.github.eggohito.neo_apoli.action.custom.NothingAction;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.parameter.BlockContextParameter;
 import io.github.eggohito.neo_apoli.context.parameter.ItemContextParameter;
-import io.github.eggohito.neo_apoli.context.parameter.SlotAccessContextParameter;
+import io.github.eggohito.neo_apoli.context.parameter.SlotContextParameter;
 import io.github.eggohito.neo_apoli.duck.internal.PowerCrafting;
 import io.github.eggohito.neo_apoli.mixin.access.CraftingMenuAccessor;
 import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.custom.misc.PrioritizedPower;
 import io.github.eggohito.neo_apoli.registry.NeoApoliPowerTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
 import io.github.eggohito.neo_apoli.util.CachedBlock;
 import io.github.eggohito.neo_apoli.util.InventoryUtil;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
@@ -41,9 +42,9 @@ import java.util.function.Function;
 
 public record ModifyRecipeCraftingPower(Optional<Condition> activeCondition, Optional<ResourceKey<Recipe<?>>> recipe, Optional<ItemStack> replacement, Action onCraftAction, Action onTakeAction, int priority) implements PrioritizedPower<ModifyRecipeCraftingPower> {
 
-	public static final Context.Parameter<CachedBlock> CRAFTING_BLOCK = NeoApoliContextParams.registerInternal("crafting_block", BlockContextParameter::new);
-	public static final Context.Parameter<SlotAccess> CRAFTED_ITEM_SLOT = NeoApoliContextParams.registerInternal("crafted_item_slot", SlotAccessContextParameter::new);
-	public static final Context.Parameter<ItemStack> CRAFTED_ITEM = NeoApoliContextParams.registerInternal("crafted_item", ItemContextParameter::new);
+	public static final BlockContextParameter CRAFTING_BLOCK = new BlockContextParameter(NeoApoli.id("crafting_block"));
+	public static final SlotContextParameter CRAFTED_ITEM_SLOT = new SlotContextParameter(NeoApoli.id("crafted_item_slot"));
+	public static final ItemContextParameter CRAFTED_ITEM = new ItemContextParameter(NeoApoli.id("crafted_item"));
 
 	public static final MapCodec<ModifyRecipeCraftingPower> CODEC = RecordCodecBuilder.mapCodec(instance -> Power
 		.addActiveConditionField(instance)
@@ -71,7 +72,7 @@ public record ModifyRecipeCraftingPower(Optional<Condition> activeCondition, Opt
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		PrioritizedPower.super.validate(validator);
 		onCraftAction().validate(validator.forChild(".on_craft_action"));
 		onTakeAction().validate(validator.forChild(".on_take_action"));

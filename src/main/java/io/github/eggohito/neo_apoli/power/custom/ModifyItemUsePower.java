@@ -8,10 +8,11 @@ import io.github.eggohito.neo_apoli.codec.NeoApoliCodecs;
 import io.github.eggohito.neo_apoli.codec.NeoApoliStreamCodecs;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.custom.misc.PrioritizedPower;
 import io.github.eggohito.neo_apoli.registry.NeoApoliPowerTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameters;
 import io.github.eggohito.neo_apoli.util.CodecUtil;
 import io.github.eggohito.neo_apoli.util.MiscUtil;
 import io.github.eggohito.neo_apoli.util.PriorityPhase;
@@ -70,7 +71,7 @@ public record ModifyItemUsePower(Optional<Condition> activeCondition, Action onU
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		PrioritizedPower.super.validate(validator);
 		onUseAction().validate(validator.forChild(".on_use_action"));
 	}
@@ -88,9 +89,9 @@ public record ModifyItemUsePower(Optional<Condition> activeCondition, Action onU
 
 		public Context createContext(Entity holder, SlotAccess slotAccess) {
 			return this.createHolderContextBuilder(holder)
-				.withRequired(NeoApoliContextParams.USED_ITEM_SLOT, slotAccess)
-				.withRequired(NeoApoliContextParams.USED_ITEM, slotAccess.get())
-				.buildWithRequirements(holder.level(), NeoApoliPowerTypes.MODIFY_ITEM_USE.requirements());
+				.withRequired(NeoApoliContextParameters.USED_ITEM_SLOT, slotAccess)
+				.withRequired(NeoApoliContextParameters.USED_ITEM, slotAccess.get())
+				.build(holder.level());
 		}
 
 		public InteractionResult execute(Context context) {

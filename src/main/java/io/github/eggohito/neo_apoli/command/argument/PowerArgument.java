@@ -8,8 +8,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.datafixers.util.Either;
-import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.ContextValidatable;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.PowerHolder;
 import io.github.eggohito.neo_apoli.power.PowerIdentifier;
@@ -116,7 +116,7 @@ public record PowerArgument(boolean allowTags) implements ArgumentType<PowerArgu
 			}
 
 			@Override
-			public void validate(Context.Validator validator) {
+			public void validate(ContextValidator validator) {
 				id().validate(validator);
 			}
 
@@ -130,7 +130,7 @@ public record PowerArgument(boolean allowTags) implements ArgumentType<PowerArgu
 			}
 
 			@Override
-			public void validate(Context.Validator validator) {
+			public void validate(ContextValidator validator) {
 				PowerManager.getInstance().getTagAsResult(this.id()).ifError(error -> validator.reportProblem(error.message()));
 			}
 

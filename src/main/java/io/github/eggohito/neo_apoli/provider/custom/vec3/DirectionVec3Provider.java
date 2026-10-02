@@ -3,6 +3,7 @@ package io.github.eggohito.neo_apoli.provider.custom.vec3;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.direction.DirectionProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliVec3ProviderTypes;
 import net.minecraft.core.Direction;
@@ -38,7 +39,7 @@ public record DirectionVec3Provider(DirectionProvider direction) implements Vec3
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Vec3Provider.super.validate(validator);
 		direction().validate(validator.forChild(".direction"));
 	}

@@ -2,7 +2,7 @@ package io.github.eggohito.neo_apoli.power.custom;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.hud.element.HudElement;
 import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.custom.misc.CooldownPower;
@@ -35,7 +35,7 @@ public record CooldownStandalonePower(HudElement hudElement, IntProvider cooldow
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		CooldownPower.super.validate(validator);
 		hudElement().validate(validator.forChild(".hud_element"));
 		cooldown().validate(validator.forChild(".cooldown"));

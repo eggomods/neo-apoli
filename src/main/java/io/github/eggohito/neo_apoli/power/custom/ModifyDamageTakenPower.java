@@ -8,7 +8,7 @@ import io.github.eggohito.neo_apoli.modifier.Modifier;
 import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.custom.misc.DamageModifyingPower;
 import io.github.eggohito.neo_apoli.registry.NeoApoliPowerTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameters;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.damagesource.DamageSource;
@@ -43,13 +43,13 @@ public record ModifyDamageTakenPower(Optional<Condition> activeCondition, List<M
 		@Override
 		public Context createDamageContext(@Nullable Entity actor, @NotNull Entity target, DamageSource source, float amount) {
 			return this.createHolderContextBuilder(target)
-				.withNullable(NeoApoliContextParams.ACTOR_ENTITY, actor)
-				.withRequired(NeoApoliContextParams.TARGET_ENTITY, target)
-				.withRequired(NeoApoliContextParams.TAKEN_DAMAGE_SOURCE, source)
-				.withRequired(NeoApoliContextParams.TAKEN_DAMAGE_AMOUNT, amount)
-				.withNullable(NeoApoliContextParams.DAMAGING_ENTITY, source.getEntity())
-				.withNullable(NeoApoliContextParams.DIRECT_DAMAGING_ENTITY, source.getDirectEntity())
-				.buildWithRequirements(target.level(), NeoApoliPowerTypes.MODIFY_DAMAGE_TAKEN.requirements());
+				.withNullable(NeoApoliContextParameters.ACTOR_ENTITY, actor)
+				.withRequired(NeoApoliContextParameters.TARGET_ENTITY, target)
+				.withRequired(NeoApoliContextParameters.TAKEN_DAMAGE_SOURCE, source)
+				.withRequired(NeoApoliContextParameters.TAKEN_DAMAGE_AMOUNT, amount)
+				.withNullable(NeoApoliContextParameters.DAMAGING_ENTITY, source.getEntity())
+				.withNullable(NeoApoliContextParameters.DIRECT_DAMAGING_ENTITY, source.getDirectEntity())
+				.build(target.level());
 		}
 
 	}

@@ -3,6 +3,7 @@ package io.github.eggohito.neo_apoli.provider.custom.number.floats;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.number.FloatProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliFloatProviderTypes;
 import io.github.eggohito.neo_apoli.util.MapCodecUtil;
@@ -40,7 +41,7 @@ public record WeightedFloatProvider(WeightedList<FloatProvider> entries) impleme
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		FloatProvider.super.validate(validator);
 		MiscUtil.iterateList(entries().unwrap(), (index, entry) -> entry.value().validate(validator.forChild(".entries[" + index + "]")));
 	}

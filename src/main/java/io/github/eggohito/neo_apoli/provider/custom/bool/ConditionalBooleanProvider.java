@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 public record ConditionalBooleanProvider(Condition condition, BooleanProvider onTrue, BooleanProvider onFalse) implements BooleanProvider, ConditionalValueProvider<Boolean, BooleanProvider> {
 
-	public static final MapCodec<ConditionalBooleanProvider> MAP_CODEC = MapCodecUtil.lazy(ConditionalBooleanProvider.class.getSimpleName(), () -> ConditionalValueProvider.mapCodec(BooleanProvider.CODEC, ConditionalBooleanProvider::new));
+	public static final MapCodec<ConditionalBooleanProvider> CODEC = MapCodecUtil.lazy(ConditionalBooleanProvider.class.getSimpleName(), () -> ConditionalValueProvider.mapCodec(BooleanProvider.CODEC, ConditionalBooleanProvider::new));
 	public static final StreamCodec<RegistryFriendlyByteBuf, ConditionalBooleanProvider> STREAM_CODEC = StreamCodecUtil.lazy(ConditionalBooleanProvider.class.getSimpleName(), () -> ConditionalValueProvider.streamCodec(BooleanProvider.STREAM_CODEC, ConditionalBooleanProvider::new));
 
 	@Override

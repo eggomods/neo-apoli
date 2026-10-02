@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliBooleanProviderTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -13,7 +14,7 @@ import java.util.Optional;
 
 public record ConditionResultBooleanProvider(Condition condition) implements BooleanProvider {
 
-	public static final MapCodec<ConditionResultBooleanProvider> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final MapCodec<ConditionResultBooleanProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Condition.CODEC.fieldOf("condition").forGetter(ConditionResultBooleanProvider::condition)
 	).apply(instance, ConditionResultBooleanProvider::new));
 
@@ -40,7 +41,7 @@ public record ConditionResultBooleanProvider(Condition condition) implements Boo
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		BooleanProvider.super.validate(validator);
 		condition().validate(validator.forChild(".condition"));
 	}

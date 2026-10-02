@@ -3,6 +3,7 @@ package io.github.eggohito.neo_apoli.provider.custom.number.ints;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.number.IntProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliIntProviderTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -53,7 +54,7 @@ public record TimeIntProvider(Optional<IntProvider> period) implements IntProvid
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		IntProvider.super.validate(validator);
 		period().ifPresent(period -> period.validate(validator.forChild(".period")));
 	}

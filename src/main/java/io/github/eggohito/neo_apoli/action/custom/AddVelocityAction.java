@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.action.Action;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.ContextUser;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
 import io.github.eggohito.neo_apoli.provider.custom.vec3.Vec3Provider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliActionTypes;
@@ -49,7 +50,7 @@ public record AddVelocityAction(Method method, Vec3Provider velocity) implements
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Action.super.validate(validator);
 		method().validate(validator);
 		velocity().validate(validator.forChild(".velocity"));
@@ -90,7 +91,7 @@ public record AddVelocityAction(Method method, Vec3Provider velocity) implements
 			}
 
 			@Override
-			public void validate(Context.Validator validator) {
+			public void validate(ContextValidator validator) {
 				Method.super.validate(validator);
 				entity().validate(validator.forChild(".entity"));
 			}
@@ -132,7 +133,7 @@ public record AddVelocityAction(Method method, Vec3Provider velocity) implements
 			}
 
 			@Override
-			public void validate(Context.Validator validator) {
+			public void validate(ContextValidator validator) {
 				Method.super.validate(validator);
 				first().validate(validator.forChild(".first"));
 				second().validate(validator.forChild((".second")));

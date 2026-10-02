@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.codec.NeoApoliStreamCodecs;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.nbt.NbtProvider;
 import io.github.eggohito.neo_apoli.registry.provider.NeoApoliStringProviderTypes;
 import net.minecraft.commands.arguments.NbtPathArgument;
@@ -18,7 +19,7 @@ import java.util.Optional;
 
 public record NbtStringProvider(NbtProvider source, NbtPathArgument.NbtPath path) implements StringProvider {
 
-	public static final MapCodec<NbtStringProvider> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final MapCodec<NbtStringProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		NbtProvider.CODEC.fieldOf("source").forGetter(NbtStringProvider::source),
 		NbtPathArgument.NbtPath.CODEC.fieldOf("path").forGetter(NbtStringProvider::path)
 	).apply(instance, NbtStringProvider::new));
@@ -70,7 +71,7 @@ public record NbtStringProvider(NbtProvider source, NbtPathArgument.NbtPath path
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		StringProvider.super.validate(validator);
 		source().validate(validator.forChild(".source"));
 	}

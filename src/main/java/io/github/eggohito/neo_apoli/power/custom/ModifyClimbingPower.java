@@ -2,9 +2,11 @@ package io.github.eggohito.neo_apoli.power.custom;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.condition.custom.IsEntitySneakingCondition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.parameter.BlockContextParameter;
 import io.github.eggohito.neo_apoli.context.visitor.ClearableVisitor;
 import io.github.eggohito.neo_apoli.exception.PosOutOfBoundsException;
@@ -14,7 +16,7 @@ import io.github.eggohito.neo_apoli.power.entity.Powers;
 import io.github.eggohito.neo_apoli.provider.custom.bool.BooleanProvider;
 import io.github.eggohito.neo_apoli.provider.custom.bool.ConstantBooleanProvider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliPowerTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
+import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameters;
 import io.github.eggohito.neo_apoli.util.CachedBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -30,11 +32,11 @@ import java.util.function.BiPredicate;
 public record ModifyClimbingPower(Optional<Condition> activeCondition, Condition holdingCondition, BooleanProvider allowHolding) implements Power {
 
 	public static final ClearableVisitor<Instance> VISITOR = ClearableVisitor.createThreadLocalized();
-	public static final Context.Parameter<CachedBlock> CLIMBED_BLOCK = NeoApoliContextParams.registerInternal("climbed_block", BlockContextParameter::new);
+	public static final BlockContextParameter CLIMBED_BLOCK = new BlockContextParameter(NeoApoli.id("climbed_block"));
 
 	public static final MapCodec<ModifyClimbingPower> CODEC = RecordCodecBuilder.mapCodec(instance -> Power
 		.addActiveConditionField(instance)
-		.and(Condition.CODEC.optionalFieldOf("holding_condition", new IsEntitySneakingCondition(NeoApoliContextParams.THIS_ENTITY)).forGetter(ModifyClimbingPower::holdingCondition))
+		.and(Condition.CODEC.optionalFieldOf("holding_condition", new IsEntitySneakingCondition(NeoApoliContextParameters.THIS_ENTITY)).forGetter(ModifyClimbingPower::holdingCondition))
 		.and(BooleanProvider.CODEC.optionalFieldOf("allow_holding", new ConstantBooleanProvider(true)).forGetter(ModifyClimbingPower::allowHolding))
 		.apply(instance, ModifyClimbingPower::new)
 	);
@@ -57,7 +59,7 @@ public record ModifyClimbingPower(Optional<Condition> activeCondition, Condition
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 
 		Power.super.validate(validator);
 

@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.action.Action;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.provider.custom.block.BlockProvider;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
 import io.github.eggohito.neo_apoli.provider.custom.vec3.Vec3Provider;
@@ -67,7 +68,7 @@ public record EmitGameEventAction(Holder<GameEvent> gameEvent, Vec3Provider posi
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 		Action.super.validate(validator);
 		position().validate(validator.forChild(".position"));
 		entitySource().ifPresent(p -> p.validate(validator.forChild(".entity_source")));

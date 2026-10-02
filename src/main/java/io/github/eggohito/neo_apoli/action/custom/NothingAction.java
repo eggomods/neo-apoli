@@ -3,6 +3,7 @@ package io.github.eggohito.neo_apoli.action.custom;
 import com.mojang.serialization.MapCodec;
 import io.github.eggohito.neo_apoli.action.Action;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.registry.NeoApoliActionTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -25,7 +26,7 @@ public enum NothingAction implements Action {
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 
 	}
 

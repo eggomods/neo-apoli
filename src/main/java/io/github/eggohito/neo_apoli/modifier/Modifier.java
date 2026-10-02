@@ -9,6 +9,7 @@ import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.ContextUser;
 import io.github.eggohito.neo_apoli.context.ContextValidatable;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.modifier.custom.AddModifier;
 import io.github.eggohito.neo_apoli.modifier.custom.MultiplyAdditiveModifier;
 import io.github.eggohito.neo_apoli.modifier.custom.MultiplyMultiplicativeModifier;
@@ -47,7 +48,7 @@ public interface Modifier extends ContextUser, Comparable<Modifier> {
 	StreamCodec<RegistryFriendlyByteBuf, Modifier> STREAM_CODEC = Type.STREAM_CODEC.dispatch(Modifier::getType, Type::streamCodec);
 
 	@Override
-	default void validate(Context.Validator validator) {
+	default void validate(ContextValidator validator) {
 		ContextUser.super.validate(validator);
 		ContextValidatable.validate(modifiers(), validator, index -> ".modifiers[" + index + "]");
 	}

@@ -10,7 +10,7 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import io.github.eggohito.neo_apoli.action.manager.ActionManager;
-import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.event.DependencyManager;
 import io.github.eggohito.neo_apoli.event.PowerPreparation;
 import io.github.eggohito.neo_apoli.event.PowerReloadEvents;
@@ -183,7 +183,7 @@ public class ServerPowerManager extends AbstractContentAndTagManager<PowerIdenti
 				Power power = holder.value();
 				Reporter powerReporter = reporter.forChild("{\"" + holder.id() + "\"}");
 
-				Context.Validator validator = new Context.Validator(power.getType().requirements(), powerReporter).withResolver(MiscUtil.getLookupProvider(resources));
+				ContextValidator validator = new ContextValidator(power.getType().parameters(), powerReporter).withResolver(MiscUtil.getLookupProvider(resources));
 				power.validate(validator);
 
 				if (!powerReporter.hasProblems()) {

@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public record StorageNbtProvider(ResourceLocation id) implements NbtProvider {
 
-	public static final MapCodec<StorageNbtProvider> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance
+	public static final MapCodec<StorageNbtProvider> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
 		.group(ResourceLocation.CODEC.fieldOf("id").forGetter(StorageNbtProvider::id))
 		.apply(instance, StorageNbtProvider::new)
 	);

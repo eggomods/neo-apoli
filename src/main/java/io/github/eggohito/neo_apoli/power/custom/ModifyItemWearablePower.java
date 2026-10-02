@@ -3,15 +3,16 @@ package io.github.eggohito.neo_apoli.power.custom;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.context.parameter.ItemContextParameter;
 import io.github.eggohito.neo_apoli.context.visitor.ClearableVisitor;
 import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.entity.Powers;
 import io.github.eggohito.neo_apoli.provider.custom.bool.BooleanProvider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliPowerTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParams;
 import io.github.eggohito.neo_apoli.util.conditional.CompositeConditional;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -29,7 +30,7 @@ import java.util.function.Function;
 public record ModifyItemWearablePower(EnumMap<EquipmentSlot, CompositeConditional.Entry<BooleanProvider>> slots) implements Power {
 
 	public static final ClearableVisitor<Instance> VISITOR = ClearableVisitor.createThreadLocalized();
-	public static final Context.Parameter<ItemStack> WORN_ITEM = NeoApoliContextParams.registerInternal("worn_item", ItemContextParameter::new);
+	public static final ItemContextParameter WORN_ITEM = new ItemContextParameter(NeoApoli.id("worn_item"));
 
 	private static final Codec<EnumMap<EquipmentSlot, CompositeConditional.Entry<BooleanProvider>>> SLOTS_CODEC = ExtraCodecs.nonEmptyMap(Codec.unboundedMap(EquipmentSlot.CODEC, CompositeConditional.Entry.codec(Condition.CODEC.fieldOf("condition"), BooleanProvider.CODEC.fieldOf("allow")))).xmap(EnumMap::new, Function.identity());
 	private static final StreamCodec<RegistryFriendlyByteBuf, EnumMap<EquipmentSlot, CompositeConditional.Entry<BooleanProvider>>> SLOTS_STREAM_CODEC = ByteBufCodecs.map(size -> new EnumMap<>(EquipmentSlot.class), EquipmentSlot.STREAM_CODEC, CompositeConditional.Entry.streamCodec(Condition.STREAM_CODEC, BooleanProvider.STREAM_CODEC));
@@ -55,14 +56,14 @@ public record ModifyItemWearablePower(EnumMap<EquipmentSlot, CompositeConditiona
 	}
 
 	@Override
-	public void validate(Context.Validator validator) {
+	public void validate(ContextValidator validator) {
 
 		Power.super.validate(validator);
-		Context.Validator slotsValidator = validator.forChild(".slots");
+		ContextValidator slotsValidator = validator.forChild(".slots");
 
 		this.slots().forEach((slot, entry) -> {
 
-			Context.Validator entryValidator = slotsValidator.forChild("." + slot.getSerializedName());
+			ContextValidator entryValidator = slotsValidator.forChild("." + slot.getSerializedName());
 
 			entry.condition().validate(entryValidator.forChild(".condition"));
 			entry.value().validate(entryValidator.forChild(".allow"));
