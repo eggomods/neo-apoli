@@ -5,7 +5,8 @@ import com.mojang.serialization.MapCodec;
 import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.action.custom.SequenceAction;
 import io.github.eggohito.neo_apoli.codec.MultiAlternativeCodec;
-import io.github.eggohito.neo_apoli.context.ContextExecutor;
+import io.github.eggohito.neo_apoli.context.Context;
+import io.github.eggohito.neo_apoli.context.ContextUser;
 import io.github.eggohito.neo_apoli.registry.NeoApoliRegistries;
 import io.github.eggohito.neo_apoli.registry.NeoApoliRegistryKeys;
 import io.github.eggohito.neo_apoli.util.alias.FixedRegistryAlias;
@@ -13,7 +14,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
-public interface Action extends ContextExecutor {
+public interface Action extends ContextUser {
 
 	MapCodec<Action> MAP_CODEC = Type.CODEC.dispatchMap(Action::getType, Type::mapCodec);
 
@@ -22,6 +23,8 @@ public interface Action extends ContextExecutor {
 	StreamCodec<RegistryFriendlyByteBuf, Action> STREAM_CODEC = Type.STREAM_CODEC.dispatch(Action::getType, Type::streamCodec);
 
 	Type<?> getType();
+
+	void execute(Context context);
 
 	record Type<A extends Action>(MapCodec<A> mapCodec, StreamCodec<RegistryFriendlyByteBuf, A> streamCodec) {
 
