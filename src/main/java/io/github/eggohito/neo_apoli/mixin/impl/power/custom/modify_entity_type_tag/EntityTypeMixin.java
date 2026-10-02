@@ -44,13 +44,8 @@ public abstract class EntityTypeMixin implements EntityCache {
 	@ModifyReturnValue(method = "is(Lnet/minecraft/tags/TagKey;)Z", at = @At("RETURN"))
 	boolean tagProxy(boolean original, TagKey<EntityType<?>> tag) {
 
-		try {
-			return original
-				|| ModifyEntityTypeTagPower.modify(this.neo_apoli$getEntity(), tag);
-		}
-
-		finally {
-			ModifyEntityTypeTagPower.VISITOR.clear();
+		try (ModifyEntityTypeTagPower.VISITOR) {
+			return original || ModifyEntityTypeTagPower.modify(this.neo_apoli$getEntity(), tag);
 		}
 
 	}
@@ -58,13 +53,8 @@ public abstract class EntityTypeMixin implements EntityCache {
 	@ModifyReturnValue(method = "is(Lnet/minecraft/core/HolderSet;)Z", at = @At("RETURN"))
 	boolean directTagProxy(boolean original, HolderSet<EntityType<?>> directTag) {
 
-		try {
-			return original
-				|| ModifyEntityTypeTagPower.modify(this.neo_apoli$getEntity(), directTag);
-		}
-
-		finally {
-			ModifyEntityTypeTagPower.VISITOR.clear();
+		try (ModifyEntityTypeTagPower.VISITOR) {
+			return original || ModifyEntityTypeTagPower.modify(this.neo_apoli$getEntity(), directTag);
 		}
 
 	}

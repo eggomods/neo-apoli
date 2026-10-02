@@ -59,9 +59,10 @@ public final class PowerIntegrations {
 
 	private static boolean onPowerElytraFlight(LivingEntity entity, boolean tickElytra) {
 
-		try {
+		try (ModifyElytraFlightPower.VISITOR) {
 
 			boolean allow = ModifyElytraFlightPower.modify(entity, () -> false);
+
 			if (allow && tickElytra) {
 				entity.gameEvent(GameEvent.ELYTRA_GLIDE);
 			}
@@ -70,20 +71,12 @@ public final class PowerIntegrations {
 
 		}
 
-		finally {
-			ModifyElytraFlightPower.VISITOR.clear();
-		}
-
 	}
 
 	private static boolean allowPowerElytraFlight(LivingEntity entity) {
 
-		try {
+		try (ModifyElytraFlightPower.VISITOR) {
 			return ModifyElytraFlightPower.modify(entity, () -> true);
-		}
-
-		finally {
-			ModifyElytraFlightPower.VISITOR.clear();
 		}
 
 	}

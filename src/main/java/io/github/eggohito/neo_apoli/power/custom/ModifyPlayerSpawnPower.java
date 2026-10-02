@@ -10,7 +10,6 @@ import io.github.eggohito.neo_apoli.codec.NeoApoliCodecs;
 import io.github.eggohito.neo_apoli.codec.NeoApoliStreamCodecs;
 import io.github.eggohito.neo_apoli.config.AbstractJsonCodecConfig;
 import io.github.eggohito.neo_apoli.context.ContextValidator;
-import io.github.eggohito.neo_apoli.context.visitor.ClearableVisitor;
 import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.custom.misc.PrioritizedPower;
 import io.github.eggohito.neo_apoli.registry.NeoApoliPowerTypes;
@@ -38,10 +37,8 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.quiltmc.parsers.json.JsonFormat;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 

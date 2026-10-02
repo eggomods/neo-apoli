@@ -18,14 +18,10 @@ public abstract class ScreenEffectRendererMixin {
 	@ModifyExpressionValue(method = "renderScreenEffect", at = @At(value = "FIELD", target = "Lnet/minecraft/world/entity/player/Player;noPhysics:Z", opcode = Opcodes.GETFIELD))
 	private static boolean preventBlockingEffectWhenPhasing(boolean original, @Local Player player) {
 
-		try {
+		try (PhasingPower.VISITOR) {
 			CachedBlock viewBlocking = MiscUtil.getViewBlocking(player);
 			return original
 				|| (viewBlocking != null && PhasingPower.doesApply(player, viewBlocking, Power.Instance::isActive));
-		}
-
-		finally {
-			PhasingPower.VISITOR.clear();
 		}
 
 	}

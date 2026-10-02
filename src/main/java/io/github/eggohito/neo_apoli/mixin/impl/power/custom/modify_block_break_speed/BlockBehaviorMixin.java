@@ -16,12 +16,8 @@ public abstract class BlockBehaviorMixin {
 	@ModifyReturnValue(method = "getDestroyProgress", at = @At("RETURN"))
 	float modifyBreakSpeed(float original, BlockState blockState, Player player, BlockGetter blockGetter, BlockPos blockPos) {
 
-		try {
+		try (ModifyBlockBreakSpeedPower.VISITOR) {
 			return ModifyBlockBreakSpeedPower.modify(player, blockPos, blockState, blockGetter.getBlockEntity(blockPos), original);
-		}
-
-		finally {
-			ModifyBlockBreakSpeedPower.VISITOR.clear();
 		}
 
 	}

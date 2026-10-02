@@ -54,7 +54,11 @@ public record ModifyDamageDealtPower(Optional<Condition> activeCondition, List<M
 	}
 
 	public static float modify(@NotNull Entity actor, @NotNull Entity target, DamageSource source, float amount) {
-		return DamageModifyingPower.modify(NeoApoliPowerTypes.MODIFY_DAMAGE_DEALT, Instance.class, actor, actor, target, source, amount);
+
+		try (DamageModifyingPower.VISITOR) {
+			return DamageModifyingPower.modify(NeoApoliPowerTypes.MODIFY_DAMAGE_DEALT, Instance.class, actor, actor, target, source, amount);
+		}
+
 	}
 
 }

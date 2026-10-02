@@ -13,12 +13,8 @@ public abstract class LivingEntityMixin {
 	@ModifyReturnValue(method = "getJumpPower()F", at = @At("RETURN"))
 	float modifyJump(float original) {
 
-		try {
+		try (ModifyJumpPower.VISITOR) {
 			return ModifyJumpPower.modify(thisAsLiving(), original);
-		}
-
-		finally {
-			ModifyJumpPower.VISITOR.clear();
 		}
 
 	}

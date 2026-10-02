@@ -22,12 +22,8 @@ public abstract class LivingEntityMixin extends Entity {
 	@WrapOperation(method = "canEquipWithDispenser", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/equipment/Equippable;canBeEquippedBy(Lnet/minecraft/world/entity/EntityType;)Z"))
 	boolean whenDispensed(Equippable equippable, EntityType<?> entityType, Operation<Boolean> original, ItemStack stack) {
 
-		try {
+		try (ModifyItemWearablePower.VISITOR) {
 			return ModifyItemWearablePower.modify(this, stack, equippable.slot(), () -> original.call(equippable, entityType));
-		}
-
-		finally {
-			ModifyItemWearablePower.VISITOR.clear();
 		}
 
 	}

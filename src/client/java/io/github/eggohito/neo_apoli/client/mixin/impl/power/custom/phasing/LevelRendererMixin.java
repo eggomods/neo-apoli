@@ -50,7 +50,7 @@ public abstract class LevelRendererMixin {
 			return original.call(camera, fogMode, fogColor, renderDistance, isFoggy, partialTick);
 		}
 
-		try {
+		try (PhasingPower.VISITOR) {
 
 			Entity entity = camera.getEntity();
 			CachedBlock viewBlocking = Objects.requireNonNull(MiscUtil.getViewBlocking(entity));
@@ -74,10 +74,6 @@ public abstract class LevelRendererMixin {
 
 			return new FogParameters(start, end, fogParameters.shape(), fogParameters.red(), fogParameters.green(), fogParameters.blue(), fogParameters.alpha());
 
-		}
-
-		finally {
-			PhasingPower.VISITOR.clear();
 		}
 
 	}

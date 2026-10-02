@@ -27,13 +27,13 @@ public abstract class EntityMixin {
 		Entity renderedEntity = (Entity) (Object) this;
 		Team team = this.getTeam();
 
-		try {
-			boolean hasTeamColor = team != null && team.getColor().getColor() != null;
-			return ModifyGlowingSelfPower.modifyColor(Minecraft.getInstance().getCameraEntity(), renderedEntity, hasTeamColor, original);
-		}
+		try (ModifyGlowingSelfPower.VISITOR) {
 
-		finally {
-			ModifyGlowingSelfPower.VISITOR.clear();
+			Entity viewer = Minecraft.getInstance().getCameraEntity();
+			boolean hasTeamColor = team != null && team.getColor().getColor() != null;
+
+			return ModifyGlowingSelfPower.modifyColor(viewer, renderedEntity, hasTeamColor, original);
+
 		}
 
 	}

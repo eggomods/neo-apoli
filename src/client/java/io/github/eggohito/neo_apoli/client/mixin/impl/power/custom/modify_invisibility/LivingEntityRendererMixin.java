@@ -28,7 +28,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
 	@ModifyExpressionValue(method = "extractRenderState(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;F)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;shouldEntityAppearGlowing(Lnet/minecraft/world/entity/Entity;)Z"))
 	boolean showOrHideOutlineWhenInvisible(boolean original, LivingEntity renderedEntity) {
 
-		try {
+		try (ModifyInvisibilityPower.VISITOR) {
 
 			if (original) {
 				return !ModifyInvisibilityPower.modify(renderedEntity, Minecraft.getInstance().getCameraEntity(), ModifyInvisibilityPower.RENDER_OUTLINE.negate(), () -> false);
@@ -40,16 +40,12 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
 
 		}
 
-		finally {
-			ModifyInvisibilityPower.VISITOR.clear();
-		}
-
 	}
 
 	@WrapWithCondition(method = "render(Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/RenderLayer;render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/renderer/entity/state/EntityRenderState;FF)V"))
 	boolean showOrHideArmorFeatureWhenInvisible(RenderLayer<S, M> renderLayer, PoseStack poseStack, MultiBufferSource bufferSource, int light, EntityRenderState state, float yRot, float xRot) {
 
-		try {
+		try (ModifyInvisibilityPower.VISITOR) {
 
 			if (renderLayer instanceof HumanoidArmorLayer) {
 				return ModifyInvisibilityPower.modify(state.neo_apoli$getEntity(), Minecraft.getInstance().getCameraEntity(), ModifyInvisibilityPower.RENDER_ARMOR.negate(), () -> true);
@@ -59,10 +55,6 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
 				return true;
 			}
 
-		}
-
-		finally {
-			ModifyInvisibilityPower.VISITOR.clear();
 		}
 
 	}

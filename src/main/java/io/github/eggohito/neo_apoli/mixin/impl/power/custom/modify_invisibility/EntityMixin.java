@@ -31,13 +31,8 @@ public abstract class EntityMixin {
 	@ModifyReturnValue(method = "isInvisible", at = @At("RETURN"))
 	boolean invisibleProxy(boolean original) {
 
-		try {
-			return original
-				|| ModifyInvisibilityPower.modify(neo_apoli$thisAsEntity(), null, Power.Instance::isActive, () -> false);
-		}
-
-		finally {
-			ModifyInvisibilityPower.VISITOR.clear();
+		try (ModifyInvisibilityPower.VISITOR) {
+			return original || ModifyInvisibilityPower.modify(neo_apoli$thisAsEntity(), null, Power.Instance::isActive, () -> false);
 		}
 
 	}
@@ -45,7 +40,7 @@ public abstract class EntityMixin {
 	@WrapOperation(method = "isInvisibleTo", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;isInvisible()Z"))
 	boolean invisibleToProxy(Entity entity, Operation<Boolean> original, Player viewer) {
 
-		try {
+		try (ModifyInvisibilityPower.VISITOR) {
 
 			if (viewer == null) {
 				return original.call(entity);
@@ -55,8 +50,6 @@ public abstract class EntityMixin {
 				return ModifyInvisibilityPower.modify(neo_apoli$thisAsEntity(), viewer, ModifyInvisibilityPower.Instance::isInvisibleTo, () -> original.call(entity));
 			}
 
-		} finally {
-			ModifyInvisibilityPower.VISITOR.clear();
 		}
 
 	}

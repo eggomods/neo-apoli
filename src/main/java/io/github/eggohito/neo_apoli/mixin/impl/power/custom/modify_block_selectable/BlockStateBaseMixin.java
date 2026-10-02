@@ -36,7 +36,7 @@ public abstract class BlockStateBaseMixin extends StateHolder<Block, BlockState>
 			return original;
 		}
 
-		try {
+		try (ModifyBlockSelectablePower.VISITOR) {
 
 			if (ModifyBlockSelectablePower.shouldBeEmpty(MiscUtil.getEntityFromCollision(collision), blockPos, this.asState(), blockGetter.getBlockEntity(blockPos))) {
 				return Shapes.empty();
@@ -46,10 +46,6 @@ public abstract class BlockStateBaseMixin extends StateHolder<Block, BlockState>
 				return original;
 			}
 
-		}
-
-		finally {
-			ModifyBlockSelectablePower.VISITOR.clear();
 		}
 
 	}

@@ -20,7 +20,7 @@ public abstract class LivingEntityMixin extends Entity {
 	@ModifyReturnValue(method = "getEffectiveGravity", at = @At("RETURN"))
 	double modifyEffectiveGravity(double original, @Local boolean falling) {
 
-		try {
+		try (ModifyFallingPower.VISITOR) {
 
 			if (!falling) {
 				return original;
@@ -34,10 +34,6 @@ public abstract class LivingEntityMixin extends Entity {
 
 			return modified;
 
-		}
-
-		finally {
-			ModifyFallingPower.VISITOR.clear();
 		}
 
 	}

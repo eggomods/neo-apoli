@@ -23,12 +23,8 @@ public abstract class ServerPlayerGameModeMixin {
 	@WrapOperation(method = "destroyBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;hasCorrectToolForDrops(Lnet/minecraft/world/level/block/state/BlockState;)Z"))
 	boolean neo_apoli$modifyHarvestable(ServerPlayer serverPlayer, BlockState blockState, Operation<Boolean> original, BlockPos mBlockPos, @Local BlockEntity blockEntity) {
 
-		try {
+		try (ModifyBlockHarvestablePower.VISITOR) {
 			return ModifyBlockHarvestablePower.modify(serverPlayer, mBlockPos, blockState, blockEntity, () -> original.call(serverPlayer, blockState));
-		}
-
-		finally {
-			ModifyBlockHarvestablePower.VISITOR.clear();
 		}
 
 	}

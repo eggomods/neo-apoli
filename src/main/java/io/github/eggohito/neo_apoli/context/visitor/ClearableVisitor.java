@@ -1,14 +1,15 @@
 package io.github.eggohito.neo_apoli.context.visitor;
 
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import com.google.common.collect.Sets;
 
 import java.lang.ref.WeakReference;
 import java.util.Optional;
 import java.util.Set;
 
-public interface ClearableVisitor<T> extends Visitor<T> {
+public interface ClearableVisitor<T> extends Visitor<T>, AutoCloseable {
 
-	void clear();
+	@Override
+	void close();
 
 	static <T> ClearableVisitor<T> createThreadLocalized() {
 		return new ClearableVisitor<>() {
@@ -25,7 +26,7 @@ public interface ClearableVisitor<T> extends Visitor<T> {
 			@Override
 			public boolean push(T element) {
 
-				Set<T> users = this.getVisited().orElseGet(ObjectOpenHashSet::new);
+				Set<T> users = this.getVisited().orElseGet(Sets::newIdentityHashSet);
 				this.visited.set(new WeakReference<>(users));
 
 				return users.add(element);
@@ -38,7 +39,7 @@ public interface ClearableVisitor<T> extends Visitor<T> {
 			}
 
 			@Override
-			public void clear() {
+			public void close() {
 				this.visited.remove();
 			}
 

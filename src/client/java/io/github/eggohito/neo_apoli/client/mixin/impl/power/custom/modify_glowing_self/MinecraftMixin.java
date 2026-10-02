@@ -18,13 +18,8 @@ public abstract class MinecraftMixin {
 	@ModifyExpressionValue(method = "shouldEntityAppearGlowing", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;isCurrentlyGlowing()Z"))
 	boolean makeSelfGlow(boolean original, Entity entity) {
 
-		try {
-			return original
-				|| ModifyGlowingSelfPower.modifyGlowing(this.getCameraEntity(), entity);
-		}
-
-		finally {
-			ModifyGlowingSelfPower.VISITOR.clear();
+		try (ModifyGlowingSelfPower.VISITOR) {
+			return original || ModifyGlowingSelfPower.modifyGlowing(this.getCameraEntity(), entity);
 		}
 
 	}

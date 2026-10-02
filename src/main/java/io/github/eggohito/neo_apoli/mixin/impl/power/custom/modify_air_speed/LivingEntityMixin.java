@@ -19,12 +19,8 @@ public abstract class LivingEntityMixin extends Entity {
 	@ModifyReturnValue(method = "getFlyingSpeed", at = @At("RETURN"))
 	protected float modifyAirSpeed(float original) {
 
-		try {
+		try (ModifyAirSpeedPower.VISITOR) {
 			return ModifyAirSpeedPower.modify(this, original);
-		}
-
-		finally {
-			ModifyAirSpeedPower.VISITOR.clear();
 		}
 
 	}

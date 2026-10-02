@@ -21,12 +21,8 @@ public abstract class EquippableMixin {
 	@WrapOperation(method = "swapWithEquipmentSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/equipment/Equippable;canBeEquippedBy(Lnet/minecraft/world/entity/EntityType;)Z"))
 	boolean onSwap(Equippable equippable, EntityType<?> entityType, Operation<Boolean> original, ItemStack stack, Player player) {
 
-		try {
+		try (ModifyItemWearablePower.VISITOR) {
 			return ModifyItemWearablePower.modify(player, stack, this.slot(), () -> original.call(equippable, entityType));
-		}
-
-		finally {
-			ModifyItemWearablePower.VISITOR.clear();
 		}
 
 	}

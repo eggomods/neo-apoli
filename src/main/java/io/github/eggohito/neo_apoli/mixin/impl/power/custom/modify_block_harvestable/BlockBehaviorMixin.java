@@ -17,12 +17,8 @@ public abstract class BlockBehaviorMixin {
 	@WrapOperation(method = "getDestroyProgress", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;hasCorrectToolForDrops(Lnet/minecraft/world/level/block/state/BlockState;)Z"))
 	boolean neo_apoli$modifyHarvestable(Player player, BlockState blockState, Operation<Boolean> original, BlockState mBlockState, Player mPlayer, BlockGetter mBlockGetter, BlockPos mBlockPos) {
 
-		try {
+		try (ModifyBlockHarvestablePower.VISITOR) {
 			return ModifyBlockHarvestablePower.modify(player, mBlockPos, blockState, mBlockGetter.getBlockEntity(mBlockPos), () -> original.call(player, blockState));
-		}
-
-		finally {
-			ModifyBlockHarvestablePower.VISITOR.clear();
 		}
 
 	}

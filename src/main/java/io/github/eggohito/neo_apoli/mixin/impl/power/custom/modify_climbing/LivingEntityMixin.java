@@ -22,13 +22,8 @@ public abstract class LivingEntityMixin extends Entity {
 	@ModifyExpressionValue(method = "onClimbable", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;is(Lnet/minecraft/tags/TagKey;)Z"))
 	boolean modifyClimbing(boolean original) {
 
-		try {
-			return original
-				|| ModifyClimbingPower.modify(this, Power.Instance::isActive);
-		}
-
-		finally {
-			ModifyClimbingPower.VISITOR.clear();
+		try (ModifyClimbingPower.VISITOR) {
+			return original || ModifyClimbingPower.modify(this, Power.Instance::isActive);
 		}
 
 	}
@@ -36,14 +31,10 @@ public abstract class LivingEntityMixin extends Entity {
 	@ModifyReturnValue(method = "isSuppressingSlidingDownLadder", at = @At("RETURN"))
 	boolean overrideClimbingHold(boolean original) {
 
-		try {
+		try (ModifyClimbingPower.VISITOR) {
 			return Powers.hasInstances(this, ModifyClimbingPower.Instance.class)
 				? ModifyClimbingPower.modify(this, ModifyClimbingPower.Instance::canHold)
 				: original;
-		}
-
-		finally {
-			ModifyClimbingPower.VISITOR.clear();
 		}
 
 	}

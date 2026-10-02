@@ -15,7 +15,7 @@ public abstract class LivingEntityMixin extends EntityMixin {
 	@WrapOperation(method = "getVisibilityPercent", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;isInvisible()Z"))
 	boolean invisibleToProxy(LivingEntity entity, Operation<Boolean> original, @Nullable Entity viewer) {
 
-		try {
+		try (ModifyInvisibilityPower.VISITOR) {
 
 			if (viewer == null) {
 				return original.call(entity);
@@ -25,10 +25,6 @@ public abstract class LivingEntityMixin extends EntityMixin {
 				return ModifyInvisibilityPower.modify(entity, viewer, ModifyInvisibilityPower.Instance::isInvisibleTo, () -> original.call(entity));
 			}
 
-		}
-
-		finally {
-			ModifyInvisibilityPower.VISITOR.clear();
 		}
 
 	}
