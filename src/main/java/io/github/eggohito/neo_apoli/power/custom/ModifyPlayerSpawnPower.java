@@ -8,6 +8,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.isxander.yacl3.config.v3.ConfigEntry;
 import io.github.eggohito.neo_apoli.codec.NeoApoliCodecs;
 import io.github.eggohito.neo_apoli.codec.NeoApoliStreamCodecs;
+import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.config.AbstractJsonCodecConfig;
 import io.github.eggohito.neo_apoli.context.ContextValidator;
 import io.github.eggohito.neo_apoli.power.Power;
@@ -17,6 +18,7 @@ import io.github.eggohito.neo_apoli.util.CodecUtil;
 import io.github.eggohito.neo_apoli.util.MiscUtil;
 import io.github.eggohito.neo_apoli.util.RegistryUtil;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
@@ -43,18 +45,19 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @SuppressWarnings("UnstableApiUsage")
-public record ModifyPlayerSpawnPower(ResourceKey<Level> dimension, Optional<Either<ResourceKey<Biome>, TagKey<Biome>>> biome, Optional<Either<ResourceKey<Structure>, TagKey<Structure>>> structure, int priority) implements PrioritizedPower<ModifyPlayerSpawnPower> {
+public record ModifyPlayerSpawnPower(Optional<Condition> activeCondition, ResourceKey<Level> dimension, Optional<Either<ResourceKey<Biome>, TagKey<Biome>>> biome, Optional<Either<ResourceKey<Structure>, TagKey<Structure>>> structure, int priority) implements PrioritizedPower<ModifyPlayerSpawnPower> {
 
-	public static final ClearableVisitor<Instance> VISITOR = ClearableVisitor.createThreadLocalized();
-
-	public static final MapCodec<ModifyPlayerSpawnPower> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-		Level.RESOURCE_KEY_CODEC.fieldOf("dimension").forGetter(ModifyPlayerSpawnPower::dimension),
-		NeoApoliCodecs.BIOME_KEY_OR_TAG.optionalFieldOf("biome").forGetter(ModifyPlayerSpawnPower::biome),
-		NeoApoliCodecs.STRUCTURE_KEY_OR_TAG.optionalFieldOf("structure").forGetter(ModifyPlayerSpawnPower::structure),
-		Codec.INT.optionalFieldOf("priority", 0).forGetter(ModifyPlayerSpawnPower::priority)
-	).apply(instance, ModifyPlayerSpawnPower::new));
+	public static final MapCodec<ModifyPlayerSpawnPower> CODEC = RecordCodecBuilder.mapCodec(instance -> Power
+		.addActiveConditionField(instance)
+		.and(Level.RESOURCE_KEY_CODEC.fieldOf("dimension").forGetter(ModifyPlayerSpawnPower::dimension))
+		.and(NeoApoliCodecs.BIOME_KEY_OR_TAG.optionalFieldOf("biome").forGetter(ModifyPlayerSpawnPower::biome))
+		.and(NeoApoliCodecs.STRUCTURE_KEY_OR_TAG.optionalFieldOf("structure").forGetter(ModifyPlayerSpawnPower::structure))
+		.and(Codec.INT.optionalFieldOf("priority", 0).forGetter(ModifyPlayerSpawnPower::priority))
+		.apply(instance, ModifyPlayerSpawnPower::new)
+	);
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ModifyPlayerSpawnPower> STREAM_CODEC = StreamCodec.composite(
+		ByteBufCodecs.optional(Condition.STREAM_CODEC), ModifyPlayerSpawnPower::activeCondition,
 		ResourceKey.streamCodec(Registries.DIMENSION), ModifyPlayerSpawnPower::dimension,
 		ByteBufCodecs.optional(NeoApoliStreamCodecs.BIOME_KEY_OR_TAG), ModifyPlayerSpawnPower::biome,
 		ByteBufCodecs.optional(NeoApoliStreamCodecs.STRUCTURE_KEY_OR_TAG), ModifyPlayerSpawnPower::structure,
@@ -84,7 +87,7 @@ public record ModifyPlayerSpawnPower(ResourceKey<Level> dimension, Optional<Eith
 
 		private static final MapCodec<Optional<ServerPlayer.RespawnConfig>> LOCATION_MAP_CODEC = MapCodec.assumeMapUnsafe(ExtraCodecs.optionalEmptyMap(ServerPlayer.RespawnConfig.CODEC));
 
-		private CompletableFuture<TeleportTransition> respawnTeleport = null;
+		private CompletableFuture<TeleportTransition> respawnTeleport = new CompletableFuture<>();
 		private Optional<ServerPlayer.RespawnConfig> respawnLocation = Optional.empty();
 
 		protected Instance(@NotNull ModifyPlayerSpawnPower power) {
@@ -97,7 +100,7 @@ public record ModifyPlayerSpawnPower(ResourceKey<Level> dimension, Optional<Eith
 			super.onGranted(holder);
 
 			if (holder instanceof ServerPlayer player) {
-				this.findRespawnLocation(player);
+				this.getOrFindRespawnLocation(player);
 			}
 
 		}
@@ -114,18 +117,20 @@ public record ModifyPlayerSpawnPower(ResourceKey<Level> dimension, Optional<Eith
 			return LOCATION_MAP_CODEC.encode(this.respawnLocation, ops, prefix);
 		}
 
-		@Nullable
 		public CompletableFuture<TeleportTransition> getRespawnLocation() {
 			return respawnTeleport;
 		}
 
 		public CompletableFuture<TeleportTransition> getOrFindRespawnLocation(ServerPlayer player) {
-			return Objects.requireNonNullElseGet(this.getRespawnLocation(), () -> this.findRespawnLocation(player));
+			CompletableFuture<TeleportTransition> respawnLocation = this.getRespawnLocation();
+			return respawnLocation.isDone()
+				? respawnLocation
+				: this.findRespawnLocation(player);
 		}
 
 		public CompletableFuture<TeleportTransition> findRespawnLocation(ServerPlayer player) {
 			return this.respawnTeleport = CompletableFuture
-				.supplyAsync(() -> this.findRespawnLocationInternal(player))
+				.supplyAsync(() -> this.findRespawnLocationInternal(player), Util.ioPool()) // Using Minecraft's IO thread pool should be fine?
 				.thenApply(this::onLocationFound);
 		}
 
@@ -165,12 +170,8 @@ public record ModifyPlayerSpawnPower(ResourceKey<Level> dimension, Optional<Eith
 
 		private BlockPos findBiomeLocation(ServerLevel dimension, BlockPos pos, int horizontalSteps, int verticalSteps, int radius) {
 
-			if (power.biome().isEmpty()) {
-				return pos;
-			}
-
 			var foundBiome = dimension.findClosestBiome3d(
-				biomeHolder -> power.biome().get().map(biomeHolder::is, biomeHolder::is),
+				biomeHolder -> power.biome().isEmpty() || power.biome().get().map(biomeHolder::is, biomeHolder::is),
 				pos,
 				radius,
 				horizontalSteps,

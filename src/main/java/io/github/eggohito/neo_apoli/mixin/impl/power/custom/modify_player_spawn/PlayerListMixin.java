@@ -1,7 +1,7 @@
 package io.github.eggohito.neo_apoli.mixin.impl.power.custom.modify_player_spawn;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import io.github.eggohito.neo_apoli.NeoApoli;
+import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.power.custom.ModifyPlayerSpawnPower;
 import io.github.eggohito.neo_apoli.power.custom.misc.PrioritizedPower;
 import net.minecraft.server.level.ServerPlayer;
@@ -10,9 +10,7 @@ import net.minecraft.world.level.portal.TeleportTransition;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.CompletableFuture;
 
 @Mixin(PlayerList.class)
 public abstract class PlayerListMixin {
@@ -24,23 +22,35 @@ public abstract class PlayerListMixin {
 			return original;
 		}
 
-		for (var instance : new PrioritizedPower.InstanceCollection<>(player, ModifyPlayerSpawnPower.Instance.class)) {
+		var instances = new PrioritizedPower.InstanceCollection<>(player, ModifyPlayerSpawnPower.Instance.class);
+		ModifyPlayerSpawnPower.Instance firstInstance = null;
 
-			try {
-				return instance.getOrFindRespawnLocation(player).get(10, TimeUnit.SECONDS);
-			}
+		for (var instance : instances) {
 
-			catch (ExecutionException | InterruptedException e) {
-				NeoApoli.LOGGER.error("Error trying to search for a valid respawn point with {}", instance.id().asDisplayString(false), e);
-			}
+			Context context = instance.createHolderContext(player);
+			CompletableFuture<TeleportTransition> respawnLocation = instance.getRespawnLocation();
 
-			catch (TimeoutException e) {
-				NeoApoli.LOGGER.warn("{} timed out searching for a valid respawn point!", instance.id().asDisplayString());
+			if (instance.isActive(context)) {
+
+				if (respawnLocation.isDone()) {
+					return respawnLocation.join();
+				}
+
+				else if (firstInstance == null){
+					firstInstance = instance;
+				}
+
 			}
 
 		}
 
-		return original;
+		if (firstInstance != null) {
+			return firstInstance.getOrFindRespawnLocation(player).join();
+		}
+
+		else {
+			return original;
+		}
 
 	}
 
