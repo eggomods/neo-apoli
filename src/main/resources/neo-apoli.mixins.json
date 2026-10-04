@@ -41,6 +41,7 @@
 		"impl.misc.internal_recipes.RecipeManagerMixin",
 		"impl.misc.moving.EntityMixin",
 		"impl.misc.placeholder_identifier.ResourceLocationMixin",
+		"impl.misc.respawning_entity.PlayerMixin",
 		"impl.misc.rideable_players.EntityMixin",
 		"impl.misc.rideable_players.PlayerListMixin",
 		"impl.misc.rideable_players.ServerPlayerMixin",

@@ -19,7 +19,6 @@ public final class NeoApoliEntityAttachments {
 	public static final AttachmentType<PowersAttachment> POWERS = AttachmentRegistry.create(Powers.ID, builder -> builder
 		.persistent(PowersAttachment.CODEC)
 		.syncWith(PowersAttachment.STREAM_CODEC, AttachmentSyncPredicate.all())
-		.initializer(PowersAttachment::new)
 		.copyOnDeath()
 	);
 

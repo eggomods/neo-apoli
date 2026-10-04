@@ -11,6 +11,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.codec.NeoApoliCodecs;
 import io.github.eggohito.neo_apoli.codec.NeoApoliStreamCodecs;
+import io.github.eggohito.neo_apoli.duck.internal.RespawningEntity;
 import io.github.eggohito.neo_apoli.power.Power;
 import io.github.eggohito.neo_apoli.power.PowerHolder;
 import io.github.eggohito.neo_apoli.power.PowerIdentifier;
@@ -41,6 +42,8 @@ import java.util.function.Function;
 @SuppressWarnings("UnstableApiUsage")
 public record PowersAttachment(ImmutableMap<PowerIdentifier, Power.Instance<?>> instances, ImmutableSetMultimap<PowerIdentifier, ResourceLocation> sources, Optional<String> decodingErrors) {
 
+	public static final PowersAttachment EMPTY = new PowersAttachment();
+
 	public static final Codec<PowersAttachment> CODEC = new Codec<>() {
 
 		@Override
@@ -57,26 +60,18 @@ public record PowersAttachment(ImmutableMap<PowerIdentifier, Power.Instance<?>> 
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, PowersAttachment> STREAM_CODEC = new StreamCodec<>() {
 
+		private static final StreamCodec<RegistryFriendlyByteBuf, Optional<List<Entry>>> OPTIONAL_ENTRIES_CODEC = ByteBufCodecs.optional(Entry.LIST_STREAM_CODEC);
+
 		@Override
 		public @NotNull PowersAttachment decode(RegistryFriendlyByteBuf buf) {
-
 			RegistryOps<Tag> ops = buf.registryAccess().createSerializationContext(NbtOps.INSTANCE);
-			boolean present = buf.readBoolean();
-
-			Optional<List<Entry>> entries = present ? Optional.of(Entry.LIST_STREAM_CODEC.decode(buf)) : Optional.empty();
-			return entries.flatMap(self -> unpack(ops, self).resultOrPartial()).orElseGet(PowersAttachment::new);
-
+			return OPTIONAL_ENTRIES_CODEC.decode(buf).flatMap(self -> unpack(ops, self).resultOrPartial()).orElse(EMPTY);
 		}
 
 		@Override
 		public void encode(RegistryFriendlyByteBuf buf, PowersAttachment input) {
-
-			RegistryOps<Tag> nbtOps = buf.registryAccess().createSerializationContext(NbtOps.INSTANCE);
-			Optional<List<Entry>> entries = input.pack(nbtOps).resultOrPartial();
-
-			buf.writeBoolean(entries.isPresent());
-			entries.ifPresent(self -> Entry.LIST_STREAM_CODEC.encode(buf, self));
-
+			RegistryOps<Tag> ops = buf.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+			OPTIONAL_ENTRIES_CODEC.encode(buf, input.pack(ops).resultOrPartial());
 		}
 
 	};
@@ -85,8 +80,13 @@ public record PowersAttachment(ImmutableMap<PowerIdentifier, Power.Instance<?>> 
 		this(instances, sources, Optional.empty());
 	}
 
-	public PowersAttachment() {
+	private PowersAttachment() {
 		this(ImmutableMap.of(), ImmutableSetMultimap.of(), Optional.empty());
+	}
+
+	@Override
+	public @NotNull String toString() {
+		return "PowersAttachment[%s]".formatted(this == EMPTY ? "EMPTY" : "instances=%s, sources=%s, decodingErrors=%s".formatted(instances(), sources(), decodingErrors()));
 	}
 
 	private <T> DataResult<List<Entry>> pack(DynamicOps<T> ops) {
@@ -132,6 +132,12 @@ public record PowersAttachment(ImmutableMap<PowerIdentifier, Power.Instance<?>> 
 		//  If there is no old value and a new value, it means the attachment was initialized
 		else if (oldValue == null && newValue != null) {
 
+			//  If the player is in the process of respawning (either from death or teleporting from The End to
+			//  the Overworld), skip invoking the grant/added power callbacks
+			if (((RespawningEntity) holder).neo_apoli$isRespawning()) {
+				return;
+			}
+
 			for (var instance : newValue.instances().values()) {
 				instance.onGranted(holder);
 				instance.onAdded(holder);
@@ -146,43 +152,31 @@ public record PowersAttachment(ImmutableMap<PowerIdentifier, Power.Instance<?>> 
 			Set<Map.Entry<PowerIdentifier, Power.Instance<?>>> revoked = Sets.difference(oldValue.instances().entrySet(), newValue.instances().entrySet());
 			Set<Map.Entry<PowerIdentifier, Power.Instance<?>>> granted = Sets.difference(newValue.instances().entrySet(), oldValue.instances().entrySet());
 
-			//  Iterate through all the powers that has been revoked
-			initial(revoked, instance -> instance.onRevoked(holder));
-
-			//  Iterate through all the powers that has been granted
-			initial(granted, instance -> instance.onGranted(holder));
+			//  Iterate through all the powers that has been revoked/granted
+			revoked.forEach(entry -> entry.getValue().onRevoked(holder));
+			granted.forEach(entry -> entry.getValue().onGranted(holder));
 
 			//  Get the difference between the sources of the old and new attachments (for recurring callbacks)
 			Set<Map.Entry<PowerIdentifier, ResourceLocation>> removed = Sets.difference(oldValue.sources().entries(), newValue.sources().entries());
 			Set<Map.Entry<PowerIdentifier, ResourceLocation>> added = Sets.difference(newValue.sources().entries(), oldValue.sources().entries());
 
-			//  Iterate through all the powers that has been removed
-			recurring(oldValue, removed, instance -> instance.onRemoved(holder));
-
-			//  Iterate through all the powers that has been added
-			recurring(newValue, added, instance -> instance.onAdded(holder));
+			//  Iterate through all the powers that has been removed/added
+			oldValue.invokeSourceCallback(removed, instance -> instance.onRemoved(holder));
+			newValue.invokeSourceCallback(added, instance -> instance.onAdded(holder));
 
 		}
 
 	}
 
-	private static void initial(Set<Map.Entry<PowerIdentifier, Power.Instance<?>>> instances, Consumer<Power.Instance<?>> action) {
+	private void invokeSourceCallback(Set<Map.Entry<PowerIdentifier, ResourceLocation>> idsAndSources, Consumer<Power.Instance<?>> callback) {
 
-		for (var entry : instances) {
-			action.accept(entry.getValue());
-		}
-
-	}
-
-	private static void recurring(PowersAttachment source, Set<Map.Entry<PowerIdentifier, ResourceLocation>> instances, Consumer<Power.Instance<?>> action) {
-
-		for (var entry : instances) {
+		for (var entry : idsAndSources) {
 
 			var id = entry.getKey();
-			Power.Instance<?> instance = source.instances().get(id);
+			Power.Instance<?> instance = this.instances().get(id);
 
 			if (instance != null) {
-				action.accept(instance);
+				callback.accept(instance);
 			}
 
 		}

@@ -1,9 +1,11 @@
 package io.github.eggohito.neo_apoli.network.packet.clientbound;
 
 import io.github.eggohito.neo_apoli.NeoApoli;
+import io.github.eggohito.neo_apoli.attachment.entity.PowersAttachment;
 import io.github.eggohito.neo_apoli.power.PowerIdentifier;
 import io.github.eggohito.neo_apoli.power.entity.Powers;
 import io.github.eggohito.neo_apoli.power.manager.PowerManager;
+import io.github.eggohito.neo_apoli.registry.attachment.NeoApoliEntityAttachments;
 import io.github.eggohito.neo_apoli.util.MiscUtil;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.Util;
@@ -38,17 +40,21 @@ public record ClientboundUpdatePowerDataPacket(int entityId, Map<PowerIdentifier
 		return TYPE;
 	}
 
+	@SuppressWarnings("UnstableApiUsage")
 	public void handle(Level level) {
 
 		Entity holder = level.getEntity(this.entityId());
-		Powers powers = Powers.getNullable(holder);
+		PowersAttachment attachment = holder != null
+			? holder.getAttached(NeoApoliEntityAttachments.POWERS)
+			: null;
 
 		if (holder == null) {
 			NeoApoli.LOGGER.warn("Couldn't sync data of the following powers to non-existent entity: [{}]", powersAndData().keySet().stream().map(PowerIdentifier::toString).collect(Collectors.joining(", ")));
 		}
 
-		else if (powers != null && !powers.getAllInstances().isEmpty()) {
+		else if (attachment != null && attachment != PowersAttachment.EMPTY) {
 
+			Powers powers = Powers.getOrCreate(holder);
 			RegistryOps<Tag> ops = level.registryAccess().createSerializationContext(NbtOps.INSTANCE);
 
 			for (var entry : powersAndData().entrySet()) {

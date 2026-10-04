@@ -1,9 +1,6 @@
 package io.github.eggohito.neo_apoli.power.entity.impl;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSetMultimap;
-import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.*;
 import io.github.eggohito.neo_apoli.NeoApoli;
 import io.github.eggohito.neo_apoli.attachment.entity.PowersAttachment;
 import io.github.eggohito.neo_apoli.network.packet.clientbound.ClientboundUpdatePowerDataPacket;
@@ -36,8 +33,8 @@ public final class MutablePowersImpl extends AbstractPowers implements MutablePo
 
 	private boolean changed = false;
 
-	MutablePowersImpl(Entity holder, PowersAttachment attachment) {
-		super(holder, new Object2ObjectLinkedOpenHashMap<>(attachment.instances()), LinkedHashMultimap.create(attachment.sources()));
+	MutablePowersImpl(Entity holder, Map<PowerIdentifier, Power.Instance<?>> instances, SetMultimap<PowerIdentifier, ResourceLocation> sources) {
+		super(holder, instances, sources);
 	}
 
 	@Override
@@ -112,7 +109,19 @@ public final class MutablePowersImpl extends AbstractPowers implements MutablePo
 
 
 	public static MutablePowers of(@NotNull Entity holder) {
-		return new MutablePowersImpl(holder, holder.getAttachedOrCreate(NeoApoliEntityAttachments.POWERS));
+
+		PowersAttachment attachment = holder.getAttached(NeoApoliEntityAttachments.POWERS);
+
+		Map<PowerIdentifier, Power.Instance<?>> instances = new Object2ObjectLinkedOpenHashMap<>();
+		SetMultimap<PowerIdentifier, ResourceLocation> sources = LinkedHashMultimap.create();
+
+		if (attachment != null) {
+			instances.putAll(attachment.instances());
+			sources.putAll(attachment.sources());
+		}
+
+		return new MutablePowersImpl(holder, instances, sources);
+
 	}
 
 
