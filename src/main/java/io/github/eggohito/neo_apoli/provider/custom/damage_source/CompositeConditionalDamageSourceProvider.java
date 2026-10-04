@@ -18,7 +18,7 @@ public record CompositeConditionalDamageSourceProvider(List<Entry<DamageSourcePr
 	public static final StreamCodec<RegistryFriendlyByteBuf, CompositeConditionalDamageSourceProvider> STREAM_CODEC = StreamCodecUtil.lazy(CompositeConditionalDamageSourceProvider.class.getSimpleName(), () -> CompositeConditionalValueProvider.streamCodec(DamageSourceProvider.STREAM_CODEC, CompositeConditionalDamageSourceProvider::new));
 
 	@Override
-	public @NotNull Type<?> getType() {
+	public DamageSourceProvider.@NotNull Type<?> getType() {
 		return NeoApoliDamageSourceProviderTypes.COMPOSITE_CONDITIONAL;
 	}
 

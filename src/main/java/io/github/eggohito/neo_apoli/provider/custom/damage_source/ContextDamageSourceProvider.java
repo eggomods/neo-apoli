@@ -34,7 +34,7 @@ public record ContextDamageSourceProvider(DamageSourceContextParameter parameter
 	);
 
 	@Override
-	public @NotNull Type<?> getType() {
+	public DamageSourceProvider.@NotNull Type<?> getType() {
 		return NeoApoliDamageSourceProviderTypes.CONTEXT;
 	}
 

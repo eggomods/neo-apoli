@@ -17,7 +17,7 @@ public record ConditionalDamageSourceProvider(Condition condition, DamageSourceP
 	public static final StreamCodec<RegistryFriendlyByteBuf, ConditionalDamageSourceProvider> STREAM_CODEC = StreamCodecUtil.lazy(ConditionalDamageSourceProvider.class.getSimpleName(), () -> ConditionalValueProvider.streamCodec(DamageSourceProvider.STREAM_CODEC, ConditionalDamageSourceProvider::new));
 
 	@Override
-	public @NotNull Type<?> getType() {
+	public DamageSourceProvider.@NotNull Type<?> getType() {
 		return NeoApoliDamageSourceProviderTypes.CONDITIONAL;
 	}
 
