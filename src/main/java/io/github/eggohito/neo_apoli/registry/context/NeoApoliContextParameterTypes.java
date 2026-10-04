@@ -8,6 +8,7 @@ import io.github.eggohito.neo_apoli.provider.custom.block.BlockProvider;
 import io.github.eggohito.neo_apoli.provider.custom.bool.BooleanProvider;
 import io.github.eggohito.neo_apoli.provider.custom.box.BoxProvider;
 import io.github.eggohito.neo_apoli.provider.custom.command_source.CommandSourceProvider;
+import io.github.eggohito.neo_apoli.provider.custom.damage_source.DamageSourceProvider;
 import io.github.eggohito.neo_apoli.provider.custom.direction.DirectionProvider;
 import io.github.eggohito.neo_apoli.provider.custom.effect.EffectProvider;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
@@ -32,7 +33,7 @@ public final class NeoApoliContextParameterTypes {
 	public static final ContextParameter.TypeWithProvider<BooleanContextParameter, BooleanProvider> BOOLEAN = registerWithProviderInternal("boolean", BooleanProvider.CODEC, BooleanProvider.STREAM_CODEC, BooleanContextParameter::new);
 	public static final ContextParameter.TypeWithProvider<BoxContextParameter, BoxProvider> BOX = registerWithProviderInternal("box", BoxProvider.CODEC, BoxProvider.STREAM_CODEC, BoxContextParameter::new);
 	public static final ContextParameter.TypeWithProvider<CommandSourceContextParameter, CommandSourceProvider> COMMAND_SOURCE = registerWithProviderInternal("command_source", CommandSourceProvider.CODEC, CommandSourceProvider.STREAM_CODEC, CommandSourceContextParameter::new);
-	public static final ContextParameter.Type<DamageSourceContextParameter> DAMAGE_SOURCE = registerSimpleInternal("damage_source", DamageSourceContextParameter::new);
+	public static final ContextParameter.Type<DamageSourceContextParameter> DAMAGE_SOURCE = registerWithProviderInternal("damage_source", DamageSourceProvider.CODEC, DamageSourceProvider.STREAM_CODEC, DamageSourceContextParameter::new);
 	public static final ContextParameter.TypeWithProvider<DirectionContextParameter, DirectionProvider> DIRECTION = registerWithProviderInternal("direction", DirectionProvider.CODEC, DirectionProvider.STREAM_CODEC, DirectionContextParameter::new);
 	public static final ContextParameter.TypeWithProvider<EffectContextParameter, EffectProvider> EFFECT = registerWithProviderInternal("effect", EffectProvider.CODEC, EffectProvider.STREAM_CODEC, EffectContextParameter::new);
 	public static final ContextParameter.TypeWithProvider<EntityContextParameter, EntityProvider> ENTITY = registerWithProviderInternal("entity", EntityProvider.CODEC, EntityProvider.STREAM_CODEC, EntityContextParameter::new);

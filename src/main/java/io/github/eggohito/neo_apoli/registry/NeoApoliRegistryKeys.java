@@ -15,6 +15,7 @@ import io.github.eggohito.neo_apoli.provider.custom.block.BlockProvider;
 import io.github.eggohito.neo_apoli.provider.custom.bool.BooleanProvider;
 import io.github.eggohito.neo_apoli.provider.custom.box.BoxProvider;
 import io.github.eggohito.neo_apoli.provider.custom.command_source.CommandSourceProvider;
+import io.github.eggohito.neo_apoli.provider.custom.damage_source.DamageSourceProvider;
 import io.github.eggohito.neo_apoli.provider.custom.direction.DirectionProvider;
 import io.github.eggohito.neo_apoli.provider.custom.effect.EffectProvider;
 import io.github.eggohito.neo_apoli.provider.custom.entity.EntityProvider;
@@ -44,6 +45,7 @@ public final class NeoApoliRegistryKeys {
 	public static final ResourceKey<Registry<BooleanProvider.Type<?>>> BOOLEAN_PROVIDER_TYPE = create("provider_type/bool");
 	public static final ResourceKey<Registry<BoxProvider.Type<?>>> BOX_PROVIDER_TYPE = create("provider_type/box");
 	public static final ResourceKey<Registry<CommandSourceProvider.Type<?>>> COMMAND_SOURCE_PROVIDER_TYPE = create("provider_type/command_source");
+	public static final ResourceKey<Registry<DamageSourceProvider.Type<?>>> DAMAGE_SOURCE_PROVIDER_TYPE = create("provider_type/damage_source");
 	public static final ResourceKey<Registry<DirectionProvider.Type<?>>> DIRECTION_PROVIDER_TYPE = create("provider_type/direction");
 	public static final ResourceKey<Registry<EffectProvider.Type<?>>> EFFECT_PROVIDER_TYPE = create("provider_type/effect");
 	public static final ResourceKey<Registry<EntityProvider.Type<?>>> ENTITY_PROVIDER_TYPE = create("provider_type/entity");

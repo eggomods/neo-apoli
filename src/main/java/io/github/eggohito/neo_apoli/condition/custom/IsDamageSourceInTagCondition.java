@@ -5,10 +5,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.neo_apoli.condition.Condition;
 import io.github.eggohito.neo_apoli.context.Context;
 import io.github.eggohito.neo_apoli.context.ContextValidator;
-import io.github.eggohito.neo_apoli.context.parameter.ContextParameter;
-import io.github.eggohito.neo_apoli.context.parameter.DamageSourceContextParameter;
+import io.github.eggohito.neo_apoli.provider.custom.damage_source.DamageSourceProvider;
 import io.github.eggohito.neo_apoli.registry.NeoApoliConditionTypes;
-import io.github.eggohito.neo_apoli.registry.context.NeoApoliContextParameterTypes;
 import io.github.eggohito.neo_apoli.util.RegistryUtil;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -16,18 +14,16 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
 
-import java.util.Set;
-
-public record IsDamageSourceInTagCondition(TagKey<DamageType> tag, DamageSourceContextParameter damageSource) implements Condition {
+public record IsDamageSourceInTagCondition(TagKey<DamageType> tag, DamageSourceProvider damageSource) implements Condition {
 
 	public static final MapCodec<IsDamageSourceInTagCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		TagKey.hashedCodec(Registries.DAMAGE_TYPE).fieldOf("tag").forGetter(IsDamageSourceInTagCondition::tag),
-		NeoApoliContextParameterTypes.DAMAGE_SOURCE.codec().fieldOf("damage_source").forGetter(IsDamageSourceInTagCondition::damageSource)
+		DamageSourceProvider.CODEC.fieldOf("damage_source").forGetter(IsDamageSourceInTagCondition::damageSource)
 	).apply(instance, IsDamageSourceInTagCondition::new));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, IsDamageSourceInTagCondition> STREAM_CODEC = StreamCodec.composite(
 		TagKey.streamCodec(Registries.DAMAGE_TYPE), IsDamageSourceInTagCondition::tag,
-		NeoApoliContextParameterTypes.DAMAGE_SOURCE.streamCodec(), IsDamageSourceInTagCondition::damageSource,
+		DamageSourceProvider.STREAM_CODEC, IsDamageSourceInTagCondition::damageSource,
 		IsDamageSourceInTagCondition::new
 	);
 
@@ -38,20 +34,16 @@ public record IsDamageSourceInTagCondition(TagKey<DamageType> tag, DamageSourceC
 
 	@Override
 	public boolean test(Context context) {
-		return context.getOptional(damageSource())
-			.map(source -> source.is(this.tag()))
+		return damageSource().getValue(context.forChild(".damage_source"))
+			.map(source -> source.is(tag()))
 			.orElse(false);
-	}
-
-	@Override
-	public Set<ContextParameter<?>> getRequiredParameters() {
-		return Set.of(damageSource());
 	}
 
 	@Override
 	public void validate(ContextValidator validator) {
 		Condition.super.validate(validator);
 		RegistryUtil.validateTag(validator.forChild(".tag"), this.tag());
+		damageSource().validate(validator.forChild(".damage_source"));
 	}
 
 }
